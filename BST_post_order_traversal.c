@@ -1,5 +1,5 @@
-https://leetcode.com/problems/binary-tree-postorder-traversal/
-http://articles.leetcode.com/binary-tree-post-order-traversal
+//https://leetcode.com/problems/binary-tree-postorder-traversal/
+//http://articles.leetcode.com/binary-tree-post-order-traversal
 //Method 1: recursive
 vector<int> postorderTraversal(TreeNode* root) {
     vector<int> ret;
