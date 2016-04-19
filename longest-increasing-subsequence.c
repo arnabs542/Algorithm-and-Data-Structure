@@ -6,11 +6,9 @@ int lengthOfLIS(vector<int>& nums) {
         return 0;
     vector<int> LIS(len, 1);
     int max = 0;
-
     /*  
     DP: LIS(i) number of LIS ending position i,
-    transition function: LIS[i] = max(LIS[j]+1,LIS[i]);j<i
-    
+    transition function: LIS[i] = max(LIS[j]+1,LIS[i]);j<i,nums[j]<nums[i].
     nums: 1,3,6,7,9,4,10,5,6
     LIS:  1,2,3,4,5,3,6,4,5,
     
