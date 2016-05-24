@@ -34,3 +34,40 @@ public:
         return num;
     }
 };
+
+//Method 2: DP
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        //DP
+        /*
+        f[i][j] denote number of distinct subsequences of t[0:j] in s[0:i]
+        if t[j]=s[i] 
+        case 1: match t[j] to s[i], then f[i][j] = f[i-1][j-1]. 
+        case 2: match t[j] to s[0:i-1], then f[i][j] = f[i-1][j]. 
+        so f[i][j] = f[i-1][j-1]+f[i-1][j]
+        
+        if t[j]!=s[i], then 
+         f[i][j] = f[i-1][j]. 
+         
+        */
+        if (s.size() < t.size()) return 0;
+        if (t.empty()) return 1;
+
+        vector<vector<int> > f(s.size() + 1, vector<int>(t.size() + 1, 0));
+        
+        for(int i=0;i<s.size();i++){
+            f[i][0] = 1;
+            for(int j=0;j<t.size();j++){
+                if(s[i]==t[j]){
+                    f[i+1][j+1] = f[i][j+1]+f[i][j];
+                }else{
+                    f[i+1][j+1] = f[i][j+1];
+                }
+            }
+            
+        }
+        
+        return f[s.size()][t.size()];
+    }
+};
