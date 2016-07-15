@@ -1,2 +1,3 @@
-# algorithm
-algorithm-coding-solution
+# Algorithm
+algorithm-data strcuture-coding
+
