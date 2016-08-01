@@ -18,24 +18,26 @@ isMatch("ab", ".*") → true
 isMatch("aab", "c*a*b") → true
 */
 
+/*
+dp[i][j] indicates whether substring s(0:i-1) matches substring p(0:j-1) 
+
+1, If p[j] == s[i] :  dp[i][j] = dp[i-1][j-1];
+2, If p[j] == '.' : dp[i][j] = dp[i-1][j-1];
+3, If p[j] == '*': we need to check p[j-1] as it is precedening char
+     here are two sub conditions:
+       1   if p[j-1] != s[i] : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
+       2   if p[j-1] == s[i] or p[j-1] == '.':
+                      dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
+                   or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
+                   or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
+
+*/
+
 //Method 1: DP
 class Solution {
 public:
   bool isMatch(string s, string p) {
-      /*
-      dp[i][j] indicates whether substring s(0:i-1) matches substring p(0:j-1) 
-      
-      1, If p[j] == s[i] :  dp[i][j] = dp[i-1][j-1];
-      2, If p[j] == '.' : dp[i][j] = dp[i-1][j-1];
-      3, If p[j] == '*': we need to check p[j-1] as it is precedening char
-           here are two sub conditions:
-             1   if p[j-1] != s[i] : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
-             2   if p[j-1] == s[i] or p[j-1] == '.':
-                            dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
-                         or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
-                         or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
-      
-      */
+
       int len_s = s.size();
       int len_p = p.size();
       
@@ -67,4 +69,27 @@ public:
           
       return dp[len_s][len_p];
   }
+};
+
+//method 2: recursive
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+
+        if (p.empty())    
+            return s.empty();
+        
+        if(p[1]=='*'){
+            
+            //check p.substr(2) if matches zero precedenct char
+            //check s.substr(1) if matches multiple precendecnt char
+            return (isMatch(s,p.substr(2)) || 
+            !s.empty() && (s[0]==p[0] || p[0]=='.')&&isMatch(s.substr(1),p));
+        }else if(p[0]=='.' || s[0]==p[0]){
+            return !s.empty() && isMatch(s.substr(1),p.substr(1));
+        }else{
+            return false;
+        }
+
+    }
 };
