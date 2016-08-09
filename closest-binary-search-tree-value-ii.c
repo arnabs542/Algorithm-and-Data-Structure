@@ -29,8 +29,14 @@ public:
       
       pq.push(make_pair(abs(target-root->val),root->val));
       
-      if(pq.size() > k) 
-          pq.pop();
+        if(pq.size() < k){
+            pq.push(make_pair(abs(target-root->val),root->val));
+        }else{
+            if(abs(root->val-target)<abs(pq.top().first)){
+                pq.push(make_pair(abs(target-root->val),root->val));
+                pq.pop();
+            }
+        }
       
       dfs_help(root->left, target, k, pq);
       dfs_help(root->right, target, k, pq);
