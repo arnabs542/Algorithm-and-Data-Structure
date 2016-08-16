@@ -66,3 +66,26 @@ public:
         return max;
     }
 };
+
+//method 3: use hash set
+class Solution {
+public:
+    int longestConsecutive(vector<int> &num) {
+        //maintain two sets. first record all num
+        //second record which do we searched
+        unordered_set<int> record(num.begin(),num.end());
+        unordered_set<int> searched;
+        int res = 1;
+        for(int n : num){
+            if(searched.find(n)!=searched.end()) continue;
+                searched.insert(n);
+            int prev = n-1,next = n+1;
+            while(record.find(prev)!=record.end()) 
+                searched.insert(prev--);
+            while(record.find(next)!=record.end()) 
+                searched.insert(next++);
+            res = max(res,next-prev-1);
+        }
+        return res;
+    }
+};
