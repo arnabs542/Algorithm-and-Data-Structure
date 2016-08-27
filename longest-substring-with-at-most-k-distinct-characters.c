@@ -28,3 +28,30 @@ public:
         return ret;
     }
 };
+
+//method2: use two pointers and sub array template
+class Solution {
+public:
+    int lengthOfLongestSubstringKDistinct(string s, int k) {
+        vector<int> map(128,0);//128 char
+        int start=0;
+        int end = 0;
+        int counter = 0;
+        int ret = 0;
+        while(end<s.size()){
+            if(map[s[end]]++==0){//meet a new distinct char, out loop to entend the end pointer
+                counter++;
+            }
+            end++;
+            while(counter>k){
+                if(map[s[start]]--==1){//since current char only appears once, remove it will lead one less distinct char
+                    counter--;
+                }
+                start++;
+            }
+            ret = max(ret,end-start);
+        }
+        return ret;
+    }
+};
+
