@@ -52,3 +52,30 @@ public:
         return max;
     }
 };
+
+
+/*
+Follow up this question to:
+Given an array of integers A and an integer k, 
+find a subarray that contains the largest sum, subject to a constraint that the sum is less than k?
+*/
+
+/*
+make use of method to have sum/cum value. so find cum[i]-cum[j]<=k with largest value
+ cum[i]-k<=cum[j], 
+O(nlog(n))
+*/
+int best_cumulative_sum(int ar[],int N,int K)
+{
+    set<int> cumset;
+    cumset.insert(0);
+    int best=0,cum=0;
+    for(int i=0;i<N;i++)
+    {
+        cum+=ar[i];
+        set<int>::iterator sit=cumset.upper_bound(cum-K);
+        if(sit!=cumset.end())
+            best=max(best,cum-*sit);
+        cumset.insert(cum);
+    }
+}
