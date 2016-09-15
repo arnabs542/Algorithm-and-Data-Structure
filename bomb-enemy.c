@@ -49,3 +49,52 @@ public:
     }
 
 };
+//method 2: made simple, use one d vector
+class Solution {
+public:
+	int maxKilledEnemies(vector<vector<char>>& grid) {
+		int row = grid.size();
+		if (!row) return 0;
+		int col = grid[0].size();
+		int ret = 0;
+		vector<int> row_enemy(row, 0); //enemy killed for fixed row along col
+		vector<int> col_enemy(col, 0); //enemy killed for fixed col along row
+
+		for (int i = 0; i<row; i++) {
+			for (int j = 0; j<col; j++) {
+				if (j == 0 || grid[i][j - 1] == 'W') {
+					//starting from current, fix row to extend col
+					row_enemy[i] = rowArea(grid, i, j);
+				}
+				if (i == 0 || grid[i - 1][j] == 'W') {
+					//starting from current, fix col to extend row
+					col_enemy[j] = colArea(grid, i, j);
+				}
+				if (grid[i][j] == '0') {
+					ret = ret>(row_enemy[i] + col_enemy[j]) ? ret : (row_enemy[i] + col_enemy[j]);
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	int rowArea(vector<vector<char>>& grid, int row, int col) {
+		int ret = 0;
+		while (col<grid[row].size() && grid[row][col] != 'W') {
+			if (grid[row][col] == 'E')
+				ret++;
+			col++;
+		}
+		return ret;
+	}
+	int colArea(vector<vector<char>>& grid, int row, int col) {
+		int ret = 0;
+		while (row<grid.size() && grid[row][col] != 'W') {
+			if (grid[row][col] == 'E')
+				ret++;
+			row++;
+		}
+		return ret;
+	}
+};
