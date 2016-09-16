@@ -78,15 +78,16 @@ void DFS(vector<vector<int>>& rooms, int i, int j, int path){
 
 //BFS way
 class Solution {
-    int row = 0;
-    int col = 0;
 public:
     void wallsAndGates(vector<vector<int>>& rooms) {
+        int row = 0;
+        int col = 0;
         row=rooms.size();
         if(!row) return;
         col=rooms[0].size();
         if(!col) return;
-        queue<pair<int,int>> q;
+        
+        queue<pair<int,int>> q; //queue for points
         for(int i=0;i<row;i++){
             for(int j=0;j<col;j++){
                 if(rooms[i][j]==0){
@@ -99,19 +100,20 @@ public:
             int x=q.front().first;
             int y=q.front().second;
             q.pop();
-            if(x-1>=0 && rooms[x-1][y]==INT_MAX){
+            //only update when inside boudary and new move could lead to smaller number to gate
+            if(x-1>=0 && rooms[x-1][y]>rooms[x][y]+1){
                 rooms[x-1][y] = rooms[x][y]+1;
                 q.push(make_pair(x-1,y));
             }
-            if(x+1<row && rooms[x+1][y]==INT_MAX){
+            if(x+1<row && rooms[x+1][y]>rooms[x][y]+1){
                 rooms[x+1][y] = rooms[x][y]+1;
                 q.push(make_pair(x+1,y));
             }
-            if(y-1>=0 && rooms[x][y-1]==INT_MAX){
+            if(y-1>=0 && rooms[x][y-1]>rooms[x][y]+1){
                 rooms[x][y-1] = rooms[x][y]+1;
                 q.push(make_pair(x,y-1));
             }
-            if(y+1<col && rooms[x][y+1]==INT_MAX){
+            if(y+1<col && rooms[x][y+1]>rooms[x][y]+1){
                 rooms[x][y+1] = rooms[x][y]+1;
                 q.push(make_pair(x,y+1));
             }
