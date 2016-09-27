@@ -36,3 +36,26 @@ public:
         return ret;
     }
 };
+
+//same as here
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int a=0;
+        int b=0;
+        //we need to implement a three-time counter(base 3) that if a bit appears three time ,it will be zero.
+        //#curent  income  ouput
+        //# ab      c/c       ab/ab
+        //# 00      1/0       01/00
+        //# 01      1/0       10/01
+        //# 10      1/0       00/10
+        // c is 1 for 3 times, ab counts back to 00.
+        for(int c:nums){
+            int ta=(~a&b&c)|(a&~b&~c);
+            b=(~a&~b&c)|(~a&b&~c);
+            a=ta;
+        }
+        //we need find the number that is 01,10 => 1, 00 => 0.
+        return a|b;
+    }
+};
