@@ -18,22 +18,22 @@ Therefore, return the max sliding window as [3,3,5,5,6,7].
 
 class Solution {
 public:
-  vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-      //use deque, make sure the queue is always in sorted order with front the largest item's index
-      vector<int> ret;
-      deque<int> dq; //push the index into deque
-      for(int i=0;i<nums.size();i++){
-          if(!dq.empty()){
-              if(dq.front()==i-k)
-                  dq.pop_front();
-          }
-          while(!dq.empty() && nums[dq.back()]<nums[i]){
-              dq.pop_back();
-          }
-          dq.push_back(i);
-          if (i>=k-1)
-              ret.push_back(nums[dq.front()]);
-      }
-      return ret;
-  }
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        //use deque, make sure the queue is always in sorted order with front the largest item's index
+        vector<int> ret;
+        deque<int> dq; //push the index into vector with num[v[i]] in descending order
+        for(int i=0;i<nums.size();i++){
+            if(!dq.empty() && (dq.front()==i-k)){
+                //the max value's index in deque reach the window size, need to pop out.
+                    dq.pop_front();
+            }
+            while(!dq.empty() && nums[dq.back()]<nums[i]){
+                dq.pop_back();
+            }
+            dq.push_back(i);
+            if (i>=k-1)
+                ret.push_back(nums[dq.front()]);
+        }
+        return ret;
+    }
 };
