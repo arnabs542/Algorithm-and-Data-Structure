@@ -39,3 +39,27 @@ public:
       return cnt;
   }
 };
+
+//a more clean method
+//DP style, 
+class Solution {
+public:
+    int countPrimes(int n) {
+        int cnt = 0;
+        vector<bool> prime(n,true);  //record whether 0->n-1 are prime
+        prime[0] = false;
+        prime[1] = false;
+        //only check until sqrt(n);
+        for(int i=2;i*i<n;i++){
+            //starting from i,any multiply of p*q will NOT be prime.
+            for(int j = i;i*j<n;j++){
+                prime[i*j-1] = false;
+            }
+        }
+        for(int i=0;i<prime.size();i++){
+            if(prime[i])
+                cnt++;
+        }        
+        return cnt;
+    }
+};
