@@ -39,27 +39,25 @@ public:
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {
-        vector<int> m(128,0); //char map
-        int start=0;
-        int end =0;
+        int start = 0;
+        unordered_map<char,int> m;
         int ret = 0;
         int counter = 0;
-        while(end<s.size()){
-            //found some char already existing
-            if(m[s[end]]==1){
+        for(int i=0;i<s.size();i++){
+            m[s[i]]++;
+            if(m[s[i]]>1){
                 counter++;
             }
-            m[s[end]]++;
-            end++;
+            
             while(counter>0){
-                //if remove current char can lead the substring back to unique
-                if(--m[s[start]]==1){
+                if(--m[s[start]]==1){//back to unique case
                     counter--;
                 }
                 start++;
             }
-            ret = max(ret,end-start);
+            ret = max(ret,i-start+1);
         }
+        
         return ret;
     }
 };
