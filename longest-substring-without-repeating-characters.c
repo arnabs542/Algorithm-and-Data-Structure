@@ -34,3 +34,32 @@ public:
         return ret;
     }
 };
+
+//method 2: use hash table
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        vector<int> m(128,0); //char map
+        int start=0;
+        int end =0;
+        int ret = 0;
+        int counter = 0;
+        while(end<s.size()){
+            //found some char already existing
+            if(m[s[end]]==1){
+                counter++;
+            }
+            m[s[end]]++;
+            end++;
+            while(counter>0){
+                //if remove current char can lead the substring back to unique
+                if(--m[s[start]]==1){
+                    counter--;
+                }
+                start++;
+            }
+            ret = max(ret,end-start);
+        }
+        return ret;
+    }
+};
