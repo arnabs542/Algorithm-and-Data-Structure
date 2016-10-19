@@ -8,17 +8,16 @@ public:
     int kthSmallest(TreeNode* root, int k) {
         //in order traversal
         stack<TreeNode*> s;
-        int cnt = 0;
         int ret = 0;
         while(true){
             while(root){
                 s.push(root);
                 root=root->left;
             }
-            cnt++;
+            k--;
             root = s.top()->right;
             
-            if(cnt==k){
+            if(k==0){
                 break;
             }
             s.pop();
