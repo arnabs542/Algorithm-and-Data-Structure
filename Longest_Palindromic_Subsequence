@@ -1,0 +1,42 @@
+/*
+(Longest Palindromic Subsequence)
+
+Given a sequence, find the length of the longest palindromic subsequence in it. 
+For example, if the given sequence is “BBABCBCAB”, then the output should be 7 as “BABCBAB” is the longest palindromic subseuqnce in it. 
+“BBBBB” and “BBCBB” are also palindromic subsequences of the given sequence, but not the longest ones.
+*/
+// Returns the length of the longest palindromic subsequence in seq
+int lps(string str)
+{
+	int n = strlen(str);
+	int i, j, k;
+	vector<vector<int>> dp(n,vector<int>(n,1));  // dp of subproblems, lps from index i->j
+
+
+	/*
+	// IF first and last characters are not same
+	If (X[i] != X[j])  L(i, j) =  max{L(i + 1, j),L(i, j - 1)} 
+
+	// If there are only 2 characters and both are same
+	Else if (j == i + 1) L(i, j) = 2  
+
+	// If there are more than two characters, and first and last 
+	// characters are same
+	Else L(i, j) =  L(i + 1, j - 1) + 2 
+	*/
+	for (k = 2; k <= n; k++)
+	{
+		for (i = 0; i+k<n ; i++)
+		{
+			j = i + k - 1;
+			if (str[i] == str[j] && k == 2)
+				L[i][j] = 2;
+			else if (str[i] == str[j])
+				L[i][j] = L[i + 1][j - 1] + 2;
+			else
+				L[i][j] = max(L[i][j - 1], L[i + 1][j]);
+		}
+	}
+
+	return L[0][n - 1];
+}
