@@ -27,20 +27,22 @@ public:
 class Solution {
 public:
     int missingNumber(vector<int>& nums) {
+        //if we have all numbers, we should have n+1
+        //for sorted, 
         sort(nums.begin(),nums.end());
         int l=0;
-        int r=nums.size()-1;
+        int r = nums.size()-1;
         while(l<=r){
             int mid = l+(r-l)/2;
+            //nums[mid]>mid means some number miss before mid, so nums[mid] is higher than index mid
             if(nums[mid]>mid){
-                r=mid-1;
+                r= mid-1;
             }else{
                 l = mid+1;
             }
         }
+        //final should index l is one more larger than r, and l should be missing one
         return l;
-    }
-
 };
 
 //method 3: checking the missing
