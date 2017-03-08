@@ -2,4 +2,10 @@
 
 ## Heap
 
-Heap is implemented as 
+Heap is implemented as tree strcuture in logic view and array in physical view:
+
+'''
+For node in index i:
+Children: left: 2*i+1; right: 2*i+2
+Parent: (i-1)/2
+'''
