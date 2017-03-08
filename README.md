@@ -1,3 +1,0 @@
-# Array, List, Queue, Heap
-
-
