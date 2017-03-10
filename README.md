@@ -18,8 +18,9 @@ O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 
 ## Stack
 
-* Min Stack
-maintain a min stack that query  minimum value in stack is O(1)
+* Min Stack:
+
+maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 
 ```CPP
 //Basic idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
@@ -50,7 +51,9 @@ int getMin(){
 }
 ```
 
-* Convert a stack to Queue
+* Convert a stack to Queue:
+
+The idea is to Use two stacks, one for push, one for pop to mimic the queue tail and head
 ```CPP
 // Use two stacks, one for push, one for pop to mimic the queue tail and head
 
@@ -66,20 +69,42 @@ int pop(){
     return;
   //put all push stack items into pop stack,
   //Ensure that pop stack is empty before transfer
-  if(stack_pop.empty())
+  if(stack_pop.empty()){
     while(!stack_push.empty()){
       stack_pop.push(stack_push.top());
       stack_push.pop();
     }
-    int ret = stack_pop.top();
-    stack_pop.pop();
-    return ret;
+  }
+  int ret = stack_pop.top();
+  stack_pop.pop();
+  return ret;
 }
 ```
 
+* Revert stack recursively without extra new stack:
 
-* Revert stack recursively
+The idea is to use function recursively because recursive uses stack
+```CPP
+stack<int> s;
+void reverse(stack<int> &s){
+  if(s.empty())
+    return;
+  int ret = getAndRemoveLastElement(s);
+  reverse(s);
+  s.push(ret);
+}
+//this function will delete last/bottom of current stack. return top of current stack
+int getAndRemoveLastElement(stack<int> &s){
+  int cur = s.top();
+  s.pop();
+  if(s.empty())
+    return cur;
+  int last = getAndRemoveLastElement(s);
+  s.push(cur);
+  return last;
+}
 
+```
 
 
 ### Examples
