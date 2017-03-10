@@ -144,14 +144,13 @@ struct TreeNode{
 TreeNode * getMaxtree_method1(vector<int> array){
   int len = array.size();
   std::vector<TreeNode> node;
-  //heap sort array
-  for(int i=0;i<len;i++){
-    heapSort(array,i);
-  }
-
   //init heap tree
   for(int i=0;i<array.size();i++){
     node[i] = new TreeNode(array[i]);
+  }
+  //heap sort array
+  for(int i=0;i<len;i++){
+    heapSort(array,i);
   }
   //Build up the max tree
   for(int i=0;i<array.size();i++){
@@ -192,21 +191,20 @@ vector<pair<int,int>> ret;
 int left,right,input;
 for(int i=0;i<array.size();i++){
   input = array[i];
-  while(s.empty() || input>s.top()){
+
+  while(!s.empty() && input>s.top()){
     s.pop(); //will get the left and right for this popped value;
-    if(s.empty())
-      left = NULL;
-    else
-      left = s.top(); //since monotonic, current top after pop should be larger
+    left = stack.empty()?NULL:s.top(); //since monotonic, current top after pop should be larger
     right = input; //input is larger than popped
     ret.push_back(make_pair(left,right));
   }
+  s.push(input);
 }
 //if there are still values in stack, it is monotonic, so right larger is NULL
 while(!s.empty()){
   right = NULL;
   s.pop();
-  left = s.top();
+  left = stack.empty()?NULL:s.top();
   ret.push_back(make_pair(left,right));
 }
 
@@ -215,9 +213,64 @@ return ret;
 
 We can use this monotonic stack way to create the max-tree:
 
-For any value, check left and right cloest larger value, and compare these two, put itself as child of smaller between left and right.
+1. For any value, check left and right cloest larger value.
+2. compare these two, put itself as child of smaller between left and right.
 
 It will be a binary tree, not necessary full balanced binary tree
+```CPP
+struct TreeNode{
+  int val;
+  TreeNode* left;
+  TreeNode* right;
+};
 
+TreeNode * getMaxtree_method2(vector<int> array){
+  stack<TreeNode> s; //monotonic stack for TreeNode value
+  map<TreeNode,TreeNode> Parents; //key is node, val is its parents
+  std::vector<TreeNode*> node;
+  //init TreeNode array
+  for(int i=0;i<array.size();i++){
+    node[i] = new TreeNode(array[i]);
+  }
+  //for each node in array, find its left cloest larger and right cloest larger, put into map
+  for(int i=0;i<array.size();i++){
+    int input = array[i];
+    int left,right;
+    while(!s.empty() && s.top()->val<input){
+      TreeNode cur = s.top();
+      s.pop();
+      left = stack.empty()? NULL: s.top();
+      right = new TreeNode(input);
+      parents[cur] = left==NULL || left->val<right->val?left:right;
+    }
+    s.push(node[i]);
+  }
+  //go through all array, and stack still have value
+  while(!s.empty()){
+    //Right is always null since we are to the end of the array
+    TreeNode cur = s.top();
+    s.pop();
+    left = stack.empty()?NULL:s.top();
+    parents[cur] = left;
+  }
+  //Build up the tree
+  TreeNode* head;
+  TreeNode* Parent;
+  for(int i=0;i<array.size();i++){
+    parent = parents[node[i]];
+    if(parent==NULL){
+      head = node[i]; //found tree root
+    }else if(parent->left == NULL){
+      parent->left = node[i];
+    }else{
+      parent->right = node[i];
+    }
+  }
+
+  return head;
+}
+
+
+```
 
 * Top K problem
