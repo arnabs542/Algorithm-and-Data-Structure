@@ -1,6 +1,7 @@
 # Array,Queue,Stack,Priority Queue(Heap)
 
-## Heap
+## Basic data structure
+### Heap
 
 Heap is implemented as tree structure in logic view and array in physical view:
 
@@ -16,7 +17,7 @@ Time complexity for construct the heap is:
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
 
-## Stack
+## Application and Examples
 
 * Min Stack:
 
@@ -106,10 +107,6 @@ int getAndRemoveLastElement(stack<int> &s){
 
 ```
 
-
-### Examples
-
-
 * Update Largest/Smallest value in sliding window
 
 1. use dequeue(double linked list), new item will be inserted into tail.
@@ -133,3 +130,93 @@ for(int i=0;i<array.size();i++){
     dq.pop_front();
 }
 ```
+
+* Create a max-tree(Assume no duplicate values.)
+
+We can use max heap and heap insert.
+```CPP
+struct TreeNode{
+  int val;
+  TreeNode left;
+  TreeNode right;
+};
+
+TreeNode * getMaxtree_method1(vector<int> array){
+  int len = array.size();
+  std::vector<TreeNode> node;
+  //heap sort array
+  for(int i=0;i<len;i++){
+    heapSort(array,i);
+  }
+
+  //init heap tree
+  for(int i=0;i<array.size();i++){
+    node[i] = new TreeNode(array[i]);
+  }
+  //Build up the max tree
+  for(int i=0;i<array.size();i++){
+    int left_child = 2*i+1;
+    int right_child = 2*i+2;
+    if(left_child<array.size())
+      node[i]->left = node[left_child];
+    if(right_child<array.size())
+      node[i]->right = node[right_child]
+  }
+}
+
+void heapSort(vector<int> &array, int index){
+  while(index!=0){
+    int parent = (index-1)/2;
+    if(array[parent]<array[index]){
+      swap(array[parent],array[index]);
+      index = parent;
+    }else{
+      break;
+    }
+  }
+}
+```
+
+
+but we can also use __monotonic stack__
+
+> for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
+
+> For a input size N array, return size N pairs of values (left, right), in which left is the cloest larger value from left side of current item, and right is the cloest larger value from right side of current item
+
+Algorithm:
+```CPP
+stack<int> s; //monotonic stack, values are increasing from top to bottom
+vector<pair<int,int>> ret;
+int left,right,input;
+for(int i=0;i<array.size();i++){
+  input = array[i];
+  while(s.empty() || input>s.top()){
+    s.pop(); //will get the left and right for this popped value;
+    if(s.empty())
+      left = NULL;
+    else
+      left = s.top(); //since monotonic, current top after pop should be larger
+    right = input; //input is larger than popped
+    ret.push_back(make_pair(left,right));
+  }
+}
+//if there are still values in stack, it is monotonic, so right larger is NULL
+while(!s.empty()){
+  right = NULL;
+  s.pop();
+  left = s.top();
+  ret.push_back(make_pair(left,right));
+}
+
+return ret;
+```
+
+We can use this monotonic stack way to create the max-tree:
+
+For any value, check left and right cloest larger value, and compare these two, put itself as child of smaller between left and right.
+
+It will be a binary tree, not necessary full balanced binary tree
+
+
+* Top K problem
