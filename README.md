@@ -137,8 +137,8 @@ We can use max heap and heap insert.
 ```CPP
 struct TreeNode{
   int val;
-  TreeNode left;
-  TreeNode right;
+  TreeNode* left;
+  TreeNode* right;
 };
 
 TreeNode * getMaxtree_method1(vector<int> array){
@@ -162,6 +162,7 @@ TreeNode * getMaxtree_method1(vector<int> array){
     if(right_child<array.size())
       node[i]->right = node[right_child]
   }
+  return node[0];
 }
 
 void heapSort(vector<int> &array, int index){
