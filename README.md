@@ -269,8 +269,7 @@ TreeNode * getMaxtree_method2(vector<int> array){
 
   return head;
 }
-
-
-```
+``
+`
 
 * Top K problem
