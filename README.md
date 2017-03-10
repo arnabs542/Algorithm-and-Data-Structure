@@ -269,7 +269,10 @@ TreeNode * getMaxtree_method2(vector<int> array){
 
   return head;
 }
-``
-`
+```
+
+* Use this data structure for other Problem_07_MaxTree
+
+Max rectangle 
 
 * Top K problem
