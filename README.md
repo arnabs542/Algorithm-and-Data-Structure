@@ -271,8 +271,66 @@ TreeNode * getMaxtree_method2(vector<int> array){
 }
 ```
 
-* Use this data structure for other Problem_07_MaxTree
+* Use this data structure for other Problem:
 
-Max rectangle 
+[Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
+
+1. step 1 is to calculate row by row, for each item in matrix, what is max rectangle/histogram size when this item is the bottom of histogram
+
+
+2. use monotonic stack, check each histogram left and right cloest smaller, then its histogram can only extend to left+1 and right-1, can calculate area
+
+```CPP
+int maximalRectangle(vector<vector<char>>& matrix){
+  int row = matrix.size();
+  if(row==0)
+    return 0;
+  int col = matrix[0].size();
+  vector<int> histogram(col,0); //histogram size extending current item via col
+  int max_area = 0;
+  for(int i =0; i<row; i++){
+    for(int j =0; j<col; j++){
+        if(matrix[i][j]=='1')
+            histogram[j]++;
+        else
+            histogram[j] =0;
+      }
+    //for each row, begin to check max area based on histogram of current row
+    max_area = max(max_area, getRectanglesize(histogram));
+  }
+
+
+  return max_area;
+
+}
+
+int getRectanglesize(vector<int>& histogram){
+    stack<int> s; //need to have monotonic decreasing stack, record index
+    int max_size = 0;
+    int left, right, height, cur_size;
+    for(int i=0;i<histogram.size();i++){
+      while(!s.empty() && histogram[i]<= histogram[s.top()]){
+        height = histogram[s.top()];
+        s.pop();
+        //left and right boundary
+        left = s.empty()? -1:s.top();
+        right = i;
+        cur_size = (right-left-1) * height;
+        max_size = max(max_size , cur_size);
+      }
+      s.push(i);
+    }
+    //if there are still values in stack, it must has top as right most, otherwise will be popped out
+    while(!s.empty()){
+      height = histogram[s.top()];
+      s.pop();
+      left = s.empty()?-1:s.top();
+      cur_size = (histogram.size()-left-1) * height;
+      max_size = max(max_size , cur_size);
+    }
+    return max_size;
+}
+
+```
 
 * Top K problem
