@@ -389,3 +389,37 @@ int getRectanglesize(vector<int>& histogram){
 ```
 
 * Top K problem
+
+Use heap will be best. See example:
+
+Q: Suppose we have matrix with each row sorted in increasing order, print largest top K values
+```CPP
+bool compare(pair<int,int> a, pair<int,int> b){
+  return a.second > b.second;
+}
+
+vector<int> topKinMatrix(vector<vector<int> matrix, int k){
+  //pq is max heap, where <int, int> represents item's row index and value respectively
+  Priority_queue(pair<int,int>, vector<pair<int,int>>, compare) pq;
+  vector<int> ret;
+  int row = matrix.size();
+  //init the heap to hold row number largest (from head of each row array)
+  for(int i=0;i<row;i++){
+    pq.push(make_pair(i, matrix[i].back()));
+  }
+  //keep get the back of each row, and pop back heap value its position in row
+  while(true){
+    int cur_row_index = pq.top().first;
+    ret.push_back(pq.top());
+    pq.pop();
+    matrix[cur_row_index].pop_back();
+    if(![cur_row_index].empty())
+      pq.push(matrix[cur_row_index].back());
+
+    if(ret.size()==K)
+      break;
+  }
+
+  return ret;
+}
+```
