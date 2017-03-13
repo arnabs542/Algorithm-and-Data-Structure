@@ -131,6 +131,61 @@ for(int i=0;i<array.size();i++){
 }
 ```
 
+An example problem could be:
+
+* In Array, if a max of subarray minus min of subarray <= Num, calculate how many such Array
+
+Requirements: Max{arr[i..j]} – Min{arr[i..j]} <= num.
+
+Where Max{arr[i..j]} is max value in subarray i->j.
+Min{arr[i..j]} is min value in subarray i->j
+
+1. if a subarray dose not match condition, extend it can not match
+2. if a subarray match condition, reduce subarray still can match
+3. assume start from position i, and extend to j position that matches, but extend to j+1 dose not match, so we can know the num of subarray that starting from index i will be j-1+1.
+4. like sliding window, need to move left i to i+1, since i->j matches, so i+1->j matches.
+and then can move forward j to j+1 and try  again.
+
+int AllLessNumSubArray(vector<int> array, int num){
+  int i = 0; //left index
+  int j = 0; //right index
+  int len = array.size();
+  int ret = 0;
+  deque<int> max_dq;  //record max value's index in subarray
+  deque<int> min_dq;  //record min value's index in subarray
+  while(i < len){
+    //j is right index, extends the subarray as sliding right
+    while(j < len){
+      int input = array[j];
+      //update max value index
+      while(!max_dq.empty() && input>=max_dq.back()){
+        max_dq.pop_back();
+      }
+      max_dq.push_back(j);
+      //update min value index
+      while(!min_dq.empty() && input<=min_dq.back()){
+        min_dq.pop_back();
+      }
+      min_dq.push_back(j);
+      //reach the right boundary
+      if(array[j]-array[i]>num)
+        break;
+      j++;
+    }
+    if(min_dq.front()==i)
+      min_dq.pop_front();
+    if(max_dq.front()==i)
+      max_dq.pop_front();
+
+    ret+= j-i+1;
+    i++;
+  }
+
+  return ret;
+}
+
+
+
 * Create a max-tree(Assume no duplicate values.)
 
 We can use max heap and heap insert.
