@@ -394,9 +394,11 @@ Use heap will be best. See example:
 
 Q: Suppose we have matrix with each row sorted in increasing order, print largest top K values
 ```CPP
-bool compare(pair<int,int> a, pair<int,int> b){
-  return a.second > b.second;
-}
+struct compare{
+  bool operator()(pair<int,int> a, pair<int,int> b){
+    return a.second > b.second;
+  }
+};
 
 vector<int> topKinMatrix(vector<vector<int> matrix, int k){
   //pq is max heap, where <int, int> represents item's row index and value respectively
@@ -422,4 +424,46 @@ vector<int> topKinMatrix(vector<vector<int> matrix, int k){
 
   return ret;
 }
+
+/* complexity will be K*log(Row) */
 ```
+
+ * Find the median value in data stream on the fly: https://leetcode.com/problems/find-median-from-data-stream/
+
+ Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
+
+ ```CPP
+ struct mycompare{
+    bool operator()(int a, int b){
+        return a>b;
+    }
+};
+ //two heaps: max_half has max half nums, min_half has small half nums
+ priority_queue<int> min_half;  //max heap: top of min_half heap is max value in min heap
+ priority_queue<int, vector<int>, mycompare> max_half; //min heap: top of max_half heap is min value of max heap
+
+ // Adds a number into the data structure.
+ void addNum(int num) {
+     //need to make sure push into both heap, otherwise if two heaps are equal and one new item //input, this new item could be mistakely choosen as median since later balance function //is not called
+     max_half.push(num);
+     min_half.push(max_half.top());
+     max_half.pop();
+
+     //balance both heap, make sure max_half is either equal size of min_half or has one more item
+     while(min_half.size()>max_half.size()+1){
+         max_half.push(min_half.top());
+         min_half.pop();
+     }
+
+ }
+
+ // Returns the median of current data stream
+ double findMedian() {
+     if(max_half.size()==min_half.size()){
+         return (min_half.top()+max_half.top())/2.0;
+     }else{
+         return (double) min_half.top();
+     }
+ }
+
+ ```
