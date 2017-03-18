@@ -14,24 +14,23 @@ Node* getIntersectNode(Node* head1, Node* head2){
   if(inter1==NULL && inter2!=NULL || inter1!=NULL && inter2==NULL){
     ret = NULL;
   }else if(inter1 == NULL && inter2 == NULL){
-    ret = checkMerge(head1,head2);
+    ret = checkMerge(head1,head2,NULL);
   }else if(inter1!=NULL && inter2!=NULL){
     //both have circle
     ret = checkMergebothLoop(head1,inter1,head2,inter2);
-
   }
 
   return ret;
 }
 
-Node* checkMerge(Node* head1, Node* head2){
+Node* checkMerge(Node* head1, Node* head2, Node* end){
   //check if two none-cicle list intersection, if so, return intersection point, otherwise NULL
   int len=0;
-  while(head1->next){
+  while(head1->next!=end){
     head1 = head1->next;
     len++;
   }
-  while(head2->next){
+  while(head2->next!=end){
     head2=head2->next;
     len--;
   }
@@ -59,6 +58,21 @@ Node* checkMerge(Node* head1, Node* head2){
 
 Node* checkMergebothLoop(Node* head1, Node* inter1, Node* head2, Node* inter2){
 
+  //In this case, two lists intersects before going to loop
+  if(inter1 == inter2){
+    return checkMerge(head1,head2,inter1);
+  }else{
+    //In this case, two lists enter same loop or never intersect
+    Node* cur1 = inter1->next;
+    while(tmp!=inter1){
+      if(cur1==inter2){
+        return inter1; //two loop is same
+      }
+    }
+
+    return NULL; //two loops are different
+
+  }
 
 }
 
