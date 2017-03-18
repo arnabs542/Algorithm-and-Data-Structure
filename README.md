@@ -22,3 +22,5 @@ O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 See [link](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/array_stack_heap.md)
 
 # Link List
+See
+[link](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/list.md)
