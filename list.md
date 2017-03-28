@@ -101,3 +101,15 @@ Node* checkCircle(Node* head){
 }
 
 ```
+
+
+* Check Whether a linked list is PalindromeList
+
+The easy solution will be input a list into stack, and then compare.
+
+If we need to have a solution which dose not require extra memory. we could revert the later half of the list, and then compare the later half with first half one by one.
+
+
+```CPP
+
+```
