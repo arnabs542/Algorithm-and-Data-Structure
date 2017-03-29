@@ -68,3 +68,38 @@ void postOrder(TreeNode* root){
 ```
 
 * Method 2: Only to use one stack. The advantage of using stack is you can always returns to last visited node
+
+* In Post order traversal, we would like to revisit this node 3 times
+  * first occur, push stack, then go to left branch
+  * finished left branch, then return to current node and process right branch
+  * after process right branch, return to current node and finally print
+
+* use an extra node prev to indicate prev printed node
+  * if prev is left child, means left branch has been visited, go to right branch
+  * else if prev is right child, means both left and right branches are visited. go up and process current, and pop
+  * if prev is not left nor right, which means left branches is not processed yet, go left
+
+```CPP
+void postOrder(TreeNode* root){
+  TreeNode* prev = root;
+  TreeNode* cur = NULL;
+  stack<TreeNode*> s;
+  s.push(root);
+  while(!s.empty()){
+    cur = s.top();
+    if(cur->left!=NULL && prev !=cur->left && prev!=cur->right){
+      //still not visited cur's both branches
+      s.push(cur->left);
+    }else if(cur->right!=NULL && prev!=cur->right){
+      //finished left branch, see if we can go right branch
+      s.push(cur->right);
+    }else{
+      printf("node is %d\n", cur->val);
+      prev = cur;
+      s.pop();
+    }
+  }
+}
+```
+
+# Serialize and Deserialize Binary Tree 
