@@ -105,6 +105,155 @@ void postOrder(TreeNode* root){
 # Serialize and Deserialize Binary Tree
 
 ```CPP
+string SerializeTree(TreeNode* root){
+  string ret;
+  SerializeTreeHelper(ret, root);
+  return ret;
+}
+
+void SerializeTreeHelper(string &s, TreeNode* root){
+  if(root==NULL){
+    s = s+'#';
+    s = s+',';
+  }else{
+    s = s+to_string(root->val);
+    s = s+',';
+    SerializeTreeHelper(s,root->left);
+    SerializeTreeHelper(s,root->right);
+  }
+}
+
+TreeNode* DeserializeTree(string s){
+  if(s.empty())
+    return NULL;
+  int index = 0;
+  return DeserializeTreehelp(s, index);
+}
+
+TreeNode* DeserializeTreehelp(string &s, index &i){
+  if(s[index]=='#'){
+    index++;
+    if(index<s.size()){
+      index ++; //pass ','
+      return NULL;
+    }
+  }else{
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    string cur = "";
+    int start = index;
+    while(data[index]!=','){
+        index++;
+    }
+    cur = data.substr(start,index-start);
+    node->val = stoi(cur);
+    index++; //pass ','
+
+    node->left = DeserializeTreehelp(s,index);
+    node->right = DeserializeTreehelp(s,index);
+
+    return node;
+  }
+}
+```
+
+# Morris Traversal
+
+* why we use recursive in tree traveral(pre,in,post): idea is to trversal to current node, node's left and return to current node, node'right and return to current node;
+* basically visit the node 3 times
+* Morris traveral try to minic recursive, visit node 3 times
+* use lots of empty pointer
 
 
+
+# adjust two nodes that is switched in BST
+
+* first step is to find two nodes are switched, using in order traversal.
+* if plain array is not monotonically increasing, record the beginning of first decreasing subarray and end of last decreasing subarray
+* switch these two
+
+```CPP
+void recoverTree(TreeNode* root) {
+  vector<TreeNode*> tree_array;
+  inorderTraveral(tree_array,root);
+
+  //find beginning of first decreasing subarray
+  TreeNode* head;
+  for(int i=0;i<tree_array.size()-1;i++){
+    if(tree_array[i]->val>tree_array[i+1]->val){
+      head = tree_array[i];
+      break;
+    }
+  }
+  //find the end of last decreasing subarray
+  TreeNode* tail;
+  for(int i=tree_array.size()-1;i>0;i--){
+    if(tree_array[i]->val<tree_array[i-1]->val){
+      tail = tree_array[i];
+      break;
+    }
+  }
+  if(head == NULL && tail == NULL)
+      return;
+    int tmp = head->val;
+    head->val = tail->val;
+    tail->val = tmp;
+  }
+
+void inorderTraveral(vector<TreeNode*> &tree_array, TreeNode* root){
+  if(root==NULL)
+    return;
+  inorderTraveral(tree_array,root->left);
+  tree_array.push_back(root);
+  inorderTraveral(tree_array,root->right);
+}
+```
+
+# Find largest BST sub tree in a binary tree
+
+* For any node, check if its left and right branch is BST
+* if yes, max(left)<cur<min(right), then cur node is root of BST, return to next level
+* if not, compare left and right
+
+* need to ensure left and right branches return same structure
+  * min and max values in branch
+  * root of largest BST in branch
+  * number of nodes in largest BST in branch
+* For current node, after collecting all these information, it can integrate and return same structure to its parents
+
+> Key idea is to build same structure that both current node, left branch and right branch can use and use recursive to collect all information
+
+> Current node needs to be visited/return 3 times, best method is recursive
+
+```CPP
+int largestBSTSubtree(TreeNode* root){
+  int ret = 0;  //current node as sub tree root, largest BST number
+  int min, max; //current node as sub tree root, min and max values in sub BST tree
+  bool b = isBST(ret,min,max,root);
+  return ret;
+}
+
+bool isBST(int &ret, int &min, int &max, TreeNode* root){
+  if(!root)
+    return true;
+
+  int left_size=0, right_size=0;
+  int left_min, left_max, right_min, right_max;
+
+  bool left_b = isBST(left_size,left_min,left_max,root->left);
+  bool right_b = isBST(right_size, right_min, right_max, root->right);
+
+  if(left_b && right_b){
+
+    if((!root->left || left_max<root->val) && (!root->right || right_min > root->val)){
+      //tree that has current node as root is BST
+      ret = left_size+right_size+1;
+      min = root->left?left_min:root->val;
+      max = root->right?right_max:root->val;
+      return true;
+    }
+  }
+  //tree that has current node as root is not BST, then return left or right's largest BST
+  ret = left_size>right_size?left_size:right_size;
+  return false;
+}
 ```
