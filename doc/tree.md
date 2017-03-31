@@ -102,6 +102,42 @@ void postOrder(TreeNode* root){
 }
 ```
 
+## next node(Descendant Node) via in order traversal
+
+* assume there is parent pointer. for any given node, get its next via in order
+
+
+```CPP
+TreeNode* Descendant(TreeNode* node){
+  //try to find cur node's right child,
+  //then descendant is right child's left most branch
+
+  if(node->right!=NULL){
+    return getLeftMost(node->right);
+  }else{
+    TreeNode* parent = node->parents;
+    //if root or current node is parent's left child, return directly
+    //otherwise keep on going until condition meet
+    while(parent==NULL && parent->left!=node){
+      node = parent;
+      parent = node->parents;
+    }
+    return parent;
+  }
+
+}
+
+TreeNode* getLeftMost(TreeNode* node){
+  if(node->left==NULL)
+    return node;
+  while(node->left){
+    node = node->left;
+  }
+  return node;
+}
+
+```
+
 # Serialize and Deserialize Binary Tree
 
 ```CPP
@@ -329,3 +365,9 @@ int help(TreeNode* root, int &max_depth){
 ## Dose A tree has B tree in its subtree?
 
 * convert A and B to string, then check whether B's string is a substring of A's string
+
+## Calculate number of nodes in binary tree
+
+## return all possible BST given N
+
+* suppose 
