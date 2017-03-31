@@ -207,8 +207,40 @@ void inorderTraveral(vector<TreeNode*> &tree_array, TreeNode* root){
   inorderTraveral(tree_array,root->right);
 }
 ```
+# Recursive to collect information in tree
 
-# Find largest BST sub tree in a binary tree
+> Key idea is Recursive and collect same information for each node:
+
+>* collect same information for each node, and pass to its parents,
+>* information has 3 items: left branch's, right branch's, and sub branch for which current node as root
+>* repeat
+
+## Tree is Binary tree?
+```CPP
+bool isBalanced(TreeNode* root) {
+  if(root==NULL)
+    return true;
+
+  if(isBalanced(root->left) && isBalanced(root->right)){ //check each branch BST?
+    if(abs(height(root->left)-height(root->right))<=1)  //check node as root's sub branch is BST
+      return true;
+  }
+
+  return false;
+
+}
+
+int height(TreeNode* root){
+  if(root==NULL)
+    return 0;
+  int left = height(root->left);
+  int right = height(root->right);
+
+  return max(left,right) +1;
+}
+```
+
+## Find largest BST sub tree in a binary tree
 
 * For any node, check if its left and right branch is BST
 * if yes, max(left)<cur<min(right), then cur node is root of BST, return to next level
@@ -257,3 +289,43 @@ bool isBST(int &ret, int &min, int &max, TreeNode* root){
   return false;
 }
 ```
+
+## Get the max distance between two nodes in Binary Tree
+
+* we can think left depth + itself + right depth is max depth for current node as root
+* recursive, every node follow standard, we got all max_depth for all nodes as root
+
+```CPP
+//https://leetcode.com/problems/diameter-of-binary-tree/
+int diameterOfBinaryTree(TreeNode* root) {
+      if(!root)
+        return 0;
+      int ret = 0;
+      help(root,ret);
+      return ret-1;  //node number-1
+}
+int help(TreeNode* root, int &max_depth){
+  if(root==NULL)
+    return 0;
+
+  int depth_left = help(root->left, max_depth);
+  int depth_right = help(root->right, max_depth);
+  int depth_cur = depth_left + depth_right + 1; //max length for cur node as root
+  max_depth = max(depth_cur, max_depth);
+  return max(depth_left,depth_right)+1;  //max branch length for current node/height
+}
+```
+# Tree topology
+
+## Find largest BST topology(return number of node in this topology) in Binary tree
+
+* Topology is not sub tree, we can cut some leaf nodes/branch
+
+## Dose A tree has B tree in its topology?
+
+* check A's node == root of B , then traveral B, and A traversal the same way
+* O(M*N): M is node number of A, N is node numer of B
+
+## Dose A tree has B tree in its subtree?
+
+* convert A and B to string, then check whether B's string is a substring of A's string
