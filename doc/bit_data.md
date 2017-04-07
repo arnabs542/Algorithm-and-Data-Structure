@@ -173,4 +173,104 @@ int findMedian(vector<int> num){
 ## Basic
 
 * Every machine has a hashed value
-* for a input, calculate which machine it needs to be put via binary  search
+* for a input, calculate which machine it needs to be put via binary  search. all machines hashed values can be considered as array
+
+* How to distribute equally
+> Use virtual node
+
+```
+T1: V1,V2...V100
+T2: V101, V102...V200
+```
+The front end maintain a physical node -> virtual node mapping. and also all the hashed value for virtual nodes(routing)
+
+if new node added, all virtual nodes are added, and virtual nodes get data from nearby virtual nodes(from virtual find physical node)
+
+
+### Design UUID
+
+* only one machine generating UUID. and then assign to later sub nodes based on country, then sub-sub nodes based on region. etc.
+* The root machine has a base and range.
+* country machine ask UUID from root, root give the base + range. then region ask UUID base + range from country
+
+
+
+# Bit Operation
+
+* Swap without extra memory
+```CPP
+void swapNoextra(int a, int b){
+  //idea is to know difference between a and b, use XOR to find difference
+  a = a^b;  // a becomes difference between a and b
+  b = b^a;  // b becomes a, a is still difference between a and b
+  a = a^b;  //
+}
+```
+
+* return larger between a and b(32 bits), without comparison
+```CPP
+int flip(int n){
+  return n^1;
+}
+
+int sign(int n){
+  //positive: 1. negative: 0
+  return flip((n>>31)&1);
+}
+
+int getmax(int a, int b){
+  //map overflow
+  int c = a-b;
+  int sA = sign(c);
+  int sB = flip(sA);
+  return return a * sA + b * sB;
+}
+```
+
+* Calculate number of 1
+
+```CPP
+int numofOnes(int n){
+  int res = 0;
+  while (n != 0) {
+    res += n & 1;
+    n >>= 1;
+  }
+  return res;
+}
+```
+
+* Odd and Even
+```CPP
+//in array, only one appears odd, others are even
+int findOdd(vector<int> in){
+  int ret = 0;
+  for(auto i:in){
+    ret = ret^i;
+  }
+  return ret;
+}
+
+//if two numbers appear odd, others are even
+pair<int,int> findOdd2(vector<int> in){
+  int e = 0;
+  for(auto i:in){
+    e = e^i;
+  }
+  //e is a^b;
+  int rightone = e &(~e+1); //get the right most 1, suppose k
+  //XOR, for number that k position is 1.
+  for (auto cur : in) {
+    if ((cur & rightOne) != 0) {
+      ehasOne ^= cur;
+    }
+  }
+
+  return make_pair(ehasOne,e^ehasOne);
+}
+```
+
+* Followup: one number appear 1 time, others k times.
+```CPP
+
+```
