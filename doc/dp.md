@@ -155,13 +155,13 @@ int LCS(string s1, string s2){
 ```
 
 ## Lowest cost to convert one string to another
+https://leetcode.com/problems/edit-distance/#/description
+dp[i][j] is lowest cost for str1[0->i-1] change to str2[0->j-1]
 
-dp[i][j] is lowest cost for str1[0->i] change to str2[0->j]
-
-if str1[i]==str2[j]
+if str1[i-1]==str2[j-1]
   dp[i][j] = dp[i-1][j-1]
 
-if str1[i]!=str2[j]
+if str1[i-1]!=str2[j-1]
   dp[i][j] = dp[i-1][j-1]+cost(replace) or
   dp[i][j] = dp[i][j-1]+cost(add) or
   dp[i][j] = dp[i-1][j]+cost(delete)
@@ -207,6 +207,10 @@ if str1[i]!=str2[j]
     return cur[m];
 }
 ```
+
+## Interleaving String
+Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and s2.
+https://leetcode.com/problems/interleaving-string/#/description
 
 
 
