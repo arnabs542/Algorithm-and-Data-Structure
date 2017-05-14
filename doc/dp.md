@@ -311,7 +311,7 @@ int win2(vector<int> cards){
 
 ## digit number to letter str(transition problem)
 
-0-26 -> A:Z, for a vector, count how many ways to do the transition
+1:26 -> A:Z, for a vector, count how many ways to do the transition
 
 ```CPP
 //Method 1: Recursive
