@@ -308,3 +308,39 @@ int win2(vector<int> cards){
 }
 
 ```
+
+## digit number to letter str(transition problem)
+
+0-26 -> A:Z, for a vector, count how many ways to do the transition
+
+```CPP
+//Method 1: Recursive
+
+int cnt(string s){
+  if(s.size()==0 || s=="")
+    return 0;
+  vector<char> array = strtovec(s);
+  return process(array,0);
+}
+
+int process(vector<char> v, int index){
+  if(index==v.size()) //cross the boundary, recursive use index+1 as params
+    return 1; //reach the end
+  if(v[index]=='0')
+    return 0;
+    //if transition finished at index i, count how many transition ways starting from index+1;
+  int ret = process(v,index+1);
+  if(index+1<v.size() && (v[index]-'0')*10 + (v[index+1]-'0')<=26)
+    ret += process(v,index+2);
+
+  return ret;
+}
+
+//Method2: DP
+
+
+```
+
+
+
+## Number of island
