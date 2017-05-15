@@ -353,24 +353,20 @@ int numDecodings(string s) {
     int tmp = 0;
     for(int i=len-2;i>=0;i--){
         if (s[i] == '0') {
-    next = cur;
-    cur = 0;
-  } else {
-    tmp = cur;
-    if ((s[i] - '0') * 10 + s[i + 1] - '0' <= 26) {
-      cur += next;
-    }
-    next = tmp;
-  }
+            next = cur;
+            cur = 0;
+        } else {
+          tmp = cur;
+          if ((s[i] - '0') * 10 + s[i + 1] - '0' <= 26) {
+            cur += next;
+          }
+          next = tmp;
+        }
     }
 
     return cur;
 
 }
-
-}
-
-
 ```
 
 
