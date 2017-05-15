@@ -309,7 +309,7 @@ int win2(vector<int> cards){
 
 ```
 
-## digit number to letter str(transition problem)
+## digit number to letter str(decode-ways problem)
 
 
 https://leetcode.com/problems/decode-ways/#/description
@@ -343,29 +343,29 @@ int process(string s,int i){
 }
 
 //Method2: DP
-//since we only need to count p(i+1) and possible p(i+2)
 int numDecodings(string s) {
     if(s.size()==0 || s==" ")
         return 0;
     int len = s.size();
-    int cur = s[len-1]=='0'?0:1;
-    int next = 1;
-    int tmp = 0;
-    for(int i=len-2;i>=0;i--){
-        if (s[i] == '0') {
-            next = cur;
-            cur = 0;
-        } else {
-          tmp = cur;
-          if ((s[i] - '0') * 10 + s[i + 1] - '0' <= 26) {
-            cur += next;
-          }
-          next = tmp;
-        }
+    vector<int>dp(len,0);
+    //dp[i] means how many decode ways from index 0->i
+    //dp[i] = dp[i-1] + dp[i-2]
+
+    dp[0] = s[0]=='0'?0:1;
+
+    for(int i=1;i<len;i++){
+        if(s[i]!='0')
+            dp[i] += dp[i-1];
+        if(s[i-1]!='0' && ((s[i-1]-'0') * 10 + (s[i]-'0')<=26))
+            if(i>=2)
+                dp[i] += dp[i-2];
+            else
+                dp[i]+=1;  //only special case, when i==1
     }
+    return dp[len-1];
+}
 
-    return cur;
-
+//Method 3: optimize the memory
 }
 ```
 
