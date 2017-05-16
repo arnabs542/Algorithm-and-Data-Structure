@@ -369,6 +369,116 @@ int numDecodings(string s) {
 }
 ```
 
+## sum of logic calculation to certain target, express ways
 
+Given a array with 1 and 0 and logic symbol(&,|,^), calculate how many ways to get the desired value
+
+```CPP
+//Recursive
+int expressways(String express, boolean desired) {
+  if (express.size()==0 || express=="") {
+    return 0;
+  }
+
+  if (!isValid(exp)) {
+    return 0;
+  }
+  return p(exp, desired, 0, exp.size() - 1);
+}
+
+static int p(string exp, bool desired, int l, int r) {
+  //l and r are only 1 or 0, not logic symbol
+  if (l == r) {
+    if (exp[l] == '1') {
+      return desired ? 1 : 0;
+    } else {
+      return desired ? 0 : 1;
+    }
+  }
+  int res = 0;
+  if (desired) {
+    for (int i = l + 1; i < r; i += 2) {
+      switch (exp[i]) {
+      case '&':
+        res += p(exp, true, l, i - 1) * p(exp, true, i + 1, r);
+        break;
+      case '|':
+        res += p(exp, true, l, i - 1) * p(exp, false, i + 1, r);
+        res += p(exp, false, l, i - 1) * p(exp, true, i + 1, r);
+        res += p(exp, true, l, i - 1) * p(exp, true, i + 1, r);
+        break;
+      case '^':
+        res += p(exp, true, l, i - 1) * p(exp, false, i + 1, r);
+        res += p(exp, false, l, i - 1) * p(exp, true, i + 1, r);
+        break;
+      }
+    }
+  } else {
+    for (int i = l + 1; i < r; i += 2) {
+      switch (exp[i]) {
+      case '&':
+        res += p(exp, false, l, i - 1) * p(exp, true, i + 1, r);
+        res += p(exp, true, l, i - 1) * p(exp, false, i + 1, r);
+        res += p(exp, false, l, i - 1) * p(exp, false, i + 1, r);
+        break;
+      case '|':
+        res += p(exp, false, l, i - 1) * p(exp, false, i + 1, r);
+        break;
+      case '^':
+        res += p(exp, true, l, i - 1) * p(exp, true, i + 1, r);
+        res += p(exp, false, l, i - 1) * p(exp, false, i + 1, r);
+        break;
+      }
+    }
+  }
+  return res;
+}
+
+//dp way
+//two dp:
+//t[i][j]: how many ways strings from i to j get true
+//f[i][j]: how many ways strings from i to j get false
+//need to start with smallest length
+
+
+int expressways(String express, bool desired) {
+  if (express.size()==0 || express=="") {
+    return 0;
+  }
+
+  if (!isValid(exp)) {
+    return 0;
+  }
+  int len = express.size();
+  vector<vector<int>> t = (len,vector<int>(len,0)); //dp for true desired value
+  vector<vector<int>> f = (len,vector<int>(len,0)); //dp for false desired value
+  t[0][0] = exp[0] == '0' ? 0 : 1;
+  f[0][0] = exp[0] == '1' ? 0 : 1;
+  //step is two because we need to avoid symbol
+  for (int i = 2; i < len; i += 2) {
+    t[i][i] = exp[i] == '0' ? 0 : 1;
+    f[i][i] = exp[i] == '1' ? 0 : 1;
+    //starting from shortest length
+
+    for (int j = i - 2; j >= 0; j -= 2) {
+      for (int k = j; k < i; k += 2) {
+        if (exp[k + 1] == '&') {
+          t[j][i] += t[j][k] * t[k + 2][i];
+          f[j][i] += (f[j][k] + t[j][k]) * f[k + 2][i] + f[j][k] * t[k + 2][i];
+        } else if (exp[k + 1] == '|') {
+          t[j][i] += (f[j][k] + t[j][k]) * t[k + 2][i] + t[j][k] * f[k + 2][i];
+          f[j][i] += f[j][k] * f[k + 2][i];
+        } else {
+          t[j][i] += f[j][k] * t[k + 2][i] + t[j][k] * f[k + 2][i];
+          f[j][i] += f[j][k] * f[k + 2][i] + t[j][k] * t[k + 2][i];
+        }
+      }
+    }
+  }
+  return desired ? t[0][t.length - 1] : f[0][f.length - 1];
+}
+
+
+```
 
 ## Number of island
