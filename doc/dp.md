@@ -555,4 +555,82 @@ int longestPalindromeSubseq(string s) {
 2. check the diameter of Palindromic
 3. current Palindromic center for right Boudary
 
+## Add min char so that whole string is Palindromic
+
+
+```CPP
+int addMin(string s){
+  int len = s.size();
+  //dp[i][j] is minimum char added so that i->j is Palindromic
+  vector<vector<int>> dp(len,vector<len,INT_MAX>);
+  for(int j=0;j<len;j++){
+    for(int i=j;i>=0;i--){
+      if(i==j)
+        dp[i][j] = 0; //no need to add since one char is Palindromic
+      else if(i==j+1){ //for two char cases
+        if(s[i]==s[j]){
+          dp[i][j] = 0;
+        }else{
+          dp[i][j] = 1;
+        }
+      }else{ //for general case
+        if(s[i]==s[j]){
+          dp[i][j] = dp[i+1][j-1];
+        }else{
+          dp[i][j] = min(dp[i+1,j],dp[i,j-1])+1;
+        }
+      }
+    }
+  }
+
+  return dp[0][len-1];
+}
+```
+
+## Valid parentheses and longest valid parentheses
+
+```CPP
+//isValid
+bool isValid(string p){
+  int a = 0;
+  for(int i=0;i<p.size();i++){
+    if(p[i]=='(')
+      a++;
+    else
+      a--;
+    if(a<0)
+      return false;
+  }
+
+  return a==0?true:false;
+}
+
+int longestValidparentheses(string p){
+  //dp[i] is longest valid parentheses ending at index i;
+  /*notice that define dp[i] is critical, if we define dp[i] as ongest valid parentheses
+  from 0->i, it is different*/
+
+  vector<int> dp(len,0);
+  int ret = 0;
+  for(int i=1;i<len;i++){
+    if(p[i]==')'){
+      //j is left position that where j->i is Validparentheses, need to accumulate dp[j-1] for
+      //longestValidparentheses ending at j-1
+      int j = i-dp[i-1]-1;
+      if(j>=0 && p[j]=='('){
+        dp[i] = dp[i-1]+2; //at least j->i is Validparentheses
+        dp[i] += (j>0?dp[j-1]:0); //accumualte longestValidparentheses ending at j-1
+      }
+    }
+    ret = max(ret,dp[i]);
+  }
+  return ret;
+}
+
+```
+
+
+## Minimum cuts needed for a palindrome partitioning
+https://leetcode.com/problems/palindrome-partitioning-ii/#/description
+
 ## Number of island
