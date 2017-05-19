@@ -1,6 +1,12 @@
-# Recursive to DP
+## General idea
 
-## Recursive in Log(n), Use Matrix Format
+> * First step is to Use recursive way to try
+
+> * memorize the intermidate results in recursive way to reduce the run time calculation
+
+> * Translate to DP
+
+
 
 ## Min Matrix Path Sum
 
@@ -729,7 +735,7 @@ bool isMatch(string s, string p) {
          3.2 if * matches many precedent element p[0: j-1] = {p[0: j-2].
             dp[i][j]=dp[i-1][j] if p[j-2]==s[i-1]||p[j-2] == '.'
             dp[i][j]=false otherwise */
-            
+
     int len_s = s.size();
     int len_p = p.size();
 
