@@ -48,7 +48,7 @@ public:
             if(m[s[i]]>1){
                 counter++;
             }
-            
+
             while(counter>0){
                 if(--m[s[start]]==1){//back to unique case
                     counter--;
@@ -57,7 +57,31 @@ public:
             }
             ret = max(ret,i-start+1);
         }
-        
+
         return ret;
     }
 };
+
+
+int lengthOfLongestSubstring(string s) {
+    int ret = 0;
+    int len = s.size();
+    map<char,int>pos; //each char's last occur position
+    vector<int> dp(len,1); //lengthOfLongestSubstring at position i;
+
+    for(int i=0;i<len;i++){
+        int last;
+        if(pos.find(s[i])!=pos.end())
+            last= pos[s[i]]; //last occur position of s[i]
+        else
+            last = -1;//never occur
+        if(i>0){
+            dp[i] = i-dp[i-1]>last?dp[i-1]+1:i-last;
+        }
+        //update position
+        pos[s[i]] = i;
+        ret = max(ret,dp[i]);
+    }
+
+    return ret;
+}

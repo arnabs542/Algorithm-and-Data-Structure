@@ -117,3 +117,76 @@ int calculate(string s) {
 }
 
 ```
+
+
+## Longest Substring Without Repeating Characters
+https://leetcode.com/problems/longest-substring-without-repeating-characters/#/description
+
+> substring problems: (if ending at certain position. sub problem:)
+
+In this problem, it is longest substring without duplicate ending at i
+
+```CPP
+//method 1: use a map to record position
+int lengthOfLongestSubstring(string s) {
+    int start = 0;
+    int end = 0;
+    int counter = 0; //how many char has more than once
+    vector<int> map(128,0);
+    int ret = 0;
+    while(end<s.size()){
+        //for unique char
+        if(map[s[end]]==1){
+            counter++;
+        }
+        map[s[end]]++;
+        end++;
+        //not unique so counter>0
+        while(counter>0){
+            if(--map[s[start]]==1){
+                counter--;
+            }
+            start++;
+        }
+        ret = max(ret,end-start);
+    }
+    return ret;
+}
+
+//Method 2: DP
+//dp[i] = longest substring ending at position i
+//pos[i] is i'th char last occur position
+
+int lengthOfLongestSubstring(string s) {
+    int ret = 0;
+    int len = s.size();
+    map<char,int>pos; //each char's last occur position
+    vector<int> dp(len,1); //lengthOfLongestSubstring at position i;
+
+    for(int i=0;i<len;i++){
+        int last;
+        if(pos.find(s[i])!=pos.end())
+            last= pos[s[i]]; //last occur position of s[i]
+        else
+            last = -1;//never occur
+        if(i>0){
+            dp[i] = i-dp[i-1]>last?dp[i-1]+1:i-last;  
+        }
+        //update position
+        pos[s[i]] = i;
+        ret = max(ret,dp[i]);
+    }
+
+    return ret;
+}
+
+```
+
+## Minimum windows substring
+https://leetcode.com/problems/minimum-window-substring/#/description
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+For example,
+S = "ADOBECODEBANC"
+T = "ABC"
+Minimum window is "BANC".
