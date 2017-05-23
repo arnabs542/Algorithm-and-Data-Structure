@@ -421,3 +421,34 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 }
 ```
+
+## Number of triangles
+//http://www.geeksforgeeks.org/find-number-of-triangles-possible/
+Given an unsorted array of positive integers. Find the number of triangles that can be formed with three different array elements as three sides of triangles.
+
+```CPP
+int NumOfTriangles(vector<int> arr)
+{
+    int len = arr.size();
+    sort(arr.begin(),arr.end());
+    int ret = 0;
+
+    for (int i = 0; i < len-2; i++)
+    {
+        //right most index
+        int k = i+2;
+
+        // Fix the second element
+        for (int j = i+1; j < len; j++)
+        {
+            while (k < len && arr[i] + arr[j] > arr[k])
+               ++k;
+
+            ret += k - j - 1;
+        }
+    }
+
+    return ret;
+}
+
+```
