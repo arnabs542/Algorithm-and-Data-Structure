@@ -19,4 +19,4 @@
 
 # Classdical Algorithm
 
-[array, string, natrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
+[array, string, matrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)

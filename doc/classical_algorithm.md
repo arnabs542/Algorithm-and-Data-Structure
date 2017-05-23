@@ -348,7 +348,8 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 ## Sub Array problem
 > Common techniques
 * two pointer problem to get these longest/smallest problem
-* use Hashtable and preprocess to get the sum of array first
+* preprocess to get the sum of array
+* Hash table to record value, index
 
 ### Longest Sum SubArray Length: Subarray sum equal to target
 
