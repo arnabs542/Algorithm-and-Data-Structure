@@ -190,3 +190,234 @@ For example,
 S = "ADOBECODEBANC"
 T = "ABC"
 Minimum window is "BANC".
+
+```CPP
+class Solution {
+public:
+  string minWindow(string s, string t) {
+      string ret="";
+      int start = 0;
+      int end = 0;
+      int d = INT_MAX;  //length of window size
+      int head = 0; //start of sub string
+      vector<int> m(128,0);
+
+      for(int i=0;i<t.size();i++){
+          m[t[i]]++;
+      }
+      int counter = t.size();    
+      while(end<s.size()){
+          if(m[s[end]]-->0)  //find it is in t
+              counter--;
+          end++;
+          //found all in t,
+          while(counter==0){
+             if(end-start<d){
+                 d = end-start;
+                 head = start;
+             }
+             //we move start pointer to try to find another instance, we need to add back the hash table and counter.
+             if(m[s[start]]++==0)
+                  counter++;
+             start++;
+          }
+      }
+
+      return d==INT_MAX?"":s.substr(head,d);
+
+  }
+};
+```
+
+## Longest substring length to make sure whole string is sorted
+https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
+
+[1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
+
+> Common techniques: Pre process the array
+
+
+```CPP
+//O(n) in time, O(1) extra memory
+//from left->right, record max. from right->left, record min
+/*
+[1,5,3,4,2,6,7]
+left->right: [1,5,R,R,R,6,7], right value which is smaller than max is 2
+right->left:[1,L,L,L,L,2,6,7], left value which is larger than min is 5
+
+re sort L->R
+*/
+
+int findUnsortedSubarray(vector<int>& nums) {
+    int len = nums.size();
+    if (len==0 || len == 1) {
+        return 0;
+    }
+    //from right to left, record value not descending. find left most
+    int min_v = nums[len - 1];
+    int l = -1;
+    for (int i = len - 2; i >=0; i--) {
+        if (nums[i] > min_v) {
+          l = i;
+        } else {
+          min_v = min(min_v, nums[i]);
+        }
+    }
+    if (l == -1) {
+        return 0;
+    }
+    //from left to rightm record value not ascending, find right most
+    int max_v = nums[0];
+    int r = -1;
+    for (int i = 1; i <len; i++) {
+        if (nums[i] < max_v) {
+          r = i;
+        } else {
+          max_v = max(max_v, nums[i]);
+        }
+    }
+    return r - l + 1;        
+}
+
+```
+
+## Half Majority
+https://leetcode.com/problems/majority-element/#/description
+Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+
+```CPP
+int majorityElement(vector<int>& nums) {
+  int cand = 0;
+  int times = 0;
+  int len = nums.size();
+  for (int i = 0; i < len; i++) {
+    if (times == 0) {
+      cand = nums[i];
+      times = 1;
+    } else if (nums[i] == cand) {
+      times++;
+    } else {
+      times--;
+    }
+  }
+  times = 0;
+  for (int i = 0; i < len; i++) {
+    if (nums[i] == cand) {
+      times++;
+    }
+  }
+  if (times > len / 2)
+      return cand;
+}
+
+```
+
+Extend. [K/N], then we just need to prepare K candidates
+
+
+## Search a 2D matrix
+https://leetcode.com/problems/search-a-2d-matrix-ii/#/description
+Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+
+Integers in each row are sorted in ascending from left to right.
+Integers in each column are sorted in ascending from top to bottom.
+
+```CPP
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int row = matrix.size();
+    if(row==0) return false;
+    int col = matrix[0].size();
+
+    int x = 0;
+    int y = col-1;
+    while(x<row && y>=0){
+        if(matrix[x][y]>target){
+            y = y-1;
+        }else if(matrix[x][y]<target){
+            x = x + 1;
+        }else{
+            return true;
+        }
+
+    }
+    return false;
+}
+
+```
+
+## Sub Array problem
+> Common techniques
+* two pointer problem to get these longest/smallest problem
+* use Hashtable and preprocess to get the sum of array first
+
+### Longest Sum SubArray Length: Subarray sum equal to target
+
+
+```CPP
+int LongestSumSubArrayLength(vector<int> nums, int k){
+  int len = nums.size();
+  int l = 0; //left index
+  int r = 0;//right index
+  int sum=0;
+  int ret = 0;
+  while(r<len){
+    sum+=nums[r];
+    if(sum==k){
+      ret = max(r-l+1,ret);
+      sum -=nums[l++];
+    }else if(sum<k){
+      r++;
+    }else{
+      sum-=nums[l++];
+    }
+  }
+
+  return ret;
+
+}
+
+```
+
+### Follow up
+https://leetcode.com/problems/continuous-subarray-sum/#/description
+
+Given a list of non-negative numbers and a target integer k, write a function to check if the array has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up to n*k where n is also an integer.
+
+```CPP
+bool checkSubarraySum(vector<int>& nums, int k) {
+    //easy way is O(N^2)
+    //proprocess. first get a sum array, then use hash map to
+    int len = nums.size();
+    int sum = 0;
+    unordered_map<int,int> m; //key is sum, val is index
+    m[0] = -1;
+    for(int i=0;i<len;i++){
+        sum += nums[i];
+        if(k!=0)
+            sum = sum%k;
+        if(m.find(sum)!=m.end()){
+            if(i-m[sum]>1)
+                return true;
+        }else{
+            m[sum]=i;
+        }
+    }
+    return false;
+}
+
+
+//Or we can use select    bool checkSubarraySum(vector<int>& nums, int k) {
+bool checkSubarraySum(vector<int>& nums, int k) {
+    int n = nums.size(), sum = 0, pre = 0;
+    unordered_set<int> modk;
+    for (int i = 0; i < n; ++i) {
+        sum += nums[i];
+        int mod = k == 0 ? sum : sum % k;
+        if (modk.count(mod)) return true;
+        modk.insert(pre);
+        pre = mod;
+    }
+    return false;
+
+}
+```
