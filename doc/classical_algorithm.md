@@ -421,9 +421,56 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 }
 ```
+## 3Sum problems: Typical three pointers problems
+> Common techniques
+* Sort the array
+* Fix the first pointer, and move the second and third
+* define the condition properly
 
-## Number of triangles
-//http://www.geeksforgeeks.org/find-number-of-triangles-possible/
+```CPP
+vector<vector<int>> threeSum(vector<int>& nums) {
+    sort(nums.begin(),nums.end());
+    vector<vector<int>> ret;
+    for(int i=0;i<nums.size();i++){
+        int target = -nums[i];
+        int start = i+1;
+        int end = nums.size()-1;
+        while(start<end){
+            if(nums[start]+nums[end]>target){
+                end--;
+            }else if(nums[start]+nums[end]<target){
+                start++;
+            }else{
+                vector<int> one;
+                one.push_back(nums[i]);
+                one.push_back(nums[start]);
+                one.push_back(nums[end]);
+                ret.push_back(one);
+                int begin = nums[start];
+                int finish = nums[end];
+
+                while(start<end && nums[start]==begin)
+                    start++;
+                while(start<end && nums[end]==finish)
+                    end--;
+            }
+            if(start>=end)
+                break;
+        }
+                // Processing duplicates of Number 1
+        while (i + 1 < nums.size() && nums[i + 1] == nums[i])
+            i++;
+    }
+
+    return ret;
+}
+
+```
+
+### Follow up: Number of triangles
+There are lots of problem can be soled by similar idea
+
+http://www.geeksforgeeks.org/find-number-of-triangles-possible/
 Given an unsorted array of positive integers. Find the number of triangles that can be formed with three different array elements as three sides of triangles.
 
 ```CPP
