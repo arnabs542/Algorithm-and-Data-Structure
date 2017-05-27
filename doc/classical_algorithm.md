@@ -422,6 +422,12 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 }
 ```
+
+### Subarray sum
+https://leetcode.com/problems/subarray-sum-equals-k/#/description
+Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
+
+
 ## 3Sum problems: Typical three pointers problems
 > Common techniques
 * Sort the array
