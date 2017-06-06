@@ -466,7 +466,8 @@ int subarraySum(vector<int>& nums, int k) {
     int sum = 0;
     int ret = 0;
     map<int,int> m; //key is sum value, val is how many times it appears
-    m[0] = 1;
+    //if sum-k==0, then it means it has sum value from begining to current ==k, need to count
+    m[0] = 1;  
     for(int i=0;i<len;i++){
         sum+=nums[i];
         if(m.find(sum-k)!=m.end())
@@ -474,6 +475,16 @@ int subarraySum(vector<int>& nums, int k) {
         m[sum]++;
     }
     return ret;    
+}
+
+//if we do not insert init value, it would be
+for(int i=0;i<len;i++){
+    sum+=nums[i];
+    if(sum==k)  //count how many times sum from begining 
+        ret++;
+    if(m.find(sum-k)!=m.end())
+        ret+=m[sum-k];
+    m[sum]++;
 }
 
 ```
