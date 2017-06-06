@@ -351,6 +351,10 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 * preprocess to get the sum of array
 * Hash table to record value, index/occur number
 
+> __*Tips*__:
+  * process before record to hash table, otherwise may over calculate
+  * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
+
 
 ### Two sum
 https://leetcode.com/problems/two-sum/#/description
@@ -374,11 +378,11 @@ vector<int> twoSum(vector<int>& nums, int target) {
         m[nums[i]] = i;    
     }
 }
-
 ```
 
-### Longest Sum SubArray Length: Subarray sum equal to target
 
+
+### Longest Sum SubArray Length: Subarray sum equal to target
 
 ```CPP
 int LongestSumSubArrayLength(vector<int> nums, int k){
@@ -473,6 +477,52 @@ int subarraySum(vector<int>& nums, int k) {
 }
 
 ```
+
+### Max subarray sum
+https://leetcode.com/problems/maximum-subarray/
+Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+For example, given the array [-2,1,-3,4,-1,2,1,-5,4],
+the contiguous subarray [4,-1,2,1] has the largest sum = 6.
+```CPP
+int maxSubArray(vector<int>& nums) {
+    int len = nums.size();
+    int ret = INT_MIN;
+    int sum = 0;
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        ret = max(ret,sum);
+        //if sum<0. subarray should start from next item
+        if(sum<0)
+            sum = 0;
+    }
+    return ret;
+}
+```
+### Count of range sum
+https://leetcode.com/problems/count-of-range-sum/#/description
+Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.
+
+```CPP
+int countRangeSum(vector<int>& nums, int lower, int upper) {
+    int len = nums.size();
+    int ret = 0;
+    long long sum = 0;
+    // lower<=sum[i]-sum[j]<=upper
+    //j (0=< j< i) satisfy sum[i]-upper=< sum[j]<=-sum[i]-lower.
+    multiset<long long> s; //multi set allow same item
+    s.insert(0); //since one number itself can be see as range, insert 0 to collect one number case
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        //count how many in that range
+        ret+=std::distance(s.lower_bound(sum-upper),s.upper_bound(sum-lower));
+        s.insert(sum);
+    }
+    return ret;
+}
+```
+
 
 ## 3Sum problems: Typical three pointers problems
 > Common techniques
