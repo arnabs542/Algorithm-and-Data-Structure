@@ -349,7 +349,33 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 > Common techniques
 * two pointer problem to get these longest/smallest problem
 * preprocess to get the sum of array
-* Hash table to record value, index
+* Hash table to record value, index/occur number
+
+
+### Two sum
+https://leetcode.com/problems/two-sum/#/description
+Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+```CPP
+vector<int> twoSum(vector<int>& nums, int target) {
+    //O(nlog(n)) is easy, sort and use pointer head and tail
+    //O(n)
+    int len = nums.size();
+    vector<int> ret;
+    unordered_map<int,int> m; //key is val, val is index
+    for(int i=0;i<len;i++){
+        if(m.find(target-nums[i])!=m.end()){
+            ret.push_back(i);
+            ret.push_back(m[target-nums[i]]);
+            return ret;
+        }
+        m[nums[i]] = i;    
+    }
+}
+
+```
 
 ### Longest Sum SubArray Length: Subarray sum equal to target
 
@@ -427,6 +453,26 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 https://leetcode.com/problems/subarray-sum-equals-k/#/description
 Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
 
+```CPP
+int subarraySum(vector<int>& nums, int k) {
+    //notice if the array is all positive, it is different
+    //easy way is to do O(N^2), calculate all subarry starting from 0->len-1, to end
+    //if we want to do O(N), need a map to record
+    int len = nums.size();
+    int sum = 0;
+    int ret = 0;
+    map<int,int> m; //key is sum value, val is how many times it appears
+    m[0] = 1;
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        if(m.find(sum-k)!=m.end())
+            ret+=m[sum-k];
+        m[sum]++;
+    }
+    return ret;    
+}
+
+```
 
 ## 3Sum problems: Typical three pointers problems
 > Common techniques
