@@ -1,5 +1,328 @@
-## Basic data structure
-### Heap
+# Array
+
+## Sub Array problem
+> Common techniques
+* two pointer problem to get these longest/smallest problem
+* preprocess to get the sum of array
+* Hash table to record value, index/occur number
+
+> __*Tips*__:
+  * whether to record value into hashmap/set before and after process.  
+  * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
+
+
+
+
+### Two sum
+https://leetcode.com/problems/two-sum/#/description
+Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+```CPP
+vector<int> twoSum(vector<int>& nums, int target) {
+    //O(nlog(n)) is easy, sort and use pointer head and tail
+    //O(n)
+    int len = nums.size();
+    vector<int> ret;
+    unordered_map<int,int> m; //key is val, val is index
+    for(int i=0;i<len;i++){
+        if(m.find(target-nums[i])!=m.end()){
+            ret.push_back(i);
+            ret.push_back(m[target-nums[i]]);
+            return ret;
+        }
+        m[nums[i]] = i;    
+    }
+}
+```
+
+### Longest substring length to make sure whole string is sorted
+https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
+
+[1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
+
+
+
+```CPP
+//O(n) in time, O(1) extra memory
+//from left->right, record max. from right->left, record min
+/*
+[1,5,3,4,2,6,7]
+left->right: [1,5,R,R,R,6,7], right value which is smaller than max is 2
+right->left:[1,L,L,L,L,2,6,7], left value which is larger than min is 5
+
+re sort L->R
+*/
+
+int findUnsortedSubarray(vector<int>& nums) {
+    int len = nums.size();
+    if (len==0 || len == 1) {
+        return 0;
+    }
+    //from right to left, record value not descending. find left most
+    int min_v = nums[len - 1];
+    int l = -1;
+    for (int i = len - 2; i >=0; i--) {
+        if (nums[i] > min_v) {
+          l = i;
+        } else {
+          min_v = min(min_v, nums[i]);
+        }
+    }
+    if (l == -1) {
+        return 0;
+    }
+    //from left to rightm record value not ascending, find right most
+    int max_v = nums[0];
+    int r = -1;
+    for (int i = 1; i <len; i++) {
+        if (nums[i] < max_v) {
+          r = i;
+        } else {
+          max_v = max(max_v, nums[i]);
+        }
+    }
+    return r - l + 1;        
+}
+
+```
+
+
+### Longest Sum SubArray Length: Subarray sum equal to target
+
+```CPP
+int LongestSumSubArrayLength(vector<int> nums, int k){
+  int len = nums.size();
+  int l = 0; //left index
+  int r = 0;//right index
+  int sum=0;
+  int ret = 0;
+  while(r<len){
+    sum+=nums[r];
+    if(sum==k){
+      ret = max(r-l+1,ret);
+      sum -=nums[l++];
+    }else if(sum<k){
+      r++;
+    }else{
+      sum-=nums[l++];
+    }
+  }
+
+  return ret;
+
+}
+
+```
+
+### Follow up
+https://leetcode.com/problems/continuous-subarray-sum/#/description
+
+Given a list of non-negative numbers and a target integer k, write a function to check if the array has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up to n*k where n is also an integer.
+
+```CPP
+bool checkSubarraySum(vector<int>& nums, int k) {
+    //easy way is O(N^2)
+    //proprocess. first get a sum array, then use hash map to
+    int len = nums.size();
+    int sum = 0;
+    unordered_map<int,int> m; //key is sum, val is index
+    m[0] = -1;
+    for(int i=0;i<len;i++){
+        sum += nums[i];
+        if(k!=0)
+            sum = sum%k;
+        if(m.find(sum)!=m.end()){
+            if(i-m[sum]>1)
+                return true;
+        }else{
+            m[sum]=i;
+        }
+    }
+    return false;
+}
+
+
+//Or we can use select    bool checkSubarraySum(vector<int>& nums, int k) {
+bool checkSubarraySum(vector<int>& nums, int k) {
+    int n = nums.size(), sum = 0, pre = 0;
+    unordered_set<int> modk;
+    for (int i = 0; i < n; ++i) {
+        sum += nums[i];
+        int mod = k == 0 ? sum : sum % k;
+        if (modk.count(mod)) return true;
+        modk.insert(pre);
+        pre = mod;
+    }
+    return false;
+
+}
+```
+
+### Subarray sum
+https://leetcode.com/problems/subarray-sum-equals-k/#/description
+Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
+
+```CPP
+int subarraySum(vector<int>& nums, int k) {
+    //notice if the array is all positive, it is different
+    //easy way is to do O(N^2), calculate all subarry starting from 0->len-1, to end
+    //if we want to do O(N), need a map to record
+    int len = nums.size();
+    int sum = 0;
+    int ret = 0;
+    map<int,int> m; //key is sum value, val is how many times it appears
+    //if sum-k==0, then it means it has sum value from begining to current ==k, need to count
+    m[0] = 1;  
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        if(m.find(sum-k)!=m.end())
+            ret+=m[sum-k];
+        m[sum]++;
+    }
+    return ret;    
+}
+
+//if we do not insert init value, it would be
+m[0]=0;
+for(int i=0;i<len;i++){
+    sum+=nums[i];
+    if(sum==k)  //count how many times sum from begining
+        ret++;
+    if(m.find(sum-k)!=m.end())
+        ret+=m[sum-k];
+    m[sum]++;
+}
+
+```
+
+### Max subarray sum
+https://leetcode.com/problems/maximum-subarray/
+Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+For example, given the array [-2,1,-3,4,-1,2,1,-5,4],
+the contiguous subarray [4,-1,2,1] has the largest sum = 6.
+```CPP
+int maxSubArray(vector<int>& nums) {
+    int len = nums.size();
+    int ret = INT_MIN;
+    int sum = 0;
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        ret = max(ret,sum);
+        //if sum<0. subarray should start from next item
+        if(sum<0)
+            sum = 0;
+    }
+    return ret;
+}
+```
+### Count of range sum
+https://leetcode.com/problems/count-of-range-sum/#/description
+Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.
+
+```CPP
+int countRangeSum(vector<int>& nums, int lower, int upper) {
+    int len = nums.size();
+    int ret = 0;
+    long long sum = 0;
+    // lower<=sum[i]-sum[j]<=upper
+    //j (0=< j< i) satisfy sum[i]-upper=< sum[j]<=-sum[i]-lower.
+    multiset<long long> s; //multi set allow same item
+    s.insert(0); //since one number itself can be see as range, insert 0 to collect one number case
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        //count how many in that range
+        ret+=std::distance(s.lower_bound(sum-upper),s.upper_bound(sum-lower));
+        s.insert(sum);
+    }
+    return ret;
+}
+```
+
+
+## 3Sum problems: Typical three pointers problems
+> Common techniques
+* Sort the array
+* Fix the first pointer, and move the second and third
+* define the condition properly
+
+```CPP
+vector<vector<int>> threeSum(vector<int>& nums) {
+    sort(nums.begin(),nums.end());
+    vector<vector<int>> ret;
+    for(int i=0;i<nums.size();i++){
+        int target = -nums[i];
+        int start = i+1;
+        int end = nums.size()-1;
+        while(start<end){
+            if(nums[start]+nums[end]>target){
+                end--;
+            }else if(nums[start]+nums[end]<target){
+                start++;
+            }else{
+                vector<int> one;
+                one.push_back(nums[i]);
+                one.push_back(nums[start]);
+                one.push_back(nums[end]);
+                ret.push_back(one);
+                int begin = nums[start];
+                int finish = nums[end];
+
+                while(start<end && nums[start]==begin)
+                    start++;
+                while(start<end && nums[end]==finish)
+                    end--;
+            }
+            if(start>=end)
+                break;
+        }
+                // Processing duplicates of Number 1
+        while (i + 1 < nums.size() && nums[i + 1] == nums[i])
+            i++;
+    }
+
+    return ret;
+}
+
+```
+
+### Follow up: Number of triangles
+There are lots of problem can be soled by similar idea
+
+http://www.geeksforgeeks.org/find-number-of-triangles-possible/
+Given an unsorted array of positive integers. Find the number of triangles that can be formed with three different array elements as three sides of triangles.
+
+```CPP
+int NumOfTriangles(vector<int> arr)
+{
+    int len = arr.size();
+    sort(arr.begin(),arr.end());
+    int ret = 0;
+
+    for (int i = 0; i < len-2; i++)
+    {
+        //right most index
+        int k = i+2;
+
+        // Fix the second element
+        for (int j = i+1; j < len; j++)
+        {
+            while (k < len && arr[i] + arr[j] > arr[k])
+               ++k;
+
+            ret += k - j - 1;
+        }
+    }
+
+    return ret;
+}
+
+```
+
+# Heap
 
 Heap is implemented as tree structure in logic view and array in physical view:
 
@@ -15,9 +338,9 @@ Time complexity for construct the heap is:
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
 
-## Application and Examples
+# Stack/Queue
 
-* Min Stack:
+## Min Stack:
 
 maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 
@@ -50,7 +373,7 @@ int getMin(){
 }
 ```
 
-* Convert a stack to Queue:
+## Convert a stack to Queue:
 
 The idea is to Use two stacks, one for push, one for pop to mimic the queue tail and head
 ```CPP
@@ -80,7 +403,7 @@ int pop(){
 }
 ```
 
-* Revert stack recursively without extra new stack:
+## Revert stack recursively without extra new stack:
 
 The idea is to use function recursively because recursive uses stack
 ```CPP
@@ -105,7 +428,7 @@ int getAndRemoveLastElement(stack<int> &s){
 
 ```
 
-* Update Largest/Smallest value in sliding window
+## Dequeue: Update Largest/Smallest value in sliding window
 
 1. use dequeue(double linked list), new item will be inserted into tail.
 2. store the index instead of the value in dequeue.
@@ -129,7 +452,7 @@ for(int i=0;i<array.size();i++){
 }
 ```
 
-An example problem could be:
+> An example problem could be:
 
 * In Array, if a max of subarray minus min of subarray <= Num, calculate how many such Array
 
@@ -184,7 +507,7 @@ int AllLessNumSubArray(vector<int> array, int num){
 
 
 
-* Create a max-tree(Assume no duplicate values.)
+## max-tree(Assume no duplicate values.)
 
 We can use max heap and heap insert.
 ```CPP
@@ -231,7 +554,7 @@ void heapSort(vector<int> &array, int index){
 ```
 
 
-but we can also use __monotonic stack__
+## __monotonic stack__
 
 > for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
 
@@ -386,7 +709,7 @@ int getRectanglesize(vector<int>& histogram){
 
 ```
 
-* Top K problem
+## Top K problem
 
 Use heap will be best. See example:
 
