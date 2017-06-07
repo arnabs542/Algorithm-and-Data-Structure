@@ -3,7 +3,10 @@
 ## Sub Array problem
 > Common techniques
 * two pointer problem to get these longest/smallest problem
-* preprocess to get the sum of array
+  * two pointers could start both from beginning: with different move forward conditions: likely in sum issue
+  * from begin and end: product issue
+* preprocess
+  * Get the sum
 * Hash table to record value, index/occur number
 
 > __*Tips*__:
@@ -116,7 +119,7 @@ int LongestSumSubArrayLength(vector<int> nums, int k){
 
 ```
 
-### Follow up
+### Follow up: subarray sum to multiple of k
 https://leetcode.com/problems/continuous-subarray-sum/#/description
 
 Given a list of non-negative numbers and a target integer k, write a function to check if the array has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up to n*k where n is also an integer.
@@ -143,21 +146,6 @@ bool checkSubarraySum(vector<int>& nums, int k) {
     return false;
 }
 
-
-//Or we can use select    bool checkSubarraySum(vector<int>& nums, int k) {
-bool checkSubarraySum(vector<int>& nums, int k) {
-    int n = nums.size(), sum = 0, pre = 0;
-    unordered_set<int> modk;
-    for (int i = 0; i < n; ++i) {
-        sum += nums[i];
-        int mod = k == 0 ? sum : sum % k;
-        if (modk.count(mod)) return true;
-        modk.insert(pre);
-        pre = mod;
-    }
-    return false;
-
-}
 ```
 
 ### Subarray sum
@@ -217,6 +205,50 @@ int maxSubArray(vector<int>& nums) {
     return ret;
 }
 ```
+
+### Maximum Product Subarray
+//https://leetcode.com/problems/maximum-product-subarray/#/description
+
+Find the contiguous subarray within an array (containing at least one number) which has the largest product.
+
+For example, given the array [2,3,-2,4],
+the contiguous subarray [2,3] has the largest product = 6.
+
+```CPP
+int maxProduct(vector<int>& nums) {
+    int prod = 1;
+    int ret = INT_MIN;
+    int begin = 1;
+    int end = 1;
+    int len = nums.size();
+    for(int i=0;i<nums.size();i++){
+        begin*=nums[i];
+        end*=nums[len-1-i];
+        ret = max(ret,max(begin,end));
+        begin = begin==0?1:begin;
+        end = end==0?1:end;
+    }
+    return ret;
+}
+
+//method 2:
+int maxProduct(vector<int>& nums) {
+    int max_cur = nums[0]; //max until currrent index
+    int min_cur = nums[0]; //min until current index
+    int ret = nums[0];
+    for(int i=1;i<nums.size();i++){
+        if(nums[i]<0)
+            swap(max_cur,min_cur);
+
+        max_cur = max(nums[i],max_cur*nums[i]);
+        min_cur = min(nums[i],min_cur*nums[i]);
+        ret = max(ret,max_cur);
+    }
+    return ret;
+}
+```
+
+
 ### Count of range sum
 https://leetcode.com/problems/count-of-range-sum/#/description
 Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
