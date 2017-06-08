@@ -432,9 +432,9 @@ int NumOfTriangles(vector<int> arr)
 
 ```
 
-## Matrix Problem
+## Matrix(Rectangle) Problem
 
-> Preprocess:
+> * similar as array, usually divide this problem into row and col two array
 
 ### Largest Square with all 1 in the boundary
 Given a matrix containing either 0 or 1 in each cell, find the square with the longest side containing all 1s in its boundary. Cells inside the square may contain either 0 or 1.
@@ -499,6 +499,65 @@ bool hasALloneBorder(int size, vector<vector<int>> &right, vector<vector<int>> &
 }
 
 ```
+
+### Maximal-square
+https://leetcode.com/problems/maximal-square/#/description
+Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
+
+For example, given the following matrix:
+
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+Return 4.
+
+```CPP
+//similar as subarray, use dp to consider max square's edge len ending i,j
+int maximalSquare(vector<vector<char>>& matrix) {
+    int row = matrix.size();
+    if(row==0)
+        return 0;
+    int col = matrix[0].size();
+
+
+    //dp[i][j] is the max edge len for point ending (i,j)
+    vector<vector<int>> dp(row,vector<int>(col,0));
+    //first row and col
+    int maxlen = 0;
+    for(int i=0;i<row;i++){
+        if(matrix[i][0]=='1'){
+            dp[i][0] = 1;
+            maxlen = 1;
+        }
+    }
+    for(int j=0;j<col;j++){
+        if(matrix[0][j]=='1'){
+            dp[0][j] = 1;
+            maxlen = 1;
+        }
+    }
+
+    for(int i=1;i<row;i++){
+        for(int j=1;j<col;j++){
+            if(matrix[i][j]=='1'){
+                //check from up left i-1,j-1, and current row [i][j-1], current col [i-1][j]
+                dp[i][j] = min(min(dp[i-1][j],dp[i][j-1]),dp[i-1][j-1]) + 1;
+                maxlen = maxlen>dp[i][j]?maxlen:dp[i][j];
+            }else{
+                dp[i][j] = 0;
+            }
+        }
+    }
+
+    return maxlen*maxlen;
+}
+
+```
+
+## Histogram
+
+Histogram problem includes like water container, max rectangle. etc. 
 
 # Heap
 
