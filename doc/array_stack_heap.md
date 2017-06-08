@@ -2,6 +2,7 @@
 
 ## Sub Array problem
 > Common techniques
+* solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
 * two pointer problem to get these longest/smallest problem
   * two pointers could start both from beginning: with different move forward conditions: likely in sum issue
   * from begin and end: product issue
@@ -266,13 +267,13 @@ vector<int> productExceptSelf(vector<int>& nums) {
     begin[0]=1;
     end[len-1]=1;
     for(int i=1;i<len;i++){
-        begin[i] = begin[i-1]*nums[i-1];
+        begin[i] = begin[i-1] * nums[i-1];
     }
     for(int i=len-2;i>=0;i--){
-        end[i]=end[i+1]*nums[i+1];
+        end[i]=end[i+1] * nums[i+1];
     }
     for(int i=0;i<len;i++){
-        ret[i]=begin[i]*end[i];
+        ret[i]=begin[i]* end[i];
     }
     return ret;
 }
@@ -284,10 +285,10 @@ vector<int> productExceptSelf(vector<int>& nums) {
     int end = 1;
     vector<int> ret(len,1);
     for(int i=0;i<len;i++){
-        ret[i]*=begin;
-        begin *=nums[i];
-        ret[len-1-i]*=end;
-        end *=nums[len-1-i];
+        ret[i]* =begin;
+        begin * =nums[i];
+        ret[len-1-i]* =end;
+        end * =nums[len-1-i];
     }
     return ret;
 }
@@ -319,6 +320,38 @@ int countRangeSum(vector<int>& nums, int lower, int upper) {
 }
 ```
 
+### Local minimum
+
+Find array if there is local min(left and right is larger) and return index
+
+```CPP
+//Binary search
+
+int localMin(vector<int> nums){
+  int len=nums.size();
+  if(nums[0]<nums[1] || len==1 )
+    return 0;
+  if(nums[len-1]<nums[len-2])
+    return len-1;
+
+  int left = 1;
+  int right = len-2;
+  int mid = 0;
+  while(left<right){
+    mid = left+(right-left)/2;
+    if(nums[mid]>nums[mid+1]){
+      left = mid+1;  //there will be local min right half
+    }else if(nums[mid]>nums[mid-1]){
+      right = mid-1;
+    }else{
+      return mid;
+    }
+  }
+  return left;
+
+}
+
+```
 
 ## 3Sum problems: Typical three pointers problems
 > Common techniques
@@ -395,6 +428,74 @@ int NumOfTriangles(vector<int> arr)
     }
 
     return ret;
+}
+
+```
+
+## Matrix Problem
+
+> Preprocess:
+
+### Largest Square with all 1 in the boundary
+Given a matrix containing either 0 or 1 in each cell, find the square with the longest side containing all 1s in its boundary. Cells inside the square may contain either 0 or 1.
+
+For example, given matrix
+
+[
+  [0, 1, 0, 1, 1]
+  [0, 1, 1, 1, 0]
+  [0, 1, 0, 1, 1]
+  [1, 1, 1, 1, 1]
+  [1, 1, 1, 1, 1]
+]
+The square with the maximum size containing all 1s in its boundary has top-left corner at (1,1) and bottom-right corner at (3, 3)
+
+
+```CPP
+//two help matrix:
+//help1: starting from current position, how many consecutive 1 in right
+//help2: starting from current position, how many consecutive 1 down
+
+int getLargestSquareSide(vector<vector<int>> matrix){
+
+  int row = matrix.size();
+  int col = matrix[0].size();
+  //starting from current position, how many consecutive 1 in right
+  vector<vector<int>> right(row,vector<int>(col,0));
+  //starting from current position, how many consecutive 1 down
+  vector<vector<int>> down(row,vector<int>(col,0));
+  int ret = 0;
+  for(int i=0;i<row;i++){
+    right[i][col-1]=matrix[i][col-1];
+  }
+  for(int j=0;j<col;j++){
+    down[row-1][j-1]=matrix[row-1][j];
+  }
+
+  for(int i=row-2;i>=0;i--){
+    for(int j=col-2;j>=0;j--){
+      right[i][j] = matrix[i][j]==0?0:right[i+1][j]+1;
+      down[i][j]=matrix[i][j]==0?0:down[i][j+1];
+    }
+  }
+  //starting from largest size
+  for(int size=min(row,col);size>0;size--){
+    if(hasALloneBorder(size,right,down,row,col)){
+      return size;
+    }
+  }
+  return 0;
+
+}
+
+bool hasALloneBorder(int size, vector<vector<int>> &right, vector<vector<int>> &down,int row, int col){
+  for(int i=0;i<=row-size;i++){
+    for(int j=0;i<=col-size;j++){
+      if(right[i][j]>=size && down[i][j]>=size && right[i+size-1][j]>=size && down[i][j+size-1]>=size)
+        return true;
+    }
+  }
+  return false;
 }
 
 ```

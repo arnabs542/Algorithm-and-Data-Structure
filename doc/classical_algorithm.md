@@ -293,3 +293,30 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 }
 
 ```
+
+## Fisrt missing positive
+ideally we should have vector as 1,2,3,...n. so nums[i-1]=i
+
+Just go through the array sequentially and for every index write the value at the index to the index specified by value, recursively placing any value at that location to its place and throwing away values > N. Then go again through the array looking for the spot where value doesn't match the index - that's the smallest value not in the array.
+
+```CPP
+int firstMissingPositive(vector<int>& nums) {
+  int len = nums.size();
+  int ret = 0;
+  for(int i=0;i<len;i++){
+      int target = nums[i];
+      //recursively placing any value to location to its place, until find or no more place
+      while(target>0 && target<=len && target!=nums[target-1]){
+          swap(target,nums[target-1]);
+      }
+  }
+
+  for(int i=0;i<len;i++){
+      if(nums[i]!=i+1){
+          ret = i+1;
+          return ret;
+      }
+  }
+  return len+1;
+}
+```
