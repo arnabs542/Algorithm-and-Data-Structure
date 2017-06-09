@@ -150,7 +150,35 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 ```
 
-### Subarray sum
+### Contiguous subarray with equal number of 0 and 1
+https://leetcode.com/problems/contiguous-array
+Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
+
+```CPP
+int findMaxLength(vector<int>& nums) {
+    int len=nums.size();
+    int ret = 0;
+    int shift = 0; //shift: num of 0 - num of 1
+    map<int,int> m; //key is shift, val is index. find two index that has same shift, len in between has same 0 and 1
+    m[0]=-1;
+    for(int i=0;i<len;i++){
+        if(nums[i]==1){
+            shift++;
+        }else{
+            shift--;
+        }
+        if(m.find(shift)!=m.end()){
+            ret = max(ret,i-m[shift]);
+        }else{
+            m[shift]=i;
+        }  
+    }
+    return ret;
+}
+
+```
+
+### Subarray sum number that equals to certain target
 https://leetcode.com/problems/subarray-sum-equals-k/#/description
 Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
 
@@ -557,7 +585,7 @@ int maximalSquare(vector<vector<char>>& matrix) {
 
 ## Histogram
 
-Histogram problem includes like water container, max rectangle. etc. 
+Histogram problem includes like water container, max rectangle. etc.
 
 # Heap
 
