@@ -46,7 +46,33 @@ TreeNode* invertTree(TreeNode* root) {
             q.push(left);
         if(right)
             q.push(right);
-        
+
+    }
+    return ret;
+}
+
+//We can also use stack
+TreeNode* invertTree(TreeNode* root) {
+    if(root==NULL)
+        return NULL;
+    TreeNode* ret = root;
+    TreeNode* left;
+    TreeNode* right;
+    stack<TreeNode*> s;
+    s.push(root);
+    while(!s.empty()){
+        TreeNode* cur = s.top();
+        s.pop();
+        left = cur->left;
+        right = cur->right;
+        cur->left = right;
+        cur->right = left;
+        if(left)
+            s.push(left);
+        if(right)
+            s.push(right);
+
+
     }
     return ret;
 }
