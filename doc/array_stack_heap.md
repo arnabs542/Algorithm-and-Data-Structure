@@ -610,33 +610,36 @@ O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ## Min Stack:
 
 maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
 
 ```CPP
 //Basic idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 
 stack<int> data_s; //regular stack
-stack<int> min_s; //stack that records min val of current stack
+stack<int> min_s; //stack that records min val of current stack  
 
-void push(int input){
-  if(min_s.empty() || min_s.top()>input){
-    min_s.push(input);
-  }else{
-    min_s.push(min_s.top());
-  }
-  data_s.push(input);
+void push(int x) {
+    if(min_s.empty() || x<=min_s.top()){
+        min_s.push(x);
+    }
+    data_s.push(x);
 }
 
-void pop(){
-  if(!min_s.empty())
-     min_s.pop();
-  if(!data_s.empty())
+void pop() {
+    if(getMin()==data_s.top())
+        min_s.pop();
     data_s.pop();
 }
 
-int getMin(){
-  if(!min_s.empty())
-    return ERROR;
-  return min_s.top();
+int top() {
+    return data_s.top();
+}
+
+int getMin() {
+    return min_s.top();
 }
 ```
 
