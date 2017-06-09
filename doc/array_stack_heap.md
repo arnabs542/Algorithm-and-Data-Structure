@@ -9,7 +9,9 @@
 * preprocess
   * Get the sum
   * get product from begin and end of array
-* Hash table to record value, index/occur number
+* Hash table
+  * Key could be array item itself, or some preprocessed one: like sum, or certain signature
+  * value is number of total items, or index(used in longest subarray case)
 
 > __*Tips*__:
   * whether to record value into hashmap/set before and after process.  
