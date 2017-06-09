@@ -644,9 +644,12 @@ vector<int> topKinMatrix(vector<vector<int> matrix, int k){
 /* complexity will be K*log(Row) */
 ```
 
-## Find the median value in data stream on the fly: https://leetcode.com/problems/find-median-from-data-stream/
+## Find the median value in data stream on the fly:
 
- Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
+
+
+Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
+https://leetcode.com/problems/find-median-from-data-stream/
 
  ```CPP
  struct mycompare{
