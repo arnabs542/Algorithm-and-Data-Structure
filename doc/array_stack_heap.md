@@ -604,6 +604,132 @@ Time complexity for construct the heap is:
 ```shell
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
+## Top K problem
+
+Use heap will be best. See example:
+
+Q: Suppose we have matrix with each row sorted in increasing order, print largest top K values
+```CPP
+struct compare{
+  bool operator()(pair<int,int> a, pair<int,int> b){
+    return a.second > b.second;
+  }
+};
+
+vector<int> topKinMatrix(vector<vector<int> matrix, int k){
+  //pq is max heap, where <int, int> represents item's row index and value respectively
+  Priority_queue(pair<int,int>, vector<pair<int,int>>, compare) pq;
+  vector<int> ret;
+  int row = matrix.size();
+  //init the heap to hold row number largest (from head of each row array)
+  for(int i=0;i<row;i++){
+    pq.push(make_pair(i, matrix[i].back()));
+  }
+  //keep get the back of each row, and pop back heap value its position in row
+  while(true){
+    int cur_row_index = pq.top().first;
+    ret.push_back(pq.top());
+    pq.pop();
+    matrix[cur_row_index].pop_back();
+    if(![cur_row_index].empty())
+      pq.push(matrix[cur_row_index].back());
+
+    if(ret.size()==K)
+      break;
+  }
+
+  return ret;
+}
+
+/* complexity will be K*log(Row) */
+```
+
+## Find the median value in data stream on the fly: https://leetcode.com/problems/find-median-from-data-stream/
+
+ Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
+
+ ```CPP
+ struct mycompare{
+    bool operator()(int a, int b){
+        return a>b;
+    }
+};
+ //two heaps: max_half has max half nums, min_half has small half nums
+ priority_queue<int> min_half;  //max heap: top of min_half heap is max value in min heap
+ priority_queue<int, vector<int>, mycompare> max_half; //min heap: top of max_half heap is min value of max heap
+
+ // Adds a number into the data structure.
+ void addNum(int num) {
+     //need to make sure push into both heap, otherwise if two heaps are equal and one new item //input, this new item could be mistakely choosen as median since later balance function //is not called
+     max_half.push(num);
+     min_half.push(max_half.top());
+     max_half.pop();
+
+     //balance both heap, make sure max_half is either equal size of min_half or has one more item
+     while(min_half.size()>max_half.size()+1){
+         max_half.push(min_half.top());
+         min_half.pop();
+     }
+
+ }
+
+ // Returns the median of current data stream
+ double findMedian() {
+     if(max_half.size()==min_half.size()){
+         return (min_half.top()+max_half.top())/2.0;
+     }else{
+         return (double) min_half.top();
+     }
+ }
+ ```
+
+## Max profit:
+
+ You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
+
+ ```CPP
+ struct cost_compare{
+     bool operator()(pair<int,int> a, pair<int,int> b){
+         return a.first>b.first;
+     }
+ };
+
+ struct profit_compare{
+     bool operator()(pair<int,int> a, pair<int,int> b){
+         return a.second<b.second;
+     }
+ };
+
+ int findMaximizedCapital(int k, int W, vector<int>& Profits, vector<int>& Capital) {
+    priority_queue<pair<int,int>,vector<pair<int,int>>,cost_compare> cost; //min heap for cost
+    priority_queue<pair<int,int>,vector<pair<int,int>>,profit_compare> profit; //max heap for profit
+
+
+    int len = Capital.size();
+    pair<int,int> cur;
+    for(int i=0;i<len;i++){
+      cur = make_pair(Capital[i],Profits[i]);
+      cost.push(cur);
+    }
+    int picks = 0;
+    while(k>0){
+
+      while(!cost.empty() && W>=cost.top().first){
+         //only pick possible project, do not trade yet
+         profit.push(cost.top());
+         cost.pop();
+      }
+      if(profit.empty())
+         break;
+     //deal the real transaction here
+       cur = profit.top();
+       W = W + cur.second;
+       profit.pop();
+       k--;
+    }
+    return W;    
+ }
+ ```
 
 # Stack/Queue
 
@@ -919,7 +1045,7 @@ TreeNode * getMaxtree_method2(vector<int> array){
 
 * Use this data structure for other Problem:
 
-[Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
+### [Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
 
 1. step 1 is to calculate row by row, for each item in matrix, what is max rectangle/histogram size when this item is the bottom of histogram
 
@@ -978,130 +1104,3 @@ int getRectanglesize(vector<int>& histogram){
 }
 
 ```
-
-## Top K problem
-
-Use heap will be best. See example:
-
-Q: Suppose we have matrix with each row sorted in increasing order, print largest top K values
-```CPP
-struct compare{
-  bool operator()(pair<int,int> a, pair<int,int> b){
-    return a.second > b.second;
-  }
-};
-
-vector<int> topKinMatrix(vector<vector<int> matrix, int k){
-  //pq is max heap, where <int, int> represents item's row index and value respectively
-  Priority_queue(pair<int,int>, vector<pair<int,int>>, compare) pq;
-  vector<int> ret;
-  int row = matrix.size();
-  //init the heap to hold row number largest (from head of each row array)
-  for(int i=0;i<row;i++){
-    pq.push(make_pair(i, matrix[i].back()));
-  }
-  //keep get the back of each row, and pop back heap value its position in row
-  while(true){
-    int cur_row_index = pq.top().first;
-    ret.push_back(pq.top());
-    pq.pop();
-    matrix[cur_row_index].pop_back();
-    if(![cur_row_index].empty())
-      pq.push(matrix[cur_row_index].back());
-
-    if(ret.size()==K)
-      break;
-  }
-
-  return ret;
-}
-
-/* complexity will be K*log(Row) */
-```
-
- * Find the median value in data stream on the fly: https://leetcode.com/problems/find-median-from-data-stream/
-
- Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
-
- ```CPP
- struct mycompare{
-    bool operator()(int a, int b){
-        return a>b;
-    }
-};
- //two heaps: max_half has max half nums, min_half has small half nums
- priority_queue<int> min_half;  //max heap: top of min_half heap is max value in min heap
- priority_queue<int, vector<int>, mycompare> max_half; //min heap: top of max_half heap is min value of max heap
-
- // Adds a number into the data structure.
- void addNum(int num) {
-     //need to make sure push into both heap, otherwise if two heaps are equal and one new item //input, this new item could be mistakely choosen as median since later balance function //is not called
-     max_half.push(num);
-     min_half.push(max_half.top());
-     max_half.pop();
-
-     //balance both heap, make sure max_half is either equal size of min_half or has one more item
-     while(min_half.size()>max_half.size()+1){
-         max_half.push(min_half.top());
-         min_half.pop();
-     }
-
- }
-
- // Returns the median of current data stream
- double findMedian() {
-     if(max_half.size()==min_half.size()){
-         return (min_half.top()+max_half.top())/2.0;
-     }else{
-         return (double) min_half.top();
-     }
- }
- ```
-
- * Max profit:
-
- You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
-
- ```CPP
- struct cost_compare{
-     bool operator()(pair<int,int> a, pair<int,int> b){
-         return a.first>b.first;
-     }
- };
-
- struct profit_compare{
-     bool operator()(pair<int,int> a, pair<int,int> b){
-         return a.second<b.second;
-     }
- };
-
- int findMaximizedCapital(int k, int W, vector<int>& Profits, vector<int>& Capital) {
-    priority_queue<pair<int,int>,vector<pair<int,int>>,cost_compare> cost; //min heap for cost
-    priority_queue<pair<int,int>,vector<pair<int,int>>,profit_compare> profit; //max heap for profit
-
-
-    int len = Capital.size();
-    pair<int,int> cur;
-    for(int i=0;i<len;i++){
-      cur = make_pair(Capital[i],Profits[i]);
-      cost.push(cur);
-    }
-    int picks = 0;
-    while(k>0){
-
-      while(!cost.empty() && W>=cost.top().first){
-         //only pick possible project, do not trade yet
-         profit.push(cost.top());
-         cost.pop();
-      }
-      if(profit.empty())
-         break;
-     //deal the real transaction here
-       cur = profit.top();
-       W = W + cur.second;
-       profit.pop();
-       k--;
-    }
-    return W;    
- }
- ```
