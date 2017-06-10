@@ -3,12 +3,12 @@
 ## Sub Array problem
 > Common techniques
 * solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
-* two pointer problem to get these longest/smallest problem
-  * two pointers could start both from beginning: with different move forward conditions: likely in sum issue
-  * from begin and end: product issue
+* two pointer to get these longest/smallest problem
+  * two pointers could start both from beginning: with different move forward conditions:
+  * The idea is to use two pointers to transfer original problem into sub problem between [l,r]
 * preprocess
   * Get the sum
-  * get product from begin and end of array
+  * from begin and end
 * Hash table
   * Key could be array item itself, or some preprocessed one: like sum, or certain signature
   * value is number of total items, or index(used in longest subarray case)
@@ -345,6 +345,36 @@ int countRangeSum(vector<int>& nums, int lower, int upper) {
         //count how many in that range
         ret+=std::distance(s.lower_bound(sum-upper),s.upper_bound(sum-lower));
         s.insert(sum);
+    }
+    return ret;
+}
+```
+
+### Max Consecutive Ones(with flip most k zeros)
+https://leetcode.com/problems/max-consecutive-ones-ii/
+Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most k 0.
+
+Example 1:
+Input: [1,0,1,1,0], k =1
+Output: 4
+Explanation: Flip the first zero will get the the maximum number of consecutive 1s.
+    After flipping, the maximum number of consecutive 1s is 4.
+```CPP
+int findMaxConsecutiveOnes(vector<int>& nums) {
+    int len = nums.size();
+    //The idea is to keep a window [l, h] that contains at most k zero
+    int ret=0;
+    queue<int> q;
+    int k=1;
+    for(int l=0,h=0;h<len;h++){
+        if(nums[h]==0){
+            q.push(h);
+        }
+        if(q.size()>k){
+            l=q.front()+1;
+            q.pop();
+        }
+        ret = max(ret,h-l+1);
     }
     return ret;
 }
