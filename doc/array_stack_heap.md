@@ -20,7 +20,7 @@
 
 
 
-### Two sum
+* Two sum
 https://leetcode.com/problems/two-sum/#/description
 Given an array of integers, return indices of the two numbers such that they add up to a specific target.
 
@@ -44,7 +44,7 @@ vector<int> twoSum(vector<int>& nums, int target) {
 }
 ```
 
-### Longest substring length to make sure whole string is sorted
+* Longest substring length to make sure whole string is sorted
 https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
 
 [1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
@@ -96,7 +96,7 @@ int findUnsortedSubarray(vector<int>& nums) {
 ```
 
 
-### Longest Sum SubArray Length: Subarray sum equal to target
+* Longest Sum SubArray Length: Subarray sum equal to target
 
 ```CPP
 int LongestSumSubArrayLength(vector<int> nums, int k){
@@ -123,7 +123,7 @@ int LongestSumSubArrayLength(vector<int> nums, int k){
 
 ```
 
-### Follow up: subarray sum to multiple of k
+* Follow up: subarray sum to multiple of k
 https://leetcode.com/problems/continuous-subarray-sum/#/description
 
 Given a list of non-negative numbers and a target integer k, write a function to check if the array has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up to n*k where n is also an integer.
@@ -152,7 +152,7 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 ```
 
-### Contiguous subarray with equal number of 0 and 1
+* Contiguous subarray with equal number of 0 and 1
 https://leetcode.com/problems/contiguous-array
 Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
 
@@ -180,7 +180,7 @@ int findMaxLength(vector<int>& nums) {
 
 ```
 
-### Subarray sum number that equals to certain target
+* Subarray sum number that equals to certain target
 https://leetcode.com/problems/subarray-sum-equals-k/#/description
 Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
 
@@ -217,7 +217,7 @@ for(int i=0;i<len;i++){
 
 ```
 
-### Max subarray sum
+* Max subarray sum
 https://leetcode.com/problems/maximum-subarray/
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
 For example, given the array [-2,1,-3,4,-1,2,1,-5,4],
@@ -238,7 +238,7 @@ int maxSubArray(vector<int>& nums) {
 }
 ```
 
-### Maximum Product Subarray
+* Maximum Product Subarray
 //https://leetcode.com/problems/maximum-product-subarray/#/description
 
 Find the contiguous subarray within an array (containing at least one number) which has the largest product.
@@ -280,7 +280,7 @@ int maxProduct(vector<int>& nums) {
 }
 ```
 
-### Product of array except itself
+* Product of array except itself
 https://leetcode.com/problems/product-of-array-except-self/
 Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
 Solve it without division and in O(n).
@@ -325,7 +325,7 @@ vector<int> productExceptSelf(vector<int>& nums) {
 
 ```
 
-### Count of range sum
+* Count of range sum
 https://leetcode.com/problems/count-of-range-sum/#/description
 Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
 
@@ -350,7 +350,7 @@ int countRangeSum(vector<int>& nums, int lower, int upper) {
 }
 ```
 
-### Max Consecutive Ones(with flip most k zeros)
+* Max Consecutive Ones(with flip most k zeros)
 https://leetcode.com/problems/max-consecutive-ones-ii/
 Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most k 0.
 
@@ -380,7 +380,7 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
 }
 ```
 
-### Local minimum
+* Local minimum
 
 Find array if there is local min(left and right is larger) and return index
 
@@ -459,7 +459,7 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 
 ```
 
-### Follow up: Number of triangles
+* Follow up: Number of triangles
 There are lots of problem can be soled by similar idea
 
 http://www.geeksforgeeks.org/find-number-of-triangles-possible/
@@ -492,128 +492,6 @@ int NumOfTriangles(vector<int> arr)
 
 ```
 
-## Matrix(Rectangle) Problem
-
-> * similar as array, usually divide this problem into row and col two array
-
-### Largest Square with all 1 in the boundary
-Given a matrix containing either 0 or 1 in each cell, find the square with the longest side containing all 1s in its boundary. Cells inside the square may contain either 0 or 1.
-
-For example, given matrix
-
-[
-  [0, 1, 0, 1, 1]
-  [0, 1, 1, 1, 0]
-  [0, 1, 0, 1, 1]
-  [1, 1, 1, 1, 1]
-  [1, 1, 1, 1, 1]
-]
-The square with the maximum size containing all 1s in its boundary has top-left corner at (1,1) and bottom-right corner at (3, 3)
-
-
-```CPP
-//two help matrix:
-//help1: starting from current position, how many consecutive 1 in right
-//help2: starting from current position, how many consecutive 1 down
-
-int getLargestSquareSide(vector<vector<int>> matrix){
-
-  int row = matrix.size();
-  int col = matrix[0].size();
-  //starting from current position, how many consecutive 1 in right
-  vector<vector<int>> right(row,vector<int>(col,0));
-  //starting from current position, how many consecutive 1 down
-  vector<vector<int>> down(row,vector<int>(col,0));
-  int ret = 0;
-  for(int i=0;i<row;i++){
-    right[i][col-1]=matrix[i][col-1];
-  }
-  for(int j=0;j<col;j++){
-    down[row-1][j-1]=matrix[row-1][j];
-  }
-
-  for(int i=row-2;i>=0;i--){
-    for(int j=col-2;j>=0;j--){
-      right[i][j] = matrix[i][j]==0?0:right[i+1][j]+1;
-      down[i][j]=matrix[i][j]==0?0:down[i][j+1];
-    }
-  }
-  //starting from largest size
-  for(int size=min(row,col);size>0;size--){
-    if(hasALloneBorder(size,right,down,row,col)){
-      return size;
-    }
-  }
-  return 0;
-
-}
-
-bool hasALloneBorder(int size, vector<vector<int>> &right, vector<vector<int>> &down,int row, int col){
-  for(int i=0;i<=row-size;i++){
-    for(int j=0;i<=col-size;j++){
-      if(right[i][j]>=size && down[i][j]>=size && right[i+size-1][j]>=size && down[i][j+size-1]>=size)
-        return true;
-    }
-  }
-  return false;
-}
-
-```
-
-### Maximal-square
-https://leetcode.com/problems/maximal-square/#/description
-Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
-
-For example, given the following matrix:
-
-1 0 1 0 0
-1 0 1 1 1
-1 1 1 1 1
-1 0 0 1 0
-Return 4.
-
-```CPP
-//similar as subarray, use dp to consider max square's edge len ending i,j
-int maximalSquare(vector<vector<char>>& matrix) {
-    int row = matrix.size();
-    if(row==0)
-        return 0;
-    int col = matrix[0].size();
-
-
-    //dp[i][j] is the max edge len for point ending (i,j)
-    vector<vector<int>> dp(row,vector<int>(col,0));
-    //first row and col
-    int maxlen = 0;
-    for(int i=0;i<row;i++){
-        if(matrix[i][0]=='1'){
-            dp[i][0] = 1;
-            maxlen = 1;
-        }
-    }
-    for(int j=0;j<col;j++){
-        if(matrix[0][j]=='1'){
-            dp[0][j] = 1;
-            maxlen = 1;
-        }
-    }
-
-    for(int i=1;i<row;i++){
-        for(int j=1;j<col;j++){
-            if(matrix[i][j]=='1'){
-                //check from up left i-1,j-1, and current row [i][j-1], current col [i-1][j]
-                dp[i][j] = min(min(dp[i-1][j],dp[i][j-1]),dp[i-1][j-1]) + 1;
-                maxlen = maxlen>dp[i][j]?maxlen:dp[i][j];
-            }else{
-                dp[i][j] = 0;
-            }
-        }
-    }
-
-    return maxlen*maxlen;
-}
-
-```
 
 ## Histogram
 
@@ -674,7 +552,7 @@ vector<int> topKinMatrix(vector<vector<int> matrix, int k){
 /* complexity will be K*log(Row) */
 ```
 
-## Find the median value in data stream on the fly:
+* Find the median value in data stream on the fly:
 
 
 
@@ -716,7 +594,7 @@ https://leetcode.com/problems/find-median-from-data-stream/
  }
  ```
 
-## Max profit:
+* Max profit:
 
  You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
 
@@ -1078,7 +956,7 @@ TreeNode * getMaxtree_method2(vector<int> array){
 
 * Use this data structure for other Problem:
 
-### [Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
+* [Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
 
 1. step 1 is to calculate row by row, for each item in matrix, what is max rectangle/histogram size when this item is the bottom of histogram
 

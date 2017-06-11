@@ -361,3 +361,186 @@ int firstMissingPositive(vector<int>& nums) {
   return len+1;
 }
 ```
+
+# Matrix Problem
+
+## Sub region in Matrix
+
+> Use DFS or BFS to search
+
+## Same row/col Problem
+search space goes from certain node along its same row and col index
+
+> Common techniques:  Preprocess: Assist with two vector, row and col, and get some feature/sum of characters of same row/col
+
+* Lonly Pixel
+
+https://leetcode.com/problems/lonely-pixel-i/
+Given a picture consisting of black and white pixels, find the number of black lonely pixels.
+The picture is represented by a 2D char array consisting of 'B' and 'W', which means black and white pixels respectively.
+
+A black lonely pixel is character 'B' that located at a specific position where the same row and same column don't have any other black pixels.
+
+Example:
+Input:
+[['W', 'W', 'B'],
+ ['W', 'B', 'W'],
+ ['B', 'W', 'W']]
+
+Output: 3
+Explanation: All the three 'B's are black lonely pixels.
+
+```CPP
+int findLonelyPixel(vector<vector<char>>& picture) {
+    int m=picture.size();
+    if(m==0) return 0;
+    int n=picture[0].size();
+
+    int ret = 0;
+    vector<int> row(m,0);
+    vector<int> col(n,0);
+
+    for(int i=0;i<m;i++){
+        for(int j=0;j<n;j++){
+            if(picture[i][j]=='B'){
+                row[i]++;
+                col[j]++;
+            }
+        }
+    }
+
+    for(int i=0;i<m;i++){
+        for(int j=0;j<n;j++){
+            if(picture[i][j]=='B' && row[i]==1 && col[j]==1){
+                ret++;
+            }
+        }
+    }
+    return ret;
+}
+
+```
+
+## Largest square/rectangle inside
+
+> * similar as array, usually divide this problem into row and col two array
+
+
+* Largest Square with all 1 in the boundary
+Given a matrix containing either 0 or 1 in each cell, find the square with the longest side containing all 1s in its boundary. Cells inside the square may contain either 0 or 1.
+
+For example, given matrix
+
+[
+  [0, 1, 0, 1, 1]
+  [0, 1, 1, 1, 0]
+  [0, 1, 0, 1, 1]
+  [1, 1, 1, 1, 1]
+  [1, 1, 1, 1, 1]
+]
+The square with the maximum size containing all 1s in its boundary has top-left corner at (1,1) and bottom-right corner at (3, 3)
+
+
+```CPP
+//two help matrix:
+//help1: starting from current position, how many consecutive 1 in right
+//help2: starting from current position, how many consecutive 1 down
+
+int getLargestSquareSide(vector<vector<int>> matrix){
+
+  int row = matrix.size();
+  int col = matrix[0].size();
+  //starting from current position, how many consecutive 1 in right
+  vector<vector<int>> right(row,vector<int>(col,0));
+  //starting from current position, how many consecutive 1 down
+  vector<vector<int>> down(row,vector<int>(col,0));
+  int ret = 0;
+  for(int i=0;i<row;i++){
+    right[i][col-1]=matrix[i][col-1];
+  }
+  for(int j=0;j<col;j++){
+    down[row-1][j-1]=matrix[row-1][j];
+  }
+
+  for(int i=row-2;i>=0;i--){
+    for(int j=col-2;j>=0;j--){
+      right[i][j] = matrix[i][j]==0?0:right[i+1][j]+1;
+      down[i][j]=matrix[i][j]==0?0:down[i][j+1];
+    }
+  }
+  //starting from largest size
+  for(int size=min(row,col);size>0;size--){
+    if(hasALloneBorder(size,right,down,row,col)){
+      return size;
+    }
+  }
+  return 0;
+
+}
+
+bool hasALloneBorder(int size, vector<vector<int>> &right, vector<vector<int>> &down,int row, int col){
+  for(int i=0;i<=row-size;i++){
+    for(int j=0;i<=col-size;j++){
+      if(right[i][j]>=size && down[i][j]>=size && right[i+size-1][j]>=size && down[i][j+size-1]>=size)
+        return true;
+    }
+  }
+  return false;
+}
+
+```
+
+* Maximal-square
+https://leetcode.com/problems/maximal-square/#/description
+Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
+
+For example, given the following matrix:
+
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+Return 4.
+
+```CPP
+//similar as subarray, use dp to consider max square's edge len ending i,j
+int maximalSquare(vector<vector<char>>& matrix) {
+    int row = matrix.size();
+    if(row==0)
+        return 0;
+    int col = matrix[0].size();
+
+
+    //dp[i][j] is the max edge len for point ending (i,j)
+    vector<vector<int>> dp(row,vector<int>(col,0));
+    //first row and col
+    int maxlen = 0;
+    for(int i=0;i<row;i++){
+        if(matrix[i][0]=='1'){
+            dp[i][0] = 1;
+            maxlen = 1;
+        }
+    }
+    for(int j=0;j<col;j++){
+        if(matrix[0][j]=='1'){
+            dp[0][j] = 1;
+            maxlen = 1;
+        }
+    }
+
+    for(int i=1;i<row;i++){
+        for(int j=1;j<col;j++){
+            if(matrix[i][j]=='1'){
+                //check from up left i-1,j-1, and current row [i][j-1], current col [i-1][j]
+                dp[i][j] = min(min(dp[i-1][j],dp[i][j-1]),dp[i-1][j-1]) + 1;
+                maxlen = maxlen>dp[i][j]?maxlen:dp[i][j];
+            }else{
+                dp[i][j] = 0;
+            }
+        }
+    }
+
+    return maxlen*maxlen;
+}
+
+```
