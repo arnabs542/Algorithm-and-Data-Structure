@@ -1,24 +1,24 @@
 # Table of Contents
 * [Array](#Array)
   * [Sub Array](##Sub Array)
-    * [Classical Sub-Array Problem](### Classical Sub-Array Problem)
-    * [Subarray: Array split Problem](### Subarray: Array split Problem)
-  * [3Sum problems: Typical three pointers problems](## 3Sum problems: Typical three pointers problems)
-  * [Histogram](## Histogram)
-2. [Heap](# Heap)
-  1. [Top K problem](## Top K problem)
-3. [Stack/Queue](# Stack/Queue)
-  1. [Min Stack](## Min Stack)
-  2. [Other Stack Problem](## Other Stack Problem)
-  3. [Dequeue: Update Largest/Smallest value in sliding window](## Dequeue: Update Largest/Smallest value in sliding window)
-  4. [Max-tree](## Max-tree)
-  5. [Monotonic stack](## Monotonic stack)
+    * [Classical Sub-Array Problem](###Classical Sub-Array Problem)
+    * [Subarray: Array split Problem](###Array split Problem)
+  * [3Sum problems: Typical three pointers problems](##Typical three pointers problems)
+  * [Histogram](##Histogram)
+* [Heap](#Heap)
+  * [Top K problem](##Top K problem)
+* [Stack/Queue](#Stack/Queue)
+  * [Min Stack](##Min Stack)
+  * [Other Stack Problem](##Other Stack Problem)
+  * [Dequeue: Update Largest/Smallest value in sliding window](##Dequeue: Update Largest/Smallest value in sliding window)
+  * [Max-tree](##Max-tree)
+  * [Monotonic stack](##Monotonic stack)
 
 
 
 # Array <a name="Array"></a>
 
-## Sub Array
+## Sub Array <a name="Sub Array"></a>
 > Common techniques
 * solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
 * two pointer to get these longest/smallest problem
@@ -36,7 +36,7 @@
   * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
 
 
-### Classical Sub-Array Problem
+### Classical Sub-Array Problem <a name="Classical Sub-Array Problem"></a>
 
 * Two sum
 https://leetcode.com/problems/two-sum/#/description
@@ -431,9 +431,9 @@ int localMin(vector<int> nums){
 
 ```
 
-### Subarray: Array split Problem
+### Array split Problem <a name="Array split Problem"></a>
 
-## 3Sum problems: Typical three pointers problems
+## Typical three pointers problems <a name="Typical three pointers problems"></a>
 > Common techniques
 * Sort the array
 * Fix the first pointer, and define left and right, search from beginning and end
@@ -509,11 +509,11 @@ int triangleNumber(vector<int>& nums) {
 ```
 
 
-## Histogram
+## Histogram <a name="Histogram"></a>
 
 Histogram problem includes like water container, max rectangle. etc.
 
-# Heap
+# Heap <a name="Heap"></a>
 
 Heap is implemented as tree structure in logic view and array in physical view:
 
@@ -528,7 +528,7 @@ Time complexity for construct the heap is:
 ```shell
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
-## Top K problem
+## Top K problem <a name="Top K problem"></a>
 
 Use heap will be best. See example:
 
@@ -658,9 +658,9 @@ https://leetcode.com/problems/find-median-from-data-stream/
  }
  ```
 
-# Stack/Queue
+# Stack/Queue <a name="Stack/Queue"></a>
 
-## Min Stack
+## Min Stack <a name="Min Stack"></a>
 
 maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 push(x) -- Push element x onto stack.
@@ -696,7 +696,7 @@ int getMin() {
 }
 ```
 
-## Other Stack Problem
+## Other Stack Problem <a name="Other Stack Problem"></a>
 * Convert a stack to Queue:
 
 The idea is to Use two stacks, one for push, one for pop to mimic the queue tail and head
@@ -752,7 +752,7 @@ int getAndRemoveLastElement(stack<int> &s){
 
 ```
 
-## Dequeue: Update Largest/Smallest value in sliding window
+## Dequeue: Update Largest/Smallest value in sliding window <a name="Dequeue: Update Largest/Smallest value in sliding window"></a>
 
 1. use dequeue(double linked list), new item will be inserted into tail.
 2. store the index instead of the value in dequeue.
@@ -831,7 +831,7 @@ int AllLessNumSubArray(vector<int> array, int num){
 
 
 
-## Max-tree
+## Max-tree <a name="Max-tree"></a>
 
 We can use max heap and heap insert.
 ```CPP
@@ -878,7 +878,7 @@ void heapSort(vector<int> &array, int index){
 ```
 
 
-## Monotonic stack
+## Monotonic stack <a name="Monotonic stack"></a>
 
 > for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
 
