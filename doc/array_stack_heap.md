@@ -1,6 +1,24 @@
+# Table of Contents
+1. [Array](# Array)
+  1.1 [Sub Array](## Sub Array)
+    1.1.1 [Classical Sub-Array Problem](### Classical Sub-Array Problem)
+    1.1.2 [Subarray: Array split Problem](### Subarray: Array split Problem)
+  1.2 [3Sum problems: Typical three pointers problems](## 3Sum problems: Typical three pointers problems)
+  1.3 [Histogram](## Histogram)
+2. [Heap](# Heap)
+  2.1 [Top K problem](## Top K problem)
+3. [Stack/Queue](# Stack/Queue)
+  3.1 [Min Stack](## Min Stack)
+  3.2 [Other Stack Problem](## Other Stack Problem)
+  3.3 [Dequeue: Update Largest/Smallest value in sliding window](## Dequeue: Update Largest/Smallest value in sliding window)
+  3.4 [Max-tree](## Max-tree)
+  3.5 [Monotonic stack](## Monotonic stack)
+
+
+
 # Array
 
-## Sub Array problem
+## Sub Array
 > Common techniques
 * solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
 * two pointer to get these longest/smallest problem
@@ -18,7 +36,7 @@
   * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
 
 
-## Classical Sub-Array Problem
+### Classical Sub-Array Problem
 
 * Two sum
 https://leetcode.com/problems/two-sum/#/description
@@ -413,6 +431,8 @@ int localMin(vector<int> nums){
 
 ```
 
+### Subarray: Array split Problem
+
 ## 3Sum problems: Typical three pointers problems
 > Common techniques
 * Sort the array
@@ -640,7 +660,7 @@ https://leetcode.com/problems/find-median-from-data-stream/
 
 # Stack/Queue
 
-## Min Stack:
+## Min Stack
 
 maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 push(x) -- Push element x onto stack.
@@ -676,7 +696,8 @@ int getMin() {
 }
 ```
 
-## Convert a stack to Queue:
+## Other Stack Problem
+* Convert a stack to Queue:
 
 The idea is to Use two stacks, one for push, one for pop to mimic the queue tail and head
 ```CPP
@@ -706,7 +727,7 @@ int pop(){
 }
 ```
 
-## Revert stack recursively without extra new stack:
+* Revert stack recursively without extra new stack:
 
 The idea is to use function recursively because recursive uses stack
 ```CPP
@@ -810,7 +831,7 @@ int AllLessNumSubArray(vector<int> array, int num){
 
 
 
-## max-tree(Assume no duplicate values.)
+## Max-tree
 
 We can use max heap and heap insert.
 ```CPP
@@ -857,7 +878,7 @@ void heapSort(vector<int> &array, int index){
 ```
 
 
-## __monotonic stack__
+## Monotonic stack
 
 > for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
 
