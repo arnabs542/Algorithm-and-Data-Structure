@@ -1,24 +1,24 @@
 # Table of Contents
 * [Array](#Array)
-  * [Sub Array](##Sub Array)
-    * [Classical Sub-Array Problem](###Classical Sub-Array Problem)
-    * [Subarray: Array split Problem](###Array split Problem)
-  * [3Sum problems: Typical three pointers problems](##Typical three pointers problems)
+  * [Sub Array](##Sub-Array)
+    * [Classical Sub-Array Problem](### Sub-array-Problem)
+    * [Subarray: Array split Problem](### Array-split)
+  * [3Sum problems: Typical three pointers problems](## three-pointers)
   * [Histogram](##Histogram)
 * [Heap](#Heap)
-  * [Top K problem](##Top K problem)
-* [Stack/Queue](#Stack/Queue)
-  * [Min Stack](##Min Stack)
-  * [Other Stack Problem](##Other Stack Problem)
-  * [Dequeue: Update Largest/Smallest value in sliding window](##Dequeue: Update Largest/Smallest value in sliding window)
+  * [Top K problem](##Top-K)
+* [Stack/Queue](#Stack_Queue)
+  * [Min Stack](##Min_Stack)
+  * [Other Stack Problem](##Other_Stack_Problem)
+  * [Dequeue: Update Largest/Smallest value in sliding window](##Dequeue)
   * [Max-tree](##Max-tree)
-  * [Monotonic stack](##Monotonic stack)
+  * [Monotonic stack](##Monotonic_stack)
 
 
 
 # Array <a name="Array"></a>
 
-## Sub Array <a name="Sub Array"></a>
+## Sub Array <a name="Sub-Array"></a>
 > Common techniques
 * solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
 * two pointer to get these longest/smallest problem
@@ -36,7 +36,7 @@
   * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
 
 
-### Classical Sub-Array Problem <a name="Classical Sub-Array Problem"></a>
+### Classical Sub-Array Problem <a name="Sub-array-Problem"></a>
 
 * Two sum
 https://leetcode.com/problems/two-sum/#/description
@@ -431,9 +431,9 @@ int localMin(vector<int> nums){
 
 ```
 
-### Array split Problem <a name="Array split Problem"></a>
+### Array split Problem <a name="Array-split"></a>
 
-## Typical three pointers problems <a name="Typical three pointers problems"></a>
+## Typical three pointers problems <a name="three-pointers"></a>
 > Common techniques
 * Sort the array
 * Fix the first pointer, and define left and right, search from beginning and end
@@ -528,7 +528,7 @@ Time complexity for construct the heap is:
 ```shell
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
-## Top K problem <a name="Top K problem"></a>
+## Top K problem <a name="Top-K"></a>
 
 Use heap will be best. See example:
 
@@ -658,9 +658,9 @@ https://leetcode.com/problems/find-median-from-data-stream/
  }
  ```
 
-# Stack/Queue <a name="Stack/Queue"></a>
+# Stack/Queue <a name="Stack_Queue"></a>
 
-## Min Stack <a name="Min Stack"></a>
+## Min Stack <a name="Min_Stack"></a>
 
 maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 push(x) -- Push element x onto stack.
@@ -696,7 +696,7 @@ int getMin() {
 }
 ```
 
-## Other Stack Problem <a name="Other Stack Problem"></a>
+## Other Stack Problem <a name="Other_Stack_Problem"></a>
 * Convert a stack to Queue:
 
 The idea is to Use two stacks, one for push, one for pop to mimic the queue tail and head
@@ -752,7 +752,7 @@ int getAndRemoveLastElement(stack<int> &s){
 
 ```
 
-## Dequeue: Update Largest/Smallest value in sliding window <a name="Dequeue: Update Largest/Smallest value in sliding window"></a>
+## Dequeue: Update Largest/Smallest value in sliding window <a name="Dequeue"></a>
 
 1. use dequeue(double linked list), new item will be inserted into tail.
 2. store the index instead of the value in dequeue.
