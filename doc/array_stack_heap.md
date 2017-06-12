@@ -416,7 +416,7 @@ int localMin(vector<int> nums){
 ## 3Sum problems: Typical three pointers problems
 > Common techniques
 * Sort the array
-* Fix the first pointer, and move the second and third
+* Fix the first pointer, and define left and right, search from beginning and end
 * define the condition properly
 
 ```CPP
@@ -459,37 +459,33 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 
 ```
 
-* Follow up: Number of triangles
-There are lots of problem can be soled by similar idea
+* Valid-triangle-number
 
-http://www.geeksforgeeks.org/find-number-of-triangles-possible/
+There are lots of problem can be soled by similar idea.
+
+https://leetcode.com/problems/valid-triangle-number/#/description
 Given an unsorted array of positive integers. Find the number of triangles that can be formed with three different array elements as three sides of triangles.
 
 ```CPP
-int NumOfTriangles(vector<int> arr)
-{
-    int len = arr.size();
-    sort(arr.begin(),arr.end());
+int triangleNumber(vector<int>& nums) {
+    //3 sum problem
+    int len = nums.size();
+    sort(nums.begin(),nums.end());
     int ret = 0;
-
-    for (int i = 0; i < len-2; i++)
-    {
-        //right most index
-        int k = i+2;
-
-        // Fix the second element
-        for (int j = i+1; j < len; j++)
-        {
-            while (k < len && arr[i] + arr[j] > arr[k])
-               ++k;
-
-            ret += k - j - 1;
+    for(int i=2;i<len;i++){
+        int l=0;
+        int r=i-1;
+        while(l<r){
+            if(nums[l]+nums[r]>nums[i]){
+                ret+=r-l;
+                r--;
+            }else
+                l++;
         }
     }
 
     return ret;
 }
-
 ```
 
 
