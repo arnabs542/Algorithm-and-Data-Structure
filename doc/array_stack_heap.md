@@ -1,6 +1,6 @@
 # Table of Contents
 * [Array](#Array)
-  * [Sub Array](##Sub-Array)
+  * [Sub Array](## Sub-Array)
     * [Classical Sub-Array Problem](### Sub-array-Problem)
     * [Subarray: Array split Problem](### Array-split)
   * [3Sum problems: Typical three pointers problems](## three-pointers)
