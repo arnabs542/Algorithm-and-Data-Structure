@@ -20,7 +20,7 @@
 
 
 
-# Array <a name="Array"></a>
+# Array <a name="array-a-namearraya"></a>
 
 ## Sub Array <a name="Sub-Array"></a>
 > Common techniques
