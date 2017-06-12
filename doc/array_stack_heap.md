@@ -18,22 +18,6 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Table of Contents
-* [Array](#Array)
-  * [Sub Array](##Sub-Array)
-    * [Classical Sub-Array Problem](###Sub-array-Problem)
-    * [Subarray: Array split Problem](###Array-split)
-  * [3Sum problems: Typical three pointers problems](##three-pointers)
-  * [Histogram](##Histogram)
-* [Heap](#Heap)
-  * [Top K problem](##Top-K)
-* [Stack/Queue](#Stack_Queue)
-  * [Min Stack](##Min_Stack)
-  * [Other Stack Problem](##Other_Stack_Problem)
-  * [Dequeue: Update Largest/Smallest value in sliding window](##Dequeue)
-  * [Max-tree](##Max-tree)
-  * [Monotonic stack](##Monotonic_stack)
-
 
 
 # Array <a name="Array"></a>
