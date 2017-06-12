@@ -1,3 +1,28 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Traversal](#traversal)
+  - [pre order](#pre-order)
+  - [In order](#in-order)
+  - [Post order](#post-order)
+  - [next node(Descendant Node) via in order traversal](#next-nodedescendant-node-via-in-order-traversal)
+- [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
+- [Morris Traversal](#morris-traversal)
+- [adjust two nodes that is switched in BST](#adjust-two-nodes-that-is-switched-in-bst)
+- [Recursive to collect information in tree](#recursive-to-collect-information-in-tree)
+  - [Tree is Binary tree?](#tree-is-binary-tree)
+  - [Find largest BST sub tree in a binary tree](#find-largest-bst-sub-tree-in-a-binary-tree)
+  - [Get the max distance between two nodes in Binary Tree](#get-the-max-distance-between-two-nodes-in-binary-tree)
+- [Tree topology](#tree-topology)
+  - [Find largest BST topology(return number of node in this topology) in Binary tree](#find-largest-bst-topologyreturn-number-of-node-in-this-topology-in-binary-tree)
+  - [Dose A tree has B tree in its topology?](#dose-a-tree-has-b-tree-in-its-topology)
+  - [Dose A tree has B tree in its subtree?](#dose-a-tree-has-b-tree-in-its-subtree)
+  - [Calculate number of nodes in binary tree](#calculate-number-of-nodes-in-binary-tree)
+  - [return all possible BST given N](#return-all-possible-bst-given-n)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Traversal
 
 ## pre order

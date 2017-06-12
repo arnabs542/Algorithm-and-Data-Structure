@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [String](#string)
+  - [Substring problem](#substring-problem)
+    - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
+    - [Minimum windows substring](#minimum-windows-substring)
+    - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
+      - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
+    - [KMP](#kmp)
+  - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
+  - [BFPRT](#bfprt)
+  - [Implement a basic calculator to evaluate a simple expression string.](#implement-a-basic-calculator-to-evaluate-a-simple-expression-string)
+  - [Half Majority](#half-majority)
+  - [Search a 2D matrix](#search-a-2d-matrix)
+  - [First missing positive](#first-missing-positive)
+- [Matrix Problem](#matrix-problem)
+  - [Sub region in Matrix](#sub-region-in-matrix)
+  - [Same row/col Problem](#same-rowcol-problem)
+  - [Largest square/rectangle inside](#largest-squarerectangle-inside)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # String
 
 ## Substring problem

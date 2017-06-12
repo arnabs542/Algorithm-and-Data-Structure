@@ -1,3 +1,30 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [General idea](#general-idea)
+- [Min Matrix Path Sum](#min-matrix-path-sum)
+- [Coin Exchange](#coin-exchange)
+- [Longest increase subsequence](#longest-increase-subsequence)
+- [Longest common subsequence](#longest-common-subsequence)
+- [Longest common substring](#longest-common-substring)
+- [Lowest cost to convert one string to another](#lowest-cost-to-convert-one-string-to-another)
+- [Interleaving String](#interleaving-string)
+- [Poker Game/Cards in line](#poker-gamecards-in-line)
+- [digit number to letter str(decode-ways problem)](#digit-number-to-letter-strdecode-ways-problem)
+- [sum of logic calculation to certain target, express ways](#sum-of-logic-calculation-to-certain-target-express-ways)
+- [Longest Palindromic Subsequence](#longest-palindromic-subsequence)
+  - [Exhaustive](#exhaustive)
+  - [Recursive to DP](#recursive-to-dp)
+  - [Manacher](#manacher)
+- [Add min char so that whole string is Palindromic](#add-min-char-so-that-whole-string-is-palindromic)
+- [Valid parentheses and longest valid parentheses](#valid-parentheses-and-longest-valid-parentheses)
+- [Minimum cuts needed for a palindrome partitioning](#minimum-cuts-needed-for-a-palindrome-partitioning)
+- [Regular expression](#regular-expression)
+- [Number of island](#number-of-island)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## General idea
 
 > * First step is to Use recursive way to try

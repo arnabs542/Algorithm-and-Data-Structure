@@ -1,9 +1,29 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Table of Contents](#table-of-contents)
+- [Array <a name="Array"></a>](#array-a-namearraya)
+  - [Sub Array <a name="Sub-Array"></a>](#sub-array-a-namesub-arraya)
+    - [Classical Sub-Array Problem <a name="Sub-array-Problem"></a>](#classical-sub-array-problem-a-namesub-array-problema)
+    - [Array split Problem <a name="Array-split"></a>](#array-split-problem-a-namearray-splita)
+  - [Typical three pointers problems <a name="three-pointers"></a>](#typical-three-pointers-problems-a-namethree-pointersa)
+  - [Histogram <a name="Histogram"></a>](#histogram-a-namehistograma)
+- [Heap <a name="Heap"></a>](#heap-a-nameheapa)
+  - [Top K problem <a name="Top-K"></a>](#top-k-problem-a-nametop-ka)
+  - [Other Stack Problem <a name="Other_Stack_Problem"></a>](#other-stack-problem-a-nameother_stack_problema)
+  - [Dequeue: Update Largest/Smallest value in sliding window <a name="Dequeue"></a>](#dequeue-update-largestsmallest-value-in-sliding-window-a-namedequeuea)
+  - [Max-tree <a name="Max-tree"></a>](#max-tree-a-namemax-treea)
+  - [Monotonic stack <a name="Monotonic stack"></a>](#monotonic-stack-a-namemonotonic-stacka)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Table of Contents
 * [Array](#Array)
   * [Sub Array](##Sub-Array)
     * [Classical Sub-Array Problem](###Sub-array-Problem)
     * [Subarray: Array split Problem](###Array-split)
-  * [3Sum problems: Typical three pointers problems](## three-pointers)
+  * [3Sum problems: Typical three pointers problems](##three-pointers)
   * [Histogram](##Histogram)
 * [Heap](#Heap)
   * [Top K problem](##Top-K)

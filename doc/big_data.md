@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Calculate whether a input is included large dataset](#calculate-whether-a-input-is-included-large-dataset)
+  - [Hash Function](#hash-function)
+  - [Bloom Filter](#bloom-filter)
+    - [Idea:](#idea)
+    - [Bloom filter design](#bloom-filter-design)
+    - [Math](#math)
+    - [Pros](#pros)
+- [Hash Parse: put input with same hash value into same small file](#hash-parse-put-input-with-same-hash-value-into-same-small-file)
+  - [Calculate highest frequency in large dataset, 2G memory, calculate highest frequency number in 2B int input (int is 32 bits)](#calculate-highest-frequency-in-large-dataset-2g-memory-calculate-highest-frequency-number-in-2b-int-input-int-is-32-bits)
+- [Bitmap](#bitmap)
+- [Duplicate and Top K problems](#duplicate-and-top-k-problems)
+  - [40B positive 32 bits int, find int that appears twice.](#40b-positive-32-bits-int-find-int-that-appears-twice)
+- [Consistent Hash](#consistent-hash)
+  - [Basic](#basic)
+    - [Design UUID](#design-uuid)
+- [Bit Operation](#bit-operation)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Calculate whether a input is included large dataset
 
 * 10B black list URL, each URL is 64B or less, design a system to detect whether a URL is in black list.
