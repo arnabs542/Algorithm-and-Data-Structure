@@ -32,4 +32,4 @@
 
 # Classdical Algorithm
 
-[array, string, matrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
+[String, matrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)

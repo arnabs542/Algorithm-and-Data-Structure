@@ -9,6 +9,7 @@
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [KMP](#kmp)
+  - [Subsequence Problem](#subsequence-problem)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
   - [BFPRT](#bfprt)
   - [Implement a basic calculator to evaluate a simple expression string.](#implement-a-basic-calculator-to-evaluate-a-simple-expression-string)
@@ -233,6 +234,34 @@ vector<int> getNextArray(vector<int> ms) {
     }
   }
   return next;
+}
+```
+
+## Subsequence Problem
+https://leetcode.com/problems/is-subsequence/#/description
+A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ace" is a subsequence of "abcde" while "aec" is not).
+
+Example 1:
+s = "abc", t = "ahbgdc"
+Return true.
+
+Example 2:
+s = "axc", t = "ahbgdc"
+Return false.
+```CPP
+bool isSubsequence(string s, string t) {
+    int index = 0;
+    if(s.size()==0)
+        return true;
+    //two pointer solution
+    for(int i=0;i<t.size();i++){
+        if(s[index]==t[i]){
+            index++;
+            if(index==s.size())
+                return true;
+        }
+    }
+    return false;
 }
 ```
 
