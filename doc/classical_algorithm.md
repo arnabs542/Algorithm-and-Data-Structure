@@ -11,17 +11,18 @@
     - [KMP](#kmp)
   - [Subsequence Problem](#subsequence-problem)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
-  - [BFPRT](#bfprt)
   - [Implement a basic calculator to evaluate a simple expression string.](#implement-a-basic-calculator-to-evaluate-a-simple-expression-string)
-  - [Half Majority](#half-majority)
-  - [Search a 2D matrix](#search-a-2d-matrix)
-  - [First missing positive](#first-missing-positive)
 - [Matrix Problem](#matrix-problem)
   - [Sub region or Path in Matrix](#sub-region-or-path-in-matrix)
   - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
 - [BackTracking](#backtracking)
   - [Common logic](#common-logic)
+- [Others](#others)
+  - [BFPRT](#bfprt)
+  - [Half Majority](#half-majority)
+  - [Search a 2D matrix](#search-a-2d-matrix)
+  - [First missing positive](#first-missing-positive)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -271,17 +272,6 @@ the easy way is to append the s1+s1, and check whether s2 is substring of s1.
 
 How do we achieve O(N). s1+s1 exhaustive list all substring
 
-## BFPRT
-In an unordered array, find the k'th smallest or largest value
-
-first method is recursive:
-1. select a pivot number
-2. partition the collection into <,=,> 3 collections compared with pivot
-3. check k's smallest location, then recursive
-
-The issue is pivot choice could be random and worst case is O(N^2)
-
-
 ## Implement a basic calculator to evaluate a simple expression string.
 https://leetcode.com/problems/basic-calculator/#/description
 Implement a basic calculator to evaluate a simple expression string.
@@ -322,99 +312,6 @@ int calculate(string s) {
   return ret;
 }
 
-```
-
-
-
-## Half Majority
-https://leetcode.com/problems/majority-element/#/description
-Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
-
-```CPP
-int majorityElement(vector<int>& nums) {
-  int cand = 0;
-  int times = 0;
-  int len = nums.size();
-  for (int i = 0; i < len; i++) {
-    if (times == 0) {
-      cand = nums[i];
-      times = 1;
-    } else if (nums[i] == cand) {
-      times++;
-    } else {
-      times--;
-    }
-  }
-  times = 0;
-  for (int i = 0; i < len; i++) {
-    if (nums[i] == cand) {
-      times++;
-    }
-  }
-  if (times > len / 2)
-      return cand;
-}
-
-```
-
-Extend. [K/N], then we just need to prepare K candidates
-
-
-## Search a 2D matrix
-https://leetcode.com/problems/search-a-2d-matrix-ii/#/description
-Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
-
-Integers in each row are sorted in ascending from left to right.
-Integers in each column are sorted in ascending from top to bottom.
-
-```CPP
-bool searchMatrix(vector<vector<int>>& matrix, int target) {
-    int row = matrix.size();
-    if(row==0) return false;
-    int col = matrix[0].size();
-
-    int x = 0;
-    int y = col-1;
-    while(x<row && y>=0){
-        if(matrix[x][y]>target){
-            y = y-1;
-        }else if(matrix[x][y]<target){
-            x = x + 1;
-        }else{
-            return true;
-        }
-
-    }
-    return false;
-}
-
-```
-
-## First missing positive
-ideally we should have vector as 1,2,3,...n. so nums[i-1]=i
-
-Just go through the array sequentially and for every index write the value at the index to the index specified by value, recursively placing any value at that location to its place and throwing away values > N. Then go again through the array looking for the spot where value doesn't match the index - that's the smallest value not in the array.
-
-```CPP
-int firstMissingPositive(vector<int>& nums) {
-  int len = nums.size();
-  int ret = 0;
-  for(int i=0;i<len;i++){
-      int target = nums[i];
-      //recursively placing any value to location to its place, until find or no more place
-      while(target>0 && target<=len && target!=nums[target-1]){
-          swap(target,nums[target-1]);
-      }
-  }
-
-  for(int i=0;i<len;i++){
-      if(nums[i]!=i+1){
-          ret = i+1;
-          return ret;
-      }
-  }
-  return len+1;
-}
 ```
 
 # Matrix Problem
@@ -706,4 +603,107 @@ void help(int &ret, int start, void * param) {
 
 
 
+```
+
+# Others
+
+## BFPRT
+In an unordered array, find the k'th smallest or largest value
+
+first method is recursive:
+1. select a pivot number
+2. partition the collection into <,=,> 3 collections compared with pivot
+3. check k's smallest location, then recursive
+
+The issue is pivot choice could be random and worst case is O(N^2)
+
+## Half Majority
+https://leetcode.com/problems/majority-element/#/description
+Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+
+```CPP
+int majorityElement(vector<int>& nums) {
+  int cand = 0;
+  int times = 0;
+  int len = nums.size();
+  for (int i = 0; i < len; i++) {
+    if (times == 0) {
+      cand = nums[i];
+      times = 1;
+    } else if (nums[i] == cand) {
+      times++;
+    } else {
+      times--;
+    }
+  }
+  times = 0;
+  for (int i = 0; i < len; i++) {
+    if (nums[i] == cand) {
+      times++;
+    }
+  }
+  if (times > len / 2)
+      return cand;
+}
+
+```
+
+Extend. [K/N], then we just need to prepare K candidates
+
+
+## Search a 2D matrix
+https://leetcode.com/problems/search-a-2d-matrix-ii/#/description
+Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+
+Integers in each row are sorted in ascending from left to right.
+Integers in each column are sorted in ascending from top to bottom.
+
+```CPP
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int row = matrix.size();
+    if(row==0) return false;
+    int col = matrix[0].size();
+
+    int x = 0;
+    int y = col-1;
+    while(x<row && y>=0){
+        if(matrix[x][y]>target){
+            y = y-1;
+        }else if(matrix[x][y]<target){
+            x = x + 1;
+        }else{
+            return true;
+        }
+
+    }
+    return false;
+}
+
+```
+
+## First missing positive
+ideally we should have vector as 1,2,3,...n. so nums[i-1]=i
+
+Just go through the array sequentially and for every index write the value at the index to the index specified by value, recursively placing any value at that location to its place and throwing away values > N. Then go again through the array looking for the spot where value doesn't match the index - that's the smallest value not in the array.
+
+```CPP
+int firstMissingPositive(vector<int>& nums) {
+  int len = nums.size();
+  int ret = 0;
+  for(int i=0;i<len;i++){
+      int target = nums[i];
+      //recursively placing any value to location to its place, until find or no more place
+      while(target>0 && target<=len && target!=nums[target-1]){
+          swap(target,nums[target-1]);
+      }
+  }
+
+  for(int i=0;i<len;i++){
+      if(nums[i]!=i+1){
+          ret = i+1;
+          return ret;
+      }
+  }
+  return len+1;
+}
 ```
