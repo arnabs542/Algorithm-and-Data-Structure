@@ -16,9 +16,11 @@
   - [Search a 2D matrix](#search-a-2d-matrix)
   - [First missing positive](#first-missing-positive)
 - [Matrix Problem](#matrix-problem)
-  - [Sub region in Matrix](#sub-region-in-matrix)
-  - [Same row/col Problem](#same-rowcol-problem)
+  - [Sub region or Path in Matrix](#sub-region-or-path-in-matrix)
+  - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
+- [BackTracking](#backtracking)
+  - [Common logic](#common-logic)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -388,16 +390,18 @@ int firstMissingPositive(vector<int>& nums) {
 
 # Matrix Problem
 
-## Sub region in Matrix
+## Sub region or Path in Matrix
 
 > Use DFS or BFS to search
 
-## Same row/col Problem
+* For subregion 
+
+## Pattern Along row/col Problem
 search space goes from certain node along its same row and col index
 
 > Common techniques:  Preprocess: Assist with two vector, row and col, and get some feature/sum of characters of same row/col
 
-* Lonly Pixel
+* Lonely Pixel
 
 https://leetcode.com/problems/lonely-pixel-i/
 Given a picture consisting of black and white pixels, find the number of black lonely pixels.
@@ -442,6 +446,76 @@ int findLonelyPixel(vector<vector<char>>& picture) {
     }
     return ret;
 }
+
+```
+
+* Bomb Enemy
+
+//https://leetcode.com/problems/bomb-enemy/
+
+Given a 2D grid, each cell is either a wall 'W', an enemy 'E' or empty '0' (the number zero), return the maximum enemies you can kill using one bomb.
+The bomb kills all the enemies in the same row and column from the planted point until it hits the wall since the wall is too strong to be destroyed.
+Note that you can only put the bomb at an empty cell.
+
+Example:
+For the given grid
+
+0 E 0 0
+E 0 W E
+0 E 0 0
+return 3. (Placing a bomb at (1,1) kills 3 enemies)
+```CPP
+class Solution {
+    int row = 0;
+    int col = 0;
+public:
+    int maxKilledEnemies(vector<vector<char>>& grid) {
+        //pre-process with row and col
+        row = grid.size();
+		if (!row) return 0;
+		col = grid[0].size();
+		int ret = 0;
+		int row_enemy; //enemy killed for fixed row along col
+		vector<int> col_enemy(col, 0); //enemy killed for fixed col along row
+
+        for (int i = 0; i<row; i++) {
+			for (int j = 0; j<col; j++) {
+			    if(j==0 || grid[i][j-1]=='W'){
+			        row_enemy = row_help(grid,i,j);
+			    }
+			    if(i==0 || grid[i-1][j]=='W'){
+			        col_enemy[j] = col_help(grid,i,j);
+			    }
+			    if(grid[i][j]=='0')
+			        ret = max(ret,row_enemy+col_enemy[j]);
+			}
+        }
+        return ret;
+    }
+
+    int row_help(vector<vector<char>>& grid, int i, int j){
+        int num = 0;
+        for(int k=j;k<col;k++){
+
+            if(grid[i][k]=='E')
+                num++;
+            else if(grid[i][k]=='W')
+                break;
+        }
+        return num;
+    }
+
+    int col_help(vector<vector<char>>& grid, int i, int j){
+        int num = 0;
+        for(int k=i;k<row;k++){
+            if(grid[k][j]=='E')
+                num++;
+            else if(grid[k][j]=='W')
+                break;
+        }
+        return num;
+    }
+};
 
 ```
 
@@ -566,5 +640,38 @@ int maximalSquare(vector<vector<char>>& matrix) {
 
     return maxlen*maxlen;
 }
+
+```
+
+# BackTracking
+
+## Common logic
+
+> DFS+Recursive
+
+1.	DFS/recursive logical key is call back and each level just do one thing and every level do the same thing repeat
+2.	Interface definition. For most problem, use reference in C++(&) so some data structure needs to be in every level and modified. Otherwise each level should be in tact
+3.	Push_back() and pop_back() is key thing to go over all items, they should be balance (push should be paired with pop), when thinking the problem, every level(in DFS or recursive) should consider its own level, do not go into recursive logic next level. Same for set item true/false (visited in two dimensional array. etc)
+4.	If not push/pop. Use local variable
+5.	Put core recursive logic tact, judgement/return/error case should be outside the recursive loop.
+
+```CPP
+//Core Logic Code
+//Core Recursive logic can be seens as
+void help(int &ret, int start, void * param) {
+	if (certain condition) {
+		// process ret logic
+		return;
+	}
+
+	for (i = start; i < param;i++) {
+		one_res.push_back();  //used mostly in vector
+    ret = f(); //some ret logic
+		help(ret, i+1/i, param);
+		one_res.pop_back(); //pop what pushed, for string case since we use local variable, no need to pop, noticing
+	}
+}
+
+
 
 ```

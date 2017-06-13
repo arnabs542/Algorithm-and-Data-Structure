@@ -2,27 +2,26 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Table of Contents](#table-of-contents)
-- [Array <a name="Array"></a>](#array-a-namearraya)
-  - [Sub Array <a name="Sub-Array"></a>](#sub-array-a-namesub-arraya)
-    - [Classical Sub-Array Problem <a name="Sub-array-Problem"></a>](#classical-sub-array-problem-a-namesub-array-problema)
-    - [Array split Problem <a name="Array-split"></a>](#array-split-problem-a-namearray-splita)
-  - [Typical three pointers problems <a name="three-pointers"></a>](#typical-three-pointers-problems-a-namethree-pointersa)
-  - [Histogram <a name="Histogram"></a>](#histogram-a-namehistograma)
-- [Heap <a name="Heap"></a>](#heap-a-nameheapa)
-  - [Top K problem <a name="Top-K"></a>](#top-k-problem-a-nametop-ka)
-  - [Other Stack Problem <a name="Other_Stack_Problem"></a>](#other-stack-problem-a-nameother_stack_problema)
-  - [Dequeue: Update Largest/Smallest value in sliding window <a name="Dequeue"></a>](#dequeue-update-largestsmallest-value-in-sliding-window-a-namedequeuea)
-  - [Max-tree <a name="Max-tree"></a>](#max-tree-a-namemax-treea)
-  - [Monotonic stack <a name="Monotonic stack"></a>](#monotonic-stack-a-namemonotonic-stacka)
+- [Array](#array)
+  - [Sub Array](#sub-array)
+    - [Classical Sub-Array Problem](#classical-sub-array-problem)
+    - [Array split Problem](#array-split-problem)
+  - [Typical three pointers problems](#typical-three-pointers-problems)
+  - [Histogram](#histogram)
+- [Heap](#heap)
+  - [Top K problem](#top-k-problem)
+  - [Other Stack Problem](#other-stack-problem)
+  - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
+  - [Max-tree](#max-tree)
+  - [Monotonic stack](#monotonic-stack)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
 
-# Array <a name="array-a-namearraya"></a>
+# Array
 
-## Sub Array <a name="Sub-Array"></a>
+## Sub Array
 > Common techniques
 * solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
 * two pointer to get these longest/smallest problem
@@ -40,7 +39,7 @@
   * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
 
 
-### Classical Sub-Array Problem <a name="Sub-array-Problem"></a>
+### Classical Sub-Array Problem
 
 * Two sum
 https://leetcode.com/problems/two-sum/#/description
@@ -435,9 +434,59 @@ int localMin(vector<int> nums){
 
 ```
 
-### Array split Problem <a name="Array-split"></a>
+### Array split Problem
 
-## Typical three pointers problems <a name="three-pointers"></a>
+Same idea as before, need to Preprocess the array, most split will need some sum preprocess. and then try different split
+
+```CPP
+//https://leetcode.com/problems/split-array-with-equal-sum/
+/*
+Given an array with n integers, you need to find if there are triplets (i, j, k) which satisfies following conditions:
+0 < i, i + 1 < j, j + 1 < k < n - 1
+Sum of subarrays (0, i - 1), (i + 1, j - 1), (j + 1, k - 1) and (k + 1, n - 1) should be equal.
+where we define that subarray (L, R) represents a slice of the original array starting from the element indexed L to the element indexed R.
+Example:
+Input: [1,2,1,2,1,2,1]
+Output: True
+Explanation:
+i = 1, j = 3, k = 5.
+sum(0, i - 1) = sum(0, 0) = 1
+sum(i + 1, j - 1) = sum(2, 2) = 1
+sum(j + 1, k - 1) = sum(4, 4) = 1
+sum(k + 1, n - 1) = sum(6, 6) = 1
+*/
+
+bool splitArray(vector<int>& nums) {
+        //get a middle cut, and then calculate left and right cur respectively see find whether there is equal
+        int len = nums.size();
+        if(len<7)
+            return false;
+
+        vector<int> sum(len,0);
+        sum[0] = nums[0];
+        for(int i=1;i<len;i++){
+            sum[i]=sum[i-1]+nums[i];
+        }
+        //i is left cut, j is middle cut, k is right cut
+        for(int j=3;j<len-3;j++){
+            unordered_set<int> s; //record sum in for subarray, for each different middle cut we have new set for split
+            for(int i=0;i<j-1;i++){
+                if(sum[i-1]==sum[j-1]-sum[i])
+                    s.insert(sum[i-1]); //one subarray in left cut candidate
+            }
+
+            for(int k=j+2;k<len-1;k++){
+                if(sum[len-1]-sum[k]==sum[k-1]-sum[j] && s.find(sum[len-1]-sum[k])!=s.end()) //find right cut and equals to left
+                    return true;
+            }
+        }
+        return false;
+
+    }
+
+```
+
+## Typical three pointers problems
 > Common techniques
 * Sort the array
 * Fix the first pointer, and define left and right, search from beginning and end
@@ -512,12 +561,10 @@ int triangleNumber(vector<int>& nums) {
 }
 ```
 
-
-## Histogram <a name="Histogram"></a>
-
+## Histogram
 Histogram problem includes like water container, max rectangle. etc.
 
-# Heap <a name="Heap"></a>
+# Heap
 
 Heap is implemented as tree structure in logic view and array in physical view:
 
@@ -532,7 +579,7 @@ Time complexity for construct the heap is:
 ```shell
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
-## Top K problem <a name="Top-K"></a>
+## Top K problem
 
 Use heap will be best. See example:
 
@@ -662,9 +709,9 @@ https://leetcode.com/problems/find-median-from-data-stream/
  }
  ```
 
-# Stack/Queue <a name="Stack_Queue"></a>
+# Stack/Queue
 
-## Min Stack <a name="Min_Stack"></a>
+## Min Stack
 
 maintain a min stack that query  minimum value in stack is O(1). idea is to maintain two stacks, regular one and the other one whose peek/top records the min value
 push(x) -- Push element x onto stack.
@@ -700,7 +747,7 @@ int getMin() {
 }
 ```
 
-## Other Stack Problem <a name="Other_Stack_Problem"></a>
+## Other Stack Problem
 * Convert a stack to Queue:
 
 The idea is to Use two stacks, one for push, one for pop to mimic the queue tail and head
@@ -756,7 +803,7 @@ int getAndRemoveLastElement(stack<int> &s){
 
 ```
 
-## Dequeue: Update Largest/Smallest value in sliding window <a name="Dequeue"></a>
+## Dequeue: Update Largest/Smallest value in sliding window
 
 1. use dequeue(double linked list), new item will be inserted into tail.
 2. store the index instead of the value in dequeue.
@@ -795,6 +842,7 @@ Min{arr[i..j]} is min value in subarray i->j
 4. like sliding window, need to move left i to i+1, since i->j matches, so i+1->j matches.
 and then can move forward j to j+1 and try  again.
 
+```CPP
 int AllLessNumSubArray(vector<int> array, int num){
   int i = 0; //left index
   int j = 0; //right index
@@ -832,10 +880,12 @@ int AllLessNumSubArray(vector<int> array, int num){
 
   return ret;
 }
+```
 
 
 
-## Max-tree <a name="Max-tree"></a>
+
+## Max-tree
 
 We can use max heap and heap insert.
 ```CPP
@@ -882,7 +932,7 @@ void heapSort(vector<int> &array, int index){
 ```
 
 
-## Monotonic stack <a name="Monotonic stack"></a>
+## Monotonic stack
 
 > for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
 
