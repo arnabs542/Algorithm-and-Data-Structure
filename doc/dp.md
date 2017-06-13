@@ -10,6 +10,10 @@
 - [Longest common substring](#longest-common-substring)
 - [Lowest cost to convert one string to another](#lowest-cost-to-convert-one-string-to-another)
 - [Interleaving String](#interleaving-string)
+- [Back Pack(0/1 Knapsack) Problem](#back-pack01-knapsack-problem)
+  - [Problem Statement](#problem-statement)
+  - [backpack Problem](#backpack-problem)
+  - [Array Split problems](#array-split-problems)
 - [Poker Game/Cards in line](#poker-gamecards-in-line)
 - [digit number to letter str(decode-ways problem)](#digit-number-to-letter-strdecode-ways-problem)
 - [sum of logic calculation to certain target, express ways](#sum-of-logic-calculation-to-certain-target-express-ways)
@@ -274,7 +278,123 @@ bool isInterleave(string s1, string s2, string s3) {
 }
 ```
 
+## Back Pack(0/1 Knapsack) Problem
 
+### Problem Statement
+* Given n items with size A​i,an integer m denotes the size of a backpack. How full you can fill this backpack?
+
+* Extension Problem:
+  * Split a array with condition
+  * Fill backpack with different items
+
+### backpack Problem
+Example:
+If we have 4 items with size [2, 3, 5, 7], the backpack size is 11, we can select [2, 3, 5], so that the max size we can fill this backpack is 10. If the backpack size is 12. we can select [2, 3, 7] so that we can fulfill the backpack.
+You function should return the max size we can fill in the given backpack.
+
+```CPP
+/**
+* @param m: An integer m denotes the size of a backpack
+* @param A: Given n items with size A[i]
+* @return: The maximum size
+*/
+int backPack(int m, vector<int> A) {
+	//bp[i+1][j] means choosing from first i items and their max value <=j
+
+	int len = A.size();
+	vector<vector<int>> bp(len + 1, vector<int>(m + 1, 0));
+
+	for (int i = 0; i<len; i++) {
+		for (int j = 0; j <= m; j++) {
+			if (A[i]>j) {
+				bp[i + 1][j] = bp[i][j];
+			}
+			else {
+				bp[i + 1][j] = max(bp[i][j - A[i]] + A[i],bp[i][j]);
+			}
+		}
+	}
+
+	return bp[len][m];
+}
+```
+
+Back pack problem can be extended for both size and value cases
+http://www.lintcode.com/en/problem/backpack-ii/
+
+```CPP
+#include <algorithm>
+
+	/*
+	param m: An integer m denotes the size of a backpack
+	param A & V: Given n items with size A[i] and value V[i]
+	return: The maximum value
+	*/
+	int backPackII(int m, vector<int> A, vector<int> V) {
+		if (A.empty() || V.empty() || m < 1) {
+			return 0;
+		}
+		int N = A.size();
+		vector<vector<int>> k(N + 1, vector<int>(m + 1, 0));
+
+		// bp algorithm
+		// k(w,i) is first i items with total value of w
+		// K(w,i)=max{K(w,i-1),K(w-v[i-1],w−w_i)+v_i}
+
+		for (int i = 1; i<N + 1; i++) {//# of items
+			for (int j = 0; j <= m; j++) {//size
+				if (A[i - 1]>j) {
+					k[i][j] = k[i - 1][j];
+				}
+				else {
+					k[i][j] = max(k[i - 1][j], k[i - 1][j - A[i - 1]] + V[i - 1]);
+				}
+			}
+		}
+
+		return k[N][m];
+	}
+```
+
+### Array Split problems
+https://leetcode.com/problems/partition-equal-subset-sum/#/description
+Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+
+Example 1:
+Input: [1, 5, 11, 5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+
+Example 2:
+Input: [1, 2, 3, 5]
+Output: false
+Explanation: The array cannot be partitioned into equal sum subsets.
+
+```CPP
+bool canPartition(vector<int>& nums) {
+    int len = nums.size();
+    int sum =0;
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+    }
+    if(sum%2!=0)
+        return false;
+    int target = sum/2;
+    //dp[i][j] means whether the specific sum j can be gotten from the first i numbers
+    vector<vector<bool>> dp(len+1,vector<bool>(target+1,false));
+    dp[0][0] = true;
+
+    for(int i=1;i<=len;i++){
+        for(int j=1;j<=target;j++){
+            dp[i][j] = dp[i-1][j]; //first we can do somthing that do not choose i item
+            if(nums[i-1]<=j)
+                dp[i][j] = (dp[i][j] || dp[i-1][j-nums[i-1]]); //pick i item
+        }
+    }
+    return dp[len][target];
+}
+
+```
 
 
 ## Poker Game/Cards in line

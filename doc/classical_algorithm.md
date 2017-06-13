@@ -394,7 +394,10 @@ int firstMissingPositive(vector<int>& nums) {
 
 > Use DFS or BFS to search
 
-* For subregion 
+* For subregion problem, usually started with target pixel and traversal region, need some matrix to record visited flag or directly modify the original matrix
+
+* For Path Problem, start with path starting or ending point.  
+
 
 ## Pattern Along row/col Problem
 search space goes from certain node along its same row and col index
