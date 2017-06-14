@@ -9,7 +9,11 @@
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [KMP](#kmp)
+    - [KMP application](#kmp-application)
   - [Subsequence Problem](#subsequence-problem)
+  - [String Stream representation Problem](#string-stream-representation-problem)
+    - [Reverse count and say](#reverse-count-and-say)
+    - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
   - [Implement a basic calculator to evaluate a simple expression string.](#implement-a-basic-calculator-to-evaluate-a-simple-expression-string)
 - [Matrix Problem](#matrix-problem)
@@ -238,6 +242,52 @@ vector<int> getNextArray(vector<int> ms) {
 }
 ```
 
+### KMP application
+https://leetcode.com/problems/shortest-palindrome/#/description
+
+Given a string S, you are allowed to convert it to a palindrome by adding characters in front of it. Find and return the shortest palindrome you can find by performing this transformation.
+
+For example:
+Given "aacecaaa", return "aaacecaaa".
+Given "abcd", return "dcbabcd".
+
+```CPP
+//simple Solution
+string shortestPalindrome(string s) {
+    string s2=s;
+    reverse(s2.begin(),s2.end());
+    int n=s.size(),l;
+    for(l=n;l>=0;l--)
+    {
+        if(s.substr(0,l)==s2.substr(n-l))
+            break;
+    }
+    return s2.substr(0,n-l)+s;
+}
+
+/*
+We can construct the following string and run KMP algorithm on it:
+(s) + (some symbol not present in s) + (reversed string)
+
+After running KMP on that string as result we get a vector p with values of a prefix function for each character (for definition of a prefix function see KMP algorithm description). We are only interested in the last value because it shows us the largest suffix of the reversed string that matches the prefix of the original string. So basically all we left to do is to add the first k characters of the reversed string to the original string, where k is a difference between original string size and the prefix function for the last character of a constructed string.
+*/
+string shortestPalindrome(string s) {
+    string rev_s = s;
+    reverse(rev_s.begin(), rev_s.end());
+    string l = s + "#" + rev_s;
+
+    vector<int> p(l.size(), 0);
+    for (int i = 1; i < l.size(); i++) {
+        int j = p[i - 1];
+        while (j > 0 && l[i] != l[j])
+            j = p[j - 1];
+        p[i] = (j += l[i] == l[j]);
+    }
+
+    return rev_s.substr(0, s.size() - p[l.size() - 1]) + s;
+}
+```
+
 ## Subsequence Problem
 https://leetcode.com/problems/is-subsequence/#/description
 A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ace" is a subsequence of "abcde" while "aec" is not).
@@ -264,6 +314,98 @@ bool isSubsequence(string s, string t) {
     }
     return false;
 }
+```
+
+## String Stream representation Problem
+
+Typically this problem will have incoming string stream, with each char represent certain meaning(could be char, number, or encoding way), and need to process this stream to get some results
+
+### Reverse count and say
+
+https://leetcode.com/problems/count-and-say/#/description
+we need to reverse count and say to original string, for example, if encoded count and say is "2345", original could be "335555" and "<234:5>"
+
+```CPP
+vector<string> reverse_count_say(string in){
+  vector<string> ret;
+  string one = "";
+  help(in,0,0,one,ret);
+  return ret;
+}
+
+void help(string &in, int i, int cnt, string &one, vector<string> ret){
+  if(cnt==0 && i==in.size()-1){
+    //only one char left without cnt, invalid
+    return;
+  }
+  if(i==in.size()){
+    //successfully reverse
+    ret.push_back(one);
+  }
+  //decode current one as number, can not decode
+  help(in,i+1,cnt*10+in[i]-'0',one,ret);
+  if(i>0){// can not decode first as char
+    //decode current one as char, so we add to current solution
+    char cur = in[i];
+    for(int i=0;i<cnt,i++){
+      one+=cur;
+    }
+    help(in,i+1,0,one,ret); //cnt reset to 0
+  }
+}
+
+```
+
+### Expression(string as calculator expression)
+
+* Expression operators
+
+https://leetcode.com/problems/expression-add-operators/#/description
+Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators (not unary) +, -, or * between the digits so they evaluate to the target value.
+
+Examples:
+"123", 6 -> ["1+2+3", "1*2*3"]
+"232", 8 -> ["2*3+2", "2+3*2"]
+"105", 5 -> ["1*0+5","10-5"]
+"00", 0 -> ["0+0", "0-0", "0*0"]
+"3456237490", 9191 -> []
+
+```CPP
+vector<string> addOperators(string num, int target) {
+    vector<string> ret;
+    string one = "";
+    if(num.size()==0)
+        return ret;
+
+    help(num,0,one,0,0,ret,target);
+    return ret;
+
+}
+
+void help(string num, int i, string one, long val, long save, vector<string> &ret, int target){
+
+    if(i==num.size()){
+        if(val==target)
+            ret.push_back(one);
+        return;
+    }
+    for(int j=i;j<num.size();j++){
+        string t = num.substr(i, j-i+1);
+        long cur = stol(t);
+        if (to_string(cur).size() != t.size()) continue;  //remove some 0
+        if(i==0){//first one, no operator
+            help(num,j+1,one+to_string(cur),cur,cur,ret,target);
+        }else{
+            //add '+' before current num
+            help(num,j+1,one+"+"+to_string(cur),val+cur,cur,ret,target);
+            //add '-' before current num
+            help(num,j+1,one+"-"+to_string(cur),val-cur,-cur,ret,target);
+            //add '*' before current num, for mutiple, like 2+3*5, need to save 3 otherwise it will be 2+3=5*5
+            help(num,j+1,one+"*"+to_string(cur), val-save + save*cur,save*cur ,ret,target);
+        }
+    }
+}
+
 ```
 
 ## Check if one string is Rotation of another string

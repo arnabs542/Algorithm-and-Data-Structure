@@ -6,6 +6,7 @@
 - [Min Matrix Path Sum](#min-matrix-path-sum)
 - [Coin Exchange](#coin-exchange)
 - [Longest increase subsequence](#longest-increase-subsequence)
+- [Longest Palindromic Substring](#longest-palindromic-substring)
 - [Longest common subsequence](#longest-common-subsequence)
 - [Longest common substring](#longest-common-substring)
 - [Lowest cost to convert one string to another](#lowest-cost-to-convert-one-string-to-another)
@@ -115,7 +116,38 @@ int minPathsum(vector<vector<int>> m){
 
 ## Longest increase subsequence
 
+## Longest Palindromic Substring
 
+https://leetcode.com/problems/longest-palindromic-substring/#/description
+Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+
+Example:
+Input: "babad"
+Output: "bab"
+Note: "aba" is also a valid answer.
+
+```CPP
+string longestPalindrome(string s) {
+    //dp[i][j] is whether there is palindrome string from i->j inclusive
+    //dp[i][j] = dp[i+1][j-1] if s[i]==s[j] and i+1>=j-1
+    int len = s.size();
+    vector<vector<bool>> dp(len,vector<bool>(len,false));
+    string ret="";
+    for(int i=0;i<len;i++){
+        dp[i][i] = true;
+        ret = s[i];
+    }
+    for(int i=len-1;i>=0;i--){
+        for(int j=i+1;j<len;j++){
+            if((s[i]==s[j]) && ((i+1>=j-1) || dp[i+1][j-1]))
+                dp[i][j] = true;
+            if (dp[i][j] && (ret == "" || j-i+1 > ret.length()))
+                ret = s.substr(i, j-i+1);
+        }
+    }
+    return ret;
+}
+```
 
 
 ## Longest common subsequence
