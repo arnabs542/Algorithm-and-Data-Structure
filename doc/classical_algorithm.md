@@ -320,7 +320,9 @@ bool isSubsequence(string s, string t) {
 
 Typically this problem will have incoming string stream, with each char represent certain meaning(could be char, number, or encoding way), and need to process this stream to get some results
 
-### Reverse count and say
+### Combination
+
+* Reverse count and say
 
 https://leetcode.com/problems/count-and-say/#/description
 we need to reverse count and say to original string, for example, if encoded count and say is "2345", original could be "335555" and "<234:5>"
@@ -357,6 +359,97 @@ void help(string &in, int i, int cnt, string &one, vector<string> ret){
 ```
 
 ### Expression(string as calculator expression)
+
+* String as calculator
+
+https://leetcode.com/problems/basic-calculator-ii/#/description
+Implement a basic calculator to evaluate a simple expression string.
+The expression string contains only non-negative integers, '+, -, * ,/' operators and empty spaces . The integer division should truncate toward zero.
+You may assume that the given expression is always valid.
+
+Some examples:
+"3+2*2" = 7
+" 3/2 " = 1
+" 3+5 / 2 " = 5
+
+```CPP
+int calculate(string s) {
+    //key is to have a value in stack and operator saved
+    int len = s.size();
+    stack<int> saved;
+    int cur = 0;
+    char sign = '+';
+    for(int i=0;i<len;i++){
+        if(isdigit(s[i])){
+            cur = cur*10+s[i]-'0';
+        }
+        if(!isdigit(s[i]) && !isspace(s[i]) || i == s.size()-1){
+            if(sign=='+') saved.push(cur);
+            if(sign=='-') saved.push(-cur);
+            if(sign=='* '){
+                int tmp = saved.top();
+                saved.pop();
+                saved.push(tmp*cur);
+            }
+            if(sign=='/'){
+                int tmp = saved.top();
+                saved.pop();
+                saved.push(tmp/cur);
+            }
+            cur = 0;
+            sign = s[i];
+        }
+    }
+
+    int ret = 0;
+    while(!saved.empty()){
+        ret+=saved.top();
+        saved.pop();
+    }
+    return ret;
+}
+```
+
+The problem can be extended to case string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces .
+"1 + 1" = 2
+" 2-1 + 2 " = 3
+"(1+(4+5+2)-3)+(6+8)" = 23
+
+```CPP
+int calculate(string s) {
+  int len = s.size();
+  int sign = 1;
+  int ret = 0;
+  int num = 0;
+  stack<int> nums,ops;
+  for(int i=0;i<len;i++){
+      if(isdigit(s[i])){
+        num = num*10+(s[i]-'0');
+      }else{
+        //not number anymore, so we would need to get the current calculation num and accumulated ret
+        ret+=sign*num;
+        num = 0;
+        if(s[i]=='+') sign = 1;
+        if(s[i]=='-') sign = -1;
+        if(s[i]=='('){
+            nums.push(ret);  //cache the results before bracket
+            ops.push(sign);  //cache the sign before bracket
+            ret = 0;
+            sign = 1;
+        }
+        if (s[i] == ')' && ops.size()) {
+            ret = ops.top() * ret + nums.top(); //finish the calculation of current bracket, so get cached
+            ops.pop();
+            nums.pop();
+        }
+    }
+}
+ret += sign * num;
+return ret;
+}
+
+```
+
 
 * Expression operators
 
