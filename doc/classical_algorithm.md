@@ -12,7 +12,7 @@
     - [KMP application](#kmp-application)
   - [Subsequence Problem](#subsequence-problem)
   - [String Stream representation Problem](#string-stream-representation-problem)
-    - [Reverse count and say](#reverse-count-and-say)
+    - [Combination](#combination)
     - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
   - [Implement a basic calculator to evaluate a simple expression string.](#implement-a-basic-calculator-to-evaluate-a-simple-expression-string)
