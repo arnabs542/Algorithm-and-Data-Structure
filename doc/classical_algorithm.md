@@ -172,7 +172,7 @@ string minWindow(string s, string t) {
                     ret = s.substr(l,r-l);
                 }
                 if(m.find(s[l])!=m.end()){
-                    if(m[s[l]]==0){ //move out s[l] substring will not include whole t
+                    if(m[s[l]]==0){ //move out s[l], substring will not include whole t
                         cnt++;
                     }
                     m[s[l]]++;
