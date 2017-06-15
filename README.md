@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Array,Queue,Stack,Priority Queue(Heap)](#arrayqueuestackpriority-queueheap)
+- [String](#string)
 - [Link List](#link-list)
 - [Tree](#tree)
 - [DP](#dp)
@@ -14,6 +15,10 @@
 # Array,Queue,Stack,Priority Queue(Heap)
 
 [Array,Queue,Stack,Priority Queue Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/array_stack_heap.md)
+
+# String
+[String](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/string.md)
+
 
 # Link List
 
@@ -32,4 +37,4 @@
 
 # Classdical Algorithm
 
-[String, matrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
+[Matrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
