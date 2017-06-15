@@ -4,12 +4,13 @@
 
 - [String](#string)
   - [Substring problem](#substring-problem)
-    - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
-    - [Minimum windows substring](#minimum-windows-substring)
+    - [Longest/shortest substring with conditions](#longestshortest-substring-with-conditions)
+      - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
+      - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
+      - [Minimum windows substring](#minimum-windows-substring)
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [KMP](#kmp)
-    - [KMP application](#kmp-application)
   - [Subsequence Problem](#subsequence-problem)
   - [String Stream representation Problem](#string-stream-representation-problem)
     - [Combination](#combination)
@@ -34,7 +35,15 @@
 
 ## Substring problem
 
-### Longest Substring Without Repeating Characters
+### Longest/shortest substring with conditions
+
+> Common solutions
+
+* use two pointers to mark left and right,
+* use a map<char,int> to record how many times a char occur.
+* may need to use some reference cnt to check condition satisfy
+
+#### Longest Substring Without Repeating Characters
 https://leetcode.com/problems/longest-substring-without-repeating-characters/#/description
 
 > substring problems: (if ending at certain position. sub problem:)
@@ -44,26 +53,25 @@ In this problem, it is longest substring without duplicate ending at i
 ```CPP
 //method 1: use a map to record position
 int lengthOfLongestSubstring(string s) {
-    int start = 0;
-    int end = 0;
-    int counter = 0; //how many char has more than once
-    vector<int> map(128,0);
     int ret = 0;
-    while(end<s.size()){
-        //for unique char
-        if(map[s[end]]==1){
-            counter++;
+    int len = s.size();
+    map<char,int> m;//key is char, val is counts  
+    int l=0;
+    int r=0;
+    int cnt = 0;
+    while(r<s.size()){
+      m[s[r]]++;
+        if(m[s[r]]>1){//repeat happen
+            cnt++;
         }
-        map[s[end]]++;
-        end++;
-        //not unique so counter>0
-        while(counter>0){
-            if(--map[s[start]]==1){
-                counter--;
+        r++;
+        while(cnt>0){
+            if(--m[s[l]]==1){ //back to unique
+                cnt--;
             }
-            start++;
+            l++;
         }
-        ret = max(ret,end-start);
+        ret = max(ret,r-l);
     }
     return ret;
 }
@@ -97,7 +105,39 @@ int lengthOfLongestSubstring(string s) {
 
 ```
 
-### Minimum windows substring
+#### Longest Substring with At Most K Distinct Characters
+
+https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
+
+Given a string, find the length of the longest substring T that contains at most k distinct characters.
+For example, Given s = “eceba” and k = 2,
+T is "ece" which its length is 3.
+
+```CPP
+int lengthOfLongestSubstringKDistinct(string s, int k) {
+    int ret = 0;
+    int l=0;
+    int r=0;
+    map<char,int> m;
+
+    while(r<s.size()){
+        m[s[r]]++;
+        r++;
+        while(m.size()>k){//more than k distint char
+            m[s[l]]--;  //move left to reduce char
+            if(m[s[l]]==0){  //check remove left char could solve it
+                m.erase(s[l]);
+            }
+            l++;
+        }
+        ret = max(ret,r-l);
+    }
+    return ret;
+}
+
+```
+
+#### Minimum windows substring
 https://leetcode.com/problems/minimum-window-substring/#/description
 Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
 
@@ -107,41 +147,41 @@ T = "ABC"
 Minimum window is "BANC".
 
 ```CPP
-class Solution {
-public:
-  string minWindow(string s, string t) {
-      string ret="";
-      int start = 0;
-      int end = 0;
-      int d = INT_MAX;  //length of window size
-      int head = 0; //start of sub string
-      vector<int> m(128,0);
+string minWindow(string s, string t) {
+        map<char,int> m; //char and its occurence
+        for(int i=0;i<t.size();i++){
+            m[t[i]]++;
+        }
+        int l=0;
+        int r = 0;
+        string ret = "";
+        int len = INT_MAX;
+        int cnt = t.size();
+        while(r<s.size()){
+            if(m.find(s[r])!=m.end()){
+                if(m[s[r]]>0){
+                    cnt--;
+                }
+                m[s[r]]--;  //this could be negative, means s has more s[r] than t has s[r]
+            }
+            r++;
 
-      for(int i=0;i<t.size();i++){
-          m[t[i]]++;
-      }
-      int counter = t.size();    
-      while(end<s.size()){
-          if(m[s[end]]-->0)  //find it is in t
-              counter--;
-          end++;
-          //found all in t,
-          while(counter==0){
-             if(end-start<d){
-                 d = end-start;
-                 head = start;
-             }
-             //we move start pointer to try to find another instance, we need to add back the hash table and counter.
-             if(m[s[start]]++==0)
-                  counter++;
-             start++;
-          }
-      }
-
-      return d==INT_MAX?"":s.substr(head,d);
-
-  }
-};
+            while(cnt==0){
+                if(r-l<len){
+                    len = r-l;
+                    ret = s.substr(l,r-l);
+                }
+                if(m.find(s[l])!=m.end()){
+                    if(m[s[l]]==0){ //move out s[l] substring will not include whole t
+                        cnt++;
+                    }
+                    m[s[l]]++;
+                }
+                l++;
+            }
+        }
+        return ret;
+}
 ```
 
 ### Substring Problem from 2 or more strings
@@ -242,7 +282,8 @@ vector<int> getNextArray(vector<int> ms) {
 }
 ```
 
-### KMP application
+* KMP application
+
 https://leetcode.com/problems/shortest-palindrome/#/description
 
 Given a string S, you are allowed to convert it to a palindrome by adding characters in front of it. Find and return the shortest palindrome you can find by performing this transformation.
