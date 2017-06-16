@@ -7,6 +7,8 @@
   - [In order](#in-order)
   - [Post order](#post-order)
   - [next node(Descendant Node) via in order traversal](#next-nodedescendant-node-via-in-order-traversal)
+- [Sub-Tree problems](#sub-tree-problems)
+  - [SubTree of another](#subtree-of-another)
 - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
 - [Morris Traversal](#morris-traversal)
 - [adjust two nodes that is switched in BST](#adjust-two-nodes-that-is-switched-in-bst)
@@ -159,6 +161,36 @@ TreeNode* getLeftMost(TreeNode* node){
     node = node->left;
   }
   return node;
+}
+
+```
+
+
+# Sub-Tree problems
+
+> Key idea is to use recursive to process, with some help function, procee some logic inside help function
+
+## SubTree of another
+https://leetcode.com/problems/subtree-of-another-tree/#/description
+Given two non-empty binary trees s and t, check whether tree t has exactly the same structure and node values with a subtree of s. A subtree of s is a tree consists of a node in s and all of this node's descendants. The tree s could also be considered as a subtree of itself.
+```CPP
+bool isSubtree(TreeNode* s, TreeNode* t) {
+    if(t==NULL)
+        return true;
+    if(s==NULL)
+        return false;
+    return  isSame(s, t) || isSubtree(s->left, t) || isSubtree(s->right, t);
+}
+
+bool isSame(TreeNode * ns, TreeNode * nt){
+    if(ns==NULL && nt==NULL)
+        return true;
+    if(ns==NULL || nt==NULL)
+        return false;
+    if(ns->val!=nt->val)
+        return false;
+
+    return isSame(ns->left,nt->left) && isSame(ns->right,nt->right);
 }
 
 ```
@@ -395,4 +427,4 @@ int help(TreeNode* root, int &max_depth){
 
 ## return all possible BST given N
 
-* suppose 
+* suppose
