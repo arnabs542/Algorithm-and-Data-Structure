@@ -535,7 +535,9 @@ void help(string num, int i, string one, long val, long save, vector<string> &re
 
 ### Data structure to string or vice verse
 
-> Key idea is recursive, and manipulate index in function
+> Key idea is recursive, and manipulate index in function. Need to split clearly what each layer should perform
+
+
 
 * construct binary tree from string
 
