@@ -5,10 +5,12 @@
 - [General idea](#general-idea)
 - [Min Matrix Path Sum](#min-matrix-path-sum)
 - [Coin Exchange](#coin-exchange)
-- [Longest increase subsequence](#longest-increase-subsequence)
-- [Longest Palindromic Substring](#longest-palindromic-substring)
-- [Longest common subsequence](#longest-common-subsequence)
-- [Longest common substring](#longest-common-substring)
+- [Longest subsequence/subsequence Problem](#longest-subsequencesubsequence-problem)
+  - [Longest Palindromic Substring](#longest-palindromic-substring)
+  - [Longest common subsequence](#longest-common-subsequence)
+  - [Longest common substring](#longest-common-substring)
+- [Sub Array/Sequence Pattern](#sub-arraysequence-pattern)
+  - [Number of increasing Subarray/subsequence](#number-of-increasing-subarraysubsequence)
 - [Lowest cost to convert one string to another](#lowest-cost-to-convert-one-string-to-another)
 - [Interleaving String](#interleaving-string)
 - [Back Pack(0/1 Knapsack) Problem](#back-pack01-knapsack-problem)
@@ -114,9 +116,9 @@ int minPathsum(vector<vector<int>> m){
 
 ```
 
-## Longest increase subsequence
+## Longest subsequence/subsequence Problem
 
-## Longest Palindromic Substring
+### Longest Palindromic Substring
 
 https://leetcode.com/problems/longest-palindromic-substring/#/description
 Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
@@ -150,7 +152,7 @@ string longestPalindrome(string s) {
 ```
 
 
-## Longest common subsequence
+### Longest common subsequence
 
 http://www.lintcode.com/en/problem/longest-common-subsequence/ Given two strings, find the longest comment subsequence (LCS). Your code should return the length of LCS. Example For "ABCD" and "EDCA", the LCS is "A" (or D or C), return 1 For "ABCD" and "EACB", the LCS is "AC", return
 
@@ -190,7 +192,7 @@ int LCS(string s1, string s2){
 
 ```
 
-## Longest common substring
+### Longest common substring
 http://lintcode.com/zh-cn/problem/longest-common-substring/
 Longest common substring problem is to find the longest string (or strings) that is a substring (or are substrings) of two or more strings.
 
@@ -221,6 +223,108 @@ int LCS(string s1, string s2){
     return result;
 }
 
+```
+
+## Sub Array/Sequence Pattern
+
+### Number of increasing Subarray/subsequence
+
+> Common solution: define dp[i] as subarray ending i which satisfy problem, then derive transition
+
+* arithmetic slices subarray
+
+
+https://leetcode.com/problems/arithmetic-slices/#/description
+A sequence of number is called arithmetic if it consists of at least three elements and if the difference between any two consecutive elements is the same.
+For example, these are arithmetic sequence:
+
+1, 3, 5, 7, 9
+7, 7, 7, 7
+3, -1, -5, -9
+The following sequence is not arithmetic.
+1, 1, 2, 5, 7
+
+The function should return the number of arithmetic slices in the array A.
+Example:
+A = [1, 2, 3, 4]
+return: 3, for 3 arithmetic slices in A: [1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself.
+
+```CPP
+int numberOfArithmeticSlices(vector<int>& A) {
+    //dp[i] is number of Arithmetic ending i,
+    // dp[i] = dp[i-1] +1; //all sequence from last increase plus new 3 item sequnce
+    int len = A.size();
+    if(len<3)
+        return false;
+    vector<int> dp(len,0);
+    int step = A[1]-A[0];
+    for(int i=2;i<len;i++){
+        if (step == A[i]-A[i-1]){
+            dp[i] = dp[i-1] + 1;
+        }
+        step = A[i]-A[i-1];
+    }
+    int ret = 0;
+    for(int i=0;i<len;i++){
+        ret+=dp[i];
+    }
+    return ret;
+}
+```
+
+* Follow up, count arithmetic slices subsequence
+
+
+https://leetcode.com/problems/arithmetic-slices-ii-subsequence/#/description
+A sequence of numbers is called arithmetic if it consists of at least three elements and if the difference between any two consecutive elements is the same.
+
+For example, these are arithmetic sequences:
+
+1, 3, 5, 7, 9
+7, 7, 7, 7
+3, -1, -5, -9
+The following sequence is not arithmetic.
+1, 1, 2, 5, 7
+
+The function should return the number of arithmetic subsequence slices in the array A.
+The input contains N integers. Every integer is in the range of -231 and 231-1 and 0 ≤ N ≤ 1000. The output is guaranteed to be less than 231-1.
+
+
+Example:
+Input: [2, 4, 6, 8, 10]
+Output: 7
+
+Explanation:
+All arithmetic subsequence slices are:
+[2,4,6]
+[4,6,8]
+[6,8,10]
+[2,4,6,8]
+[4,6,8,10]
+[2,4,6,8,10]
+[2,6,10]
+
+```CPP
+int numberOfArithmeticSlices(vector<int>& A) {
+    if(A.empty()) return 0;
+    // for each dp, record its step and how many sub sequence for that step size
+    vector<unordered_map<int,int>> dp(A.size());//[index, [step, count]]
+
+    int res = 0;
+    for(int i = 0; i < A.size(); ++i){
+        for(int j = 0; j < i; ++j){
+            if((long)A[i] - (long)A[j] > INT_MAX || (long)A[i] - (long)A[j] < INT_MIN) continue;
+
+            int step = A[i] - A[j];
+            dp[i][step] += 1;
+            if(dp[j].find(step) != dp[j].end()){
+                dp[i][step] += dp[j][step];
+                res += dp[j][step];
+            }
+        }
+    }
+    return res;
+}
 ```
 
 ## Lowest cost to convert one string to another
