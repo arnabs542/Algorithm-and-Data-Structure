@@ -13,6 +13,11 @@
   - [Half Majority](#half-majority)
   - [Search a 2D matrix](#search-a-2d-matrix)
   - [First missing positive](#first-missing-positive)
+- [Random/Probablity](#randomprobablity)
+  - [Random sampling: Generate random k numbers in range n](#random-sampling-generate-random-k-numbers-in-range-n)
+  - [Reject sampling](#reject-sampling)
+  - [Suffle](#suffle)
+  - [Revisor sampling](#revisor-sampling)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -412,4 +417,158 @@ int firstMissingPositive(vector<int>& nums) {
   }
   return len+1;
 }
+```
+
+# Random/Probablity
+
+To get random probablity p=1/N
+
+```CPP
+p = (rand()*N)%N
+if(p==0) //this will give 1/N probability
+  {...}
+```
+
+## Random sampling: Generate random k numbers in range n
+
+Example to draw 3 random from 0-9:
+
+* First draw (n1), a random number between 1 and 7
+* Second draw (n2), a random number between 1 and 8, with 8 having TWO chances to be drawn:
+  * if 8 is drawn
+  * if n1 is drawn
+* Third draw (n3), a random number between 1 and 9, with 9 having THREE chances to be drawn:
+  * if 9 is drawn
+  * if n1 is drawn
+  * if n2 is drawn
+
+* So, each number has 3(k) chances to be drawn:
+  * The numbers at or below 7 have a chance to be drawn each of the 3 draws
+  * The number 8 has two chances to be drawn on the second draw, and one draw thereafter
+  * The number 9 has three chances to be drawn on the third draw,
+
+```CPP
+set<int> randomSample(int k, int n){
+  set<int> ret;
+  for(int i=n-k;i<n;i++){
+    int t = rand()%i;
+    if(ret.find(t)==ret.end()){
+      ret.insert(t);
+    }else{
+      ret.insert(i);
+    }
+  }
+  return ret;
+}
+```
+
+
+## Reject sampling
+Given a function which generates a random integer in the range 1 to 7, write a function which generates a random integer in the range 1 to 10 uniformly.
+The main idea is when you generate a number in the desired range, output that number immediately. If the number is out of the desired range,
+reject it and re-sample again. As each number in the desired range has the same probability of being chosen, a uniform distribution is produced.
+
+```CPP
+int rand10() {
+  int row, col, idx;
+  do {
+    row = rand7();
+    col = rand7();
+    idx = col + (row-1) * 7;
+  } while (idx > 40);
+  return 1 + (idx-1)%10;
+}
+
+
+```
+
+## Suffle
+Shuffle a Deck
+
+```CPP
+void KnuthShuffle(int* pArr)
+{
+    int val;
+    for(int i=51;i>=0;i--)
+    {
+        val=(rand() * 52)%i;
+        swap(pArr[i], pArr[val]);
+    }
+}
+```
+
+https://leetcode.com/problems/shuffle-an-array/#/
+```CPP
+vector<int> shuffle(vector<int> nums) {
+    vector<int> ret(nums);
+    //shuffle each position with another one after that
+    for (int i = 0;i < ret.size();i++) {
+        int pos = rand()%(ret.size()-i);
+        swap(ret[i+pos], ret[i]);
+    }
+    return ret;
+}
+
+```
+
+## Revisor sampling
+Reservoir sampling is a family of randomized algorithms for randomly choosing a sample of k items from a list S containing n items, where n is either a very large or unknown number. Typically n is large enough that the list doesn't fit into main memory.
+
+* Keep the first item(or first k items) in memory.
+* When i-th item comes
+  * With 1/i probability, replace the first item with new item
+  * With (1-1/i) probability, keep item
+
+
+```CPP
+// A function to randomly select k items from stream[0..n-1].
+vector<int> selectKItems(vector<int> stream, int n, int k){
+  vector<int> ret;
+  int i;
+  for(i=0;i<k;i++){
+    ret[i] = stream[i];
+  }
+  for(;i<n;i++){
+    int pos = rand()%(i+1);
+    if(pos<k)
+      ret[pos] = stream[i];
+  }
+  return ret;
+}
+
+```
+
+Revisor sampling can also be used to some other random sample issues
+
+> Given an array of integers with possible duplicates, randomly output the index of a given target number.
+
+Example:
+https://leetcode.com/problems/random-pick-index/#/description
+int[] nums = new int[] {1,2,3,3,3};
+Solution solution = new Solution(nums);
+
+// pick(3) should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.
+solution.pick(3);
+
+// pick(1) should return 0. Since in the array only nums[0] is equal to 1.
+solution.pick(1);
+
+```CPP
+int pick(int target,vector<int> n) {
+    int ret = -1;
+    int size = 0;
+    for(int i=0;i<n.size();i++){
+        if(n[i]==target){
+            size++;
+            if(size==1)
+                ret = i; //init
+            else{
+                if(rand()%size==0)
+                    ret = i;//revisor sampling with probability p=1/size
+            }
+        }
+    }
+    return ret;
+}
+
 ```
