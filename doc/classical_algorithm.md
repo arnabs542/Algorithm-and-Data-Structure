@@ -24,7 +24,11 @@
 
 * For subregion problem, usually started with target pixel and traversal region, need some matrix to record visited flag or directly modify the original matrix
 
-* For Path Problem, start with path starting or ending point.  
+* For Path Problem, start with path starting or ending point.
+
+* Stop Conditions:
+  * visited conditions
+  * updated cell value larger or smaller than new DFS/BFS ones
 
 
 ## Pattern Along row/col Problem

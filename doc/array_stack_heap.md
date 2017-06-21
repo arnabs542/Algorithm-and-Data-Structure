@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Array](#array)
+  - [Array re-order](#array-re-order)
   - [Sub Array](#sub-array)
     - [Classical Sub-Array Problem](#classical-sub-array-problem)
     - [Array split Problem](#array-split-problem)
@@ -23,6 +24,34 @@
 
 
 # Array
+
+## Array re-order
+
+* one for loop for main array, and the other pointer moving if condition meet
+
+https://leetcode.com/problems/move-zeroes/#/description
+
+Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be [1, 3, 12, 0, 0].
+
+```CPP
+void moveZeroes(vector<int>& nums) {
+    int next = 0;
+    // move all the nonzero elements advance
+    for (int i=0; i<nums.size(); i++) {
+        if (nums[i] != 0) {
+            nums[next] = nums[i];
+            next++;
+        }
+    }
+    while(next<nums.size()) {
+        nums[next] = 0;
+        next++;
+    }
+}
+```
+
+
 
 ## Sub Array
 > Common techniques
