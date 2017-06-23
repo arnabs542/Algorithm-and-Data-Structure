@@ -19,6 +19,9 @@
       - [Expression operators](#expression-operators)
     - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
+  - [Rearrange string](#rearrange-string)
+    - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
+    - [Task schedule](#task-schedule)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -595,3 +598,119 @@ TreeNode* help(string &s, int& i){
 the easy way is to append the s1+s1, and check whether s2 is substring of s1.
 
 How do we achieve O(N). s1+s1 exhaustive list all substring
+
+## Rearrange string
+
+* Key idea is to use hash map and priority queue. hash map's key is char and val is how many times it appears, pq is to record via map's val
+
+* Every time just to process map and pq. pop pq with counter decrease and re push to pq
+
+### Rearrange String k Distance Apart
+https://leetcode.com/problems/rearrange-string-k-distance-apart/#/description
+Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
+
+Example 1:
+s = "aabbcc", k = 3
+Result: "abcabc"
+
+The same letters are at least distance 3 from each other.
+Example 2:
+s = "aaabc", k = 3
+Answer: ""
+
+It is not possible to rearrange the string.
+Example 3:
+s = "aaadbbcc", k = 2
+Answer: "abacabcd"
+Another possible answer is: "abcabcda"
+The same letters are at least distance 2 from each other.
+
+```CPP
+string rearrangeString(string s, int k) {
+    int len = s.size();
+    if(k==0)
+        return s;
+
+    map<char,int> m;
+    for(int i=0;i<s.size();i++){
+        m[s[i]]++;
+    }
+    string ret = "";
+
+    priority_queue<pair<int,char>> pq;  //count and char
+    for(auto i:m){
+        pq.push(make_pair(i.second,i.first)); //heap via char's occurence count
+    }
+
+    while(!pq.empty()){
+        vector<pair<int,char>> tmp;
+        int cnt = min(len,k);
+        for(int i=0;i<cnt;i++){
+            if(!pq.empty()){
+                pair<int,char> cur = pq.top();
+                if(--cur.first>0)
+                    tmp.push_back(cur);
+                ret+=cur.second;
+                pq.pop();
+                len--;
+            }else{
+                return "";
+            }
+        }
+        for(int i=0;i<tmp.size();i++){
+            pq.push(tmp[i]);
+        }
+    }
+
+    return ret;
+}
+```
+
+### Task schedule
+https://leetcode.com/problems/task-scheduler/#/description
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+
+Example 1:
+Input: tasks = ['A','A','A','B','B','B'], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+```CPP
+int leastInterval(vector<char>& tasks, int n) {
+    map<char,int> m;
+    for(int i=0;i<tasks.size();i++){
+        m[tasks[i]]++;
+    }
+    priority_queue<int> pq; //heap for task's count
+    for(auto i:m){
+        pq.push(i.second);
+    }
+    int ret = 0;
+    int cycle = n+1;
+    while(!pq.empty()){
+        int t = 0;
+        vector<int> tmp;
+        for(int i=0;i<cycle;i++){
+            if(!pq.empty()){
+                tmp.push_back(pq.top());
+                pq.pop();
+                t++;
+            }
+        }
+        for (int i=0;i<tmp.size();i++) {
+            if (--tmp[i]>0) {
+                pq.push(tmp[i]);
+            }
+        }
+        ret += !pq.empty() ? cycle : t;
+    }
+
+    return ret;
+}
+
+```
