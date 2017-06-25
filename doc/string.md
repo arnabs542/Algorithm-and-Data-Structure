@@ -19,9 +19,6 @@
       - [Expression operators](#expression-operators)
     - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
-  - [Rearrange string](#rearrange-string)
-    - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
-    - [Task schedule](#task-schedule)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -667,6 +664,45 @@ string rearrangeString(string s, int k) {
 }
 ```
 
+Another method
+```CPP
+string rearrangeString(string s, int k) {
+    int len = s.size();
+    if(k==0)
+        return s;
+
+    vector<int> cnt(26,0);
+    for(int i=0;i<len;i++)
+        cnt[s[i]-'a']++;
+    string ret = "";
+    //keep track of the most left position that one character can appear.
+    vector<int> valid(26,0);
+
+    for(int i=0;i<len;i++){
+        int pos = findMaxleft(cnt, valid, i);
+        if(pos==-1)
+            return "";
+        cnt[pos]--;
+        valid[pos] = i+k;
+        ret += char('a'+pos);
+
+    }
+    return ret;
+}
+
+int findMaxleft(vector<int> &cnt, vector<int> &valid, int index){
+    int pos = -1;
+    int v = INT_MIN;
+    for(int i=0;i<cnt.size();i++){
+       if(cnt[i]>0 && cnt[i]>v && index>=valid[i]){
+           v = cnt[i];
+           pos = i;
+       }
+   }
+   return pos;
+}
+```
+
 ### Task schedule
 https://leetcode.com/problems/task-scheduler/#/description
 Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
@@ -712,5 +748,4 @@ int leastInterval(vector<char>& tasks, int n) {
 
     return ret;
 }
-
 ```
