@@ -19,6 +19,9 @@
       - [Expression operators](#expression-operators)
     - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
+  - [Rearrange string](#rearrange-string)
+    - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
+    - [Task schedule](#task-schedule)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

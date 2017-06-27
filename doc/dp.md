@@ -4,6 +4,8 @@
 
 - [General idea](#general-idea)
 - [Min Matrix Path Sum](#min-matrix-path-sum)
+- [Using limited Variables instead of DP array](#using-limited-variables-instead-of-dp-array)
+  - [Max Sum without adjacent](#max-sum-without-adjacent)
 - [Coin Exchange](#coin-exchange)
 - [Longest subsequence/subsequence Problem](#longest-subsequencesubsequence-problem)
   - [Longest Palindromic Substring](#longest-palindromic-substring)
@@ -90,6 +92,36 @@ int minPathsum(vector<vector<int>> m){
 	}
 
 
+```
+
+## Using limited Variables instead of DP array
+
+some problems we can only use limited variables and iterate them to accomplish DP tasks
+
+### Max Sum without adjacent
+
+Typically this type of problem can be formulated as DP, and we can use limited variable and iterate them
+
+http://www.geeksforgeeks.org/maximum-sum-such-that-no-two-elements-are-adjacent/
+
+```CPP
+int FindMaxSum(vector<int> arr)
+{
+  int incl = arr[0];
+  int excl = 0;
+  int excl_new;
+
+  for (int i = 1; i < arr.size(); i++)
+  {
+     //current max excluding i
+     excl_new = (incl > excl)? incl: excl;
+
+     //current max including i
+     incl = excl + arr[i];
+     excl = excl_new;
+  }
+   return ((incl > excl)? incl : excl);
+}
 ```
 
 ## Coin Exchange
