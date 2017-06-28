@@ -978,13 +978,11 @@ Explanation: There are three 132 patterns in the sequence: [-1, 3, 2], [-1, 3, 0
 
 ```CPP
 bool find132pattern(vector<int>& nums) {
-    /*
+  /*
+  Have a stack, each time we store a new number, we first pop out all numbers that are smaller than that number. The numbers that are popped out becomes candidate for s3.
+  We keep track of the maximum of such s3. Once we encounter any number smaller than s3, we know we found a valid sequence since s1 < s3 implies s1 < s2.
+  */
 
-Have a stack, each time we store a new number, we first pop out all numbers that are smaller than that number. The numbers that are popped out becomes candidate for s3.
-We keep track of the maximum of such s3.
-Once we encounter any number smaller than s3, we know we found a valid sequence since s1 < s3 implies s1 < s2.
-
-    * /
     int s3=INT_MIN;
     stack<int> s; //for s3, top will be max s3 value;
     for(int i=nums.size()-1;i>=0;i--){
