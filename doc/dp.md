@@ -564,6 +564,50 @@ bool canPartition(vector<int>& nums) {
 
 ```
 
+This can be extended to problem how to split array into two subsets with sum of two collection difference is minimum.
+
+let's assume we have vector input for different toys and numbers are their values. so this is function we can use
+```CPP
+int minDiff(vector<int> toys){
+
+  //first sum all values
+  int sum = 0;
+  int len = toys.size();
+  for(int i=0;i<len;i++){
+    sum+=toys[i];
+  }
+  //using dp, dp[i][j] means you can split i items with one collection sum to j
+  vector<vector<bool>> dp(len+1,vector<bool>(sum,false));
+  for(int i=0;i<=len;i++){
+    dp[i][0] = true;  //sum to 0 is possible as one set is empty
+  }
+  for(int j=1;j<=sum;j++){
+    dp[0][j] = false; //choose nothing can not sum to j values
+  }
+
+  for(int i=1;i<=len;i++){
+    for(int j=1;j<=sum;j++){
+      dp[i][j] = dp[i-1][j]; //not choose i-th item i;
+      if(toys[i-1]<=j)
+        dp[i][j] |= dp[i][j-toys[i-1]];// not to choose i-th item;
+    }
+  }
+
+  int diff = INT_MAX;
+
+  //two collection has sum values k,m, k+m=sum, diff = m-k = sum-k-k
+  //starting from exact same partition with 0 diff
+  for(int k=sum/2;k>=0;k--){
+    if(dp[len][k]==true){
+      diff = sum-2*k;  
+    }
+  }
+
+  return diff;
+}
+
+```
+
 
 ## Poker Game/Cards in line
 
