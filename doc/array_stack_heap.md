@@ -14,13 +14,13 @@
       - [Make nums inside array even](#make-nums-inside-array-even)
 - [Heap](#heap)
   - [Top K problem](#top-k-problem)
+- [Stack/Queue](#stackqueue)
+  - [Min Stack](#min-stack)
   - [Other Stack Problem](#other-stack-problem)
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
-  - [Max-tree](#max-tree)
   - [Monotonic stack](#monotonic-stack)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 
 
 # Array
@@ -813,6 +813,52 @@ https://leetcode.com/problems/find-median-from-data-stream/
  }
  ```
 
+## Max_Tree
+
+We can use max heap and heap insert.
+```CPP
+struct TreeNode{
+  int val;
+  TreeNode* left;
+  TreeNode* right;
+};
+
+TreeNode * getMaxtree_method1(vector<int> array){
+  int len = array.size();
+  std::vector<TreeNode> node;
+  //init heap tree
+  for(int i=0;i<array.size();i++){
+    node[i] = new TreeNode(array[i]);
+  }
+  //heap sort array
+  for(int i=0;i<len;i++){
+    heapSort(array,i);
+  }
+  //Build up the max tree
+  for(int i=0;i<array.size();i++){
+    int left_child = 2*i+1;
+    int right_child = 2*i+2;
+    if(left_child<array.size())
+      node[i]->left = node[left_child];
+    if(right_child<array.size())
+      node[i]->right = node[right_child]
+  }
+  return node[0];
+}
+
+void heapSort(vector<int> &array, int index){
+  while(index!=0){
+    int parent = (index-1)/2;
+    if(array[parent]<array[index]){
+      swap(array[parent],array[index]);
+      index = parent;
+    }else{
+      break;
+    }
+  }
+}
+```
+
 # Stack/Queue
 
 ## Min Stack
@@ -1037,56 +1083,6 @@ int AllLessNumSubArray(vector<int> array, int num){
   return ret;
 }
 ```
-
-
-
-
-## Max-tree
-
-We can use max heap and heap insert.
-```CPP
-struct TreeNode{
-  int val;
-  TreeNode* left;
-  TreeNode* right;
-};
-
-TreeNode * getMaxtree_method1(vector<int> array){
-  int len = array.size();
-  std::vector<TreeNode> node;
-  //init heap tree
-  for(int i=0;i<array.size();i++){
-    node[i] = new TreeNode(array[i]);
-  }
-  //heap sort array
-  for(int i=0;i<len;i++){
-    heapSort(array,i);
-  }
-  //Build up the max tree
-  for(int i=0;i<array.size();i++){
-    int left_child = 2*i+1;
-    int right_child = 2*i+2;
-    if(left_child<array.size())
-      node[i]->left = node[left_child];
-    if(right_child<array.size())
-      node[i]->right = node[right_child]
-  }
-  return node[0];
-}
-
-void heapSort(vector<int> &array, int index){
-  while(index!=0){
-    int parent = (index-1)/2;
-    if(array[parent]<array[index]){
-      swap(array[parent],array[index]);
-      index = parent;
-    }else{
-      break;
-    }
-  }
-}
-```
-
 
 ## Monotonic stack
 
