@@ -565,6 +565,7 @@ bool canPartition(vector<int>& nums) {
 ```
 
 This can be extended to problem how to split array into two subsets with sum of two collection difference is minimum.
+http://www.geeksforgeeks.org/partition-a-set-into-two-subsets-such-that-the-difference-of-subset-sums-is-minimum/
 
 let's assume we have vector input for different toys and numbers are their values. so this is function we can use
 ```CPP

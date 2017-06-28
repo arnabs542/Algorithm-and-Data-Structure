@@ -6,7 +6,7 @@
   - [Array re-order](#array-re-order)
   - [Sub Array](#sub-array)
     - [Classical Sub-Array Problem](#classical-sub-array-problem)
-    - [Array split Problem](#array-split-problem)
+    - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
   - [Typical three pointers problems](#typical-three-pointers-problems)
   - [Histogram](#histogram)
     - [Water container problem](#water-container-problem)
@@ -466,7 +466,7 @@ int localMin(vector<int> nums){
 
 ```
 
-### Array split Problem
+### Array split/Cut/Partition Problem
 
 Same idea as before, need to Preprocess the array, most split will need some sum preprocess. and then try different split
 
