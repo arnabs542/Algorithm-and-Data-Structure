@@ -496,6 +496,7 @@ Find any topological order for the given graph.
 
 ## DFS
 https://www.youtube.com/watch?v=ddTC4Zovtbc
+
 https://www.cs.usfca.edu/~galles/visualization/TopoSortDFS.html
 The idea is to explore nodes and its neighbors recursively, using a set to check whether node has been visited
 
