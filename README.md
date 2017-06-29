@@ -8,6 +8,7 @@
 - [Tree](#tree)
 - [DP](#dp)
 - [Big data](#big-data)
+- [Graph](#graph)
 - [Classdical Algorithm](#classdical-algorithm)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -34,6 +35,9 @@
 
 # Big data
 [Big Data Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/big_data.md)
+
+# Graph
+[Graph Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/Graph.md)
 
 # Classdical Algorithm
 
