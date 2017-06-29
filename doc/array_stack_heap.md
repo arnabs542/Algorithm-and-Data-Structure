@@ -14,6 +14,7 @@
       - [Make nums inside array even](#make-nums-inside-array-even)
 - [Heap](#heap)
   - [Top K problem](#top-k-problem)
+  - [Two heaps to record different attributes for one task](#two-heaps-to-record-different-attributes-for-one-task)
 - [Stack/Queue](#stackqueue)
   - [Min Stack](#min-stack)
   - [Other Stack Problem](#other-stack-problem)
@@ -764,6 +765,7 @@ https://leetcode.com/problems/find-median-from-data-stream/
      }
  }
  ```
+## Two heaps to record different attributes for one task
 
 * IPO/Max profit:
 
