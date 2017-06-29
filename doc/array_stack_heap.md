@@ -649,7 +649,7 @@ int findMinMoves(vector<int>& machines) {
         L > 0 && R > 0: both sides lacks dresses, and we can only export one dress from current machines at a time, so result is abs(L) + abs(R)
         L < 0 && R < 0: both sides contains too many dresses, and we can import dresses from both sides at the same time, so result is max(abs(L), abs(R))
         L < 0 && R > 0 or L >0 && R < 0: the side with a larger absolute value will import/export its extra dresses from/to current machine or other side, so result is max(abs(L), abs(R))
-        * /
+        */
 
         int l = 0;  //all dress left of current
         int r = 0;  //all dress right of current
