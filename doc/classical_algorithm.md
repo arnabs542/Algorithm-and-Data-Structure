@@ -434,7 +434,7 @@ public:
 
 ## Largest square/rectangle inside
 
-> * similar as array, usually divide this problem into row and col two array
+> similar as array, usually divide this problem into row and col two array
 
 
 * Largest Square with all 1 in the boundary
