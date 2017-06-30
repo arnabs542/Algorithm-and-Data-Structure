@@ -20,6 +20,7 @@
   - [Other Stack Problem](#other-stack-problem)
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
   - [Monotonic stack](#monotonic-stack)
+    - [Monotonic stack applications:](#monotonic-stack-applications)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -813,7 +814,7 @@ https://leetcode.com/problems/find-median-from-data-stream/
     }
     return W;    
  }
- ```
+```
 
 ## Max_Tree
 
@@ -1177,7 +1178,7 @@ TreeNode * getMaxtree_method2(vector<int> array){
 }
 ```
 
-* Use this data structure for other Problem:
+### Monotonic stack applications:
 
 * [Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
 
