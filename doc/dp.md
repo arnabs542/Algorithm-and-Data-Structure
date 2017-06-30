@@ -6,7 +6,6 @@
 - [Min Matrix Path Sum](#min-matrix-path-sum)
 - [Using limited Variables instead of DP array](#using-limited-variables-instead-of-dp-array)
   - [Max Sum without adjacent](#max-sum-without-adjacent)
-- [Coin Exchange](#coin-exchange)
 - [Longest subsequence/subsequence Problem](#longest-subsequencesubsequence-problem)
   - [Longest Palindromic Substring](#longest-palindromic-substring)
   - [Longest common subsequence](#longest-common-subsequence)
@@ -19,6 +18,7 @@
   - [Problem Statement](#problem-statement)
   - [backpack Problem](#backpack-problem)
   - [Array Split problems](#array-split-problems)
+  - [Coin Exchange](#coin-exchange)
 - [Poker Game/Cards in line](#poker-gamecards-in-line)
 - [digit number to letter str(decode-ways problem)](#digit-number-to-letter-strdecode-ways-problem)
 - [sum of logic calculation to certain target, express ways](#sum-of-logic-calculation-to-certain-target-express-ways)
@@ -122,30 +122,6 @@ int FindMaxSum(vector<int> arr)
   }
    return ((incl > excl)? incl : excl);
 }
-```
-
-## Coin Exchange
-
-```CPP
-	int coinChange(vector<int>& coins, int amount) {
-		//DP: dp[i] indicates fewest number of coins for amount i
-		//DP[i] = min(DP[i],DP[i-coin[j]+1)
-		if (amount == 0)
-			return 0;
-
-		vector<int> DP(amount + 1, amount + 1);
-		DP[0] = 0;
-
-		for (int i = 1; i <= amount; i++) {
-			for (int j = 0; j<coins.size(); j++) {
-				if (i >= coins[j])
-					DP[i] = min(DP[i], DP[i - coins[j]] + 1);
-			}
-		}
-
-		return DP[amount] == amount + 1 ? -1 : DP[amount];
-	}
-
 ```
 
 ## Longest subsequence/subsequence Problem
@@ -609,6 +585,30 @@ int minDiff(vector<int> toys){
 
 ```
 
+
+### Coin Exchange
+
+```CPP
+	int coinChange(vector<int>& coins, int amount) {
+		//DP: dp[i] indicates fewest number of coins for amount i
+		//DP[i] = min(DP[i],DP[i-coin[j]+1)
+		if (amount == 0)
+			return 0;
+
+		vector<int> DP(amount + 1, amount + 1);
+		DP[0] = 0;
+
+		for (int i = 1; i <= amount; i++) {
+			for (int j = 0; j<coins.size(); j++) {
+				if (i >= coins[j])
+					DP[i] = min(DP[i], DP[i - coins[j]] + 1);
+			}
+		}
+
+		return DP[amount] == amount + 1 ? -1 : DP[amount];
+	}
+
+```
 
 ## Poker Game/Cards in line
 
