@@ -317,6 +317,7 @@ The picture is represented by a 2D char array consisting of 'B' and 'W', which m
 
 A black lonely pixel is character 'B' that located at a specific position where the same row and same column don't have any other black pixels.
 
+```
 Example:
 Input:
 [['W', 'W', 'B'],
@@ -325,6 +326,7 @@ Input:
 
 Output: 3
 Explanation: All the three 'B's are black lonely pixels.
+```
 
 ```CPP
 int findLonelyPixel(vector<vector<char>>& picture) {
@@ -365,6 +367,7 @@ Given a 2D grid, each cell is either a wall 'W', an enemy 'E' or empty '0' (the 
 The bomb kills all the enemies in the same row and column from the planted point until it hits the wall since the wall is too strong to be destroyed.
 Note that you can only put the bomb at an empty cell.
 
+```
 Example:
 For the given grid
 
@@ -372,6 +375,8 @@ For the given grid
 E 0 W E
 0 E 0 0
 return 3. (Placing a bomb at (1,1) kills 3 enemies)
+```
+
 ```CPP
 class Solution {
     int row = 0;
@@ -435,6 +440,7 @@ public:
 * Largest Square with all 1 in the boundary
 Given a matrix containing either 0 or 1 in each cell, find the square with the longest side containing all 1s in its boundary. Cells inside the square may contain either 0 or 1.
 
+```
 For example, given matrix
 
 [
@@ -445,6 +451,7 @@ For example, given matrix
   [1, 1, 1, 1, 1]
 ]
 The square with the maximum size containing all 1s in its boundary has top-left corner at (1,1) and bottom-right corner at (3, 3)
+```
 
 
 ```CPP
@@ -500,6 +507,7 @@ bool hasALloneBorder(int size, vector<vector<int>> &right, vector<vector<int>> &
 https://leetcode.com/problems/maximal-square/#/description
 Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
 
+```
 For example, given the following matrix:
 
 1 0 1 0 0
@@ -507,6 +515,7 @@ For example, given the following matrix:
 1 1 1 1 1
 1 0 0 1 0
 Return 4.
+```
 
 ```CPP
 //similar as subarray, use dp to consider max square's edge len ending i,j
