@@ -395,6 +395,8 @@ void help(string &in, int i, int cnt, string &one, vector<string> ret){
 
 ### Expression(string as calculator expression)
 
+Key of all these problem are caching the sign, and caching intermidtate(* ,/ or bracket) results in stack
+
 #### String as calculator
 
 https://leetcode.com/problems/basic-calculator-ii/#/description

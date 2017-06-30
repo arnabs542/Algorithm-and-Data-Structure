@@ -4,6 +4,7 @@
 
 - [Matrix Problem](#matrix-problem)
   - [Sub region or Path in Matrix](#sub-region-or-path-in-matrix)
+    - [Example](#example)
   - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
 - [BackTracking](#backtracking)
@@ -34,6 +35,273 @@
 * Stop Conditions:
   * visited conditions
   * updated cell value larger or smaller than new DFS/BFS ones
+
+### Example
+
+* https://leetcode.com/problems/number-of-islands/
+
+
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+Example 1:
+```
+11110
+11010
+11000
+00000
+Answer: 1
+Example 2:
+11000
+11000
+00100
+00011
+```
+
+
+```CPP
+//method 1: DFS
+int numIslands(vector<vector<char>>& grid) {
+    if (grid.size() == 0) return 0;
+    int len = grid.size();
+    int high = grid[0].size();
+    int ret = 0;
+    for(int i=0;i<len;i++){
+        for(int j=0;j<high;j++){
+            if(grid[i][j]=='1'){
+                ret++;
+                DFS_visit(grid,i,j,len,high);
+            }
+        }
+    }
+    return ret;
+}
+
+void DFS_visit(vector<vector<char>>& grid, int x, int y, int m, int n){
+    grid[x][y] = 2;//marked all adjcent cells of (x,y) as one island and visited(2 instead of 1)
+    if (x + 1 < m && grid[x + 1][y] == '1') {
+        DFS_visit(grid, x + 1, y, m, n);
+    }
+    if (y + 1 < n && grid[x][y + 1] == '1') {
+        DFS_visit(grid, x, y + 1, m, n);
+    }
+    if (x - 1 >= 0 && grid[x - 1][y] == '1') {
+        DFS_visit(grid, x-1, y, m, n);
+    }
+    if (y - 1 >= 0 && grid[x][y - 1] == '1') {
+        DFS_visit(grid, x, y-1, m, n);
+    }
+}
+
+//method 2: BFS
+class Solution {
+public:
+//use BFS
+int numIslands(vector<vector<char>>& grid) {
+
+  int m = grid.size();
+  if(m==0)
+      return 0;
+  int n = grid[0].size();
+  int ret = 0;
+  vector<vector<bool>> visited(m, vector<bool>(n, false));
+  queue<int> q_row;
+  queue<int> q_col;
+
+  for(int i=0;i<m;i++){
+      for(int j=0;j<n;j++){
+          if(grid[i][j]=='1' && visited[i][j]==false){
+              visited[i][j]==true;
+              q_row.push(i);
+              q_col.push(j);
+              ret++;
+              while(!q_row.empty()){
+                  int x = q_row.front();
+                  int y = q_col.front();
+                  q_row.pop();
+                  q_col.pop();
+                  if (x+1<m && grid[x+1][y]=='1' && !visited[x+1][y]){
+                      q_row.push(x+1);
+                      q_col.push(y);
+                      visited[x+1][y] = true;
+                  }
+                  if (x-1 >=0 && grid[x-1][y]=='1' && !visited[x-1][y]){
+                      q_row.push(x-1);
+                      q_col.push(y);
+                      visited[x-1][y] = true;
+                  }
+                  if (y+1<n && grid[x][y+1]=='1' && !visited[x][y+1]){
+                      q_row.push(x);
+                      q_col.push(y+1);
+                      visited[x][y+1] = true;
+                  }
+                  if (y-1>=0 && grid[x][y-1]=='1' && !visited[x][y-1]){
+                      q_row.push(x);
+                      q_col.push(y-1);
+                      visited[x][y-1]=true;
+                  }
+              }
+          }
+      }
+  }
+  return ret;
+}
+```
+
+* https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
+Given an integer matrix, find the length of the longest increasing path.
+From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).
+```
+Example 1:
+nums = [
+  [9,9,4],
+  [6,6,8],
+  [2,1,1]
+]
+Return 4
+The longest increasing path is [1, 2, 6, 9].
+```
+
+```CPP
+int longestIncreasingPath(vector<vector<int>>& matrix) {
+    int ret = 0;
+    row=matrix.size();
+    if(!row) return ret;
+    col=matrix[0].size();
+    for(int i=0;i<row;i++){
+        for(int j=0;j<col;j++){
+            //Longest increase path starting from current node
+            int cur = dfs(matrix,i,j,1);
+            ret = ret>cur?ret:cur;
+        }
+    }
+
+    return ret;
+}
+
+int dfs(vector<vector<int>>& matrix, int x, int y, int path){
+    int left = path;
+    int right = path;
+    int up = path;
+    int down = path;
+    //search four directions
+    if(x+1<row&&matrix[x+1][y]>matrix[x][y]){
+        down = dfs(matrix,x+1,y,path+1);
+    }
+    if(x-1>=0&&matrix[x-1][y]>matrix[x][y]){
+        up = dfs(matrix,x-1,y,path+1);
+    }
+    if(y+1<col&&matrix[x][y+1]>matrix[x][y]){
+        right = dfs(matrix,x,y+1,path+1);
+    }
+    if(y-1>=0&&matrix[x][y-1]>matrix[x][y]){
+        left = dfs(matrix,x,y-1,path+1);
+    }
+    return max(max(max(left,right),up),down);
+
+}
+
+//Use DP to cache
+int longestIncreasingPath(vector<vector<int>>& matrix) {
+    int ret = 0;
+    row=matrix.size();
+    if(!row) return ret;
+    col=matrix[0].size();
+    //dp: record longest increase starting from i,j, when some other node visit, it dose not need to calculate again
+    vector<vector<int>> cache(row,vector<int>(col,0));
+    for(int i=0;i<row;i++){
+        for(int j=0;j<col;j++){
+            //Longest increase path starting from current node, calcualte four direction
+            ret = max(ret,dfs(matrix,i,j,cache)+1);
+        }
+    }
+
+    return ret;
+}
+
+int dfs(vector<vector<int>>& matrix, int x, int y, vector<vector<int>>& cache){
+    if(cache[x][y])
+        return cache[x][y];
+    int left = 0;
+    int right = 0;
+    int up = 0;
+    int down = 0;
+    //search four directions
+    if(x+1<row&&matrix[x+1][y]>matrix[x][y]){
+        down = dfs(matrix,x+1,y,cache)+1;
+    }
+    if(x-1>=0&&matrix[x-1][y]>matrix[x][y]){
+        up = dfs(matrix,x-1,y,cache)+1;
+    }
+    if(y+1<col&&matrix[x][y+1]>matrix[x][y]){
+        right = dfs(matrix,x,y+1,cache)+1;
+    }
+    if(y-1>=0&&matrix[x][y-1]>matrix[x][y]){
+        left = dfs(matrix,x,y-1,cache)+1;
+    }
+    int maxval = max(max(max(left,right),up),down);
+    cache[x][y] = maxval;
+    return maxval;
+
+}
+```
+
+* https://leetcode.com/problems/walls-and-gates/#/description
+You are given a m x n 2D grid initialized with these three possible values.
+
+-1 - A wall or an obstacle.
+
+0 - A gate.
+
+INF - Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than 2147483647.
+
+Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+
+```
+For example, given the 2D grid:
+INF  -1  0  INF
+INF INF INF  -1
+INF  -1 INF  -1
+  0  -1 INF INF
+After running your function, the 2D grid should be:
+  3  -1   0   1
+  2   2   1  -1
+  1  -1   2  -1
+  0  -1   3   4
+```
+
+```CPP
+void wallsAndGates(vector<vector<int>>& rooms) {
+        row=rooms.size();
+        if(!row) return;
+        col=rooms[0].size();
+        if(!col) return;
+
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                if(rooms[i][j]==0){
+                    //starting from gate and traversal whole matrix
+                    DFS(rooms,i,j,0);
+                }
+            }
+        }
+
+    }
+
+    void DFS(vector<vector<int>>& rooms, int i, int j, int path){
+        if (i<0 || i >= row || j<0 || j >= col || path>rooms[i][j]) {
+			return;
+		}
+		else {
+			rooms[i][j] = path;
+			DFS(rooms, i - 1, j, path + 1);
+			DFS(rooms, i + 1, j, path + 1);
+			DFS(rooms, i, j - 1, path + 1);
+			DFS(rooms, i, j + 1, path + 1);
+		}
+
+    }
+
+```
+
 
 
 ## Pattern Along row/col Problem
