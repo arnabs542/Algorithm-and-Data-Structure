@@ -2,6 +2,9 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
+- [Binary search](#binary-search)
+  - [Local Minimum](#local-minimum)
+  - [Numerical(Square) Calculation](#numericalsquare-calculation)
 - [Matrix Problem](#matrix-problem)
   - [Sub region or Path in Matrix](#sub-region-or-path-in-matrix)
     - [Example](#example)
@@ -21,6 +24,78 @@
   - [Revisor sampling](#revisor-sampling)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Binary search
+
+Anything that can split the Search space can use Binary search
+
+## Local Minimum
+
+Local minimum
+Find array if there is local min(left and right is larger) and return index
+
+//Binary search
+```CPP
+int localMin(vector<int> nums){
+  int len=nums.size();
+  if(nums[0]<nums[1] || len==1 )
+    return 0;
+  if(nums[len-1]<nums[len-2])
+    return len-1;
+
+  int left = 1;
+  int right = len-2;
+  int mid = 0;
+  while(left<right){
+    mid = left+(right-left)/2;
+    if(nums[mid]>nums[mid+1]){
+      left = mid+1;  //there will be local min right half
+    }else if(nums[mid]>nums[mid-1]){
+      right = mid-1;
+    }else{
+      return mid;
+    }
+  }
+  return left;
+
+}
+```
+
+
+## Numerical(Square) Calculation
+https://leetcode.com/problems/sum-of-square-numbers/#/description
+
+Given a non-negative integer c, your task is to decide whether there're two integers a and b such that a2 + b2 = c.
+
+Example 1:
+Input: 5
+Output: True
+Explanation: 1 * 1 + 2 * 2 = 5
+Example 2:
+Input: 3
+Output: False
+
+```CPP
+bool judgeSquareSum(int c) {
+    if (c < 0) {
+        return false;
+    }
+    int left = 0, right = sqrt(c);
+    while (left <= right) {
+        int cur = left * left + right * right;
+        if (cur < c) {
+            left++;
+        } else if (cur > c) {
+            right--;
+        } else {
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+
 
 # Matrix Problem
 
