@@ -275,6 +275,57 @@ for(int i=0;i<len;i++){
 
 ```
 
+* Follow up: Longest Subarray with sum to k
+
+```CPP
+int Longestsubarray(vector<int> nums, int k){
+  int ret = 0;
+  int sum = 0;
+  map<int,int> m;//key is sum val, val is index
+  for(int i=0;i<nums.size();i++){
+    sum+=nums[i];
+    if(m.find(sum-k)!=m.end()){
+      ret = max(ret, i-m[sum-k]); //get the length
+    }
+    /if sum is already there, we do not record index since we need left most index to get longest
+    if(m.find(sum)==m.end())  
+      m[sum] = i;
+  }
+
+}
+
+```
+
+* Follow Up: If subrray contains all positive
+
+```CPP
+//use two pointers
+int Longestsubarray(vector<int> arr, int k){
+  if (arr.size()==0 || k==0) {
+    return 0;
+  }
+  int left = 0;
+  int right = 0;
+  int sum = arr[0];
+  int len = 0;
+  while (right < arr.size()) {
+    if (sum == k) {
+      len = max(len, right - left + 1);
+      sum -= arr[left++];
+    } else if (sum < k) {
+      right++;
+      if (right == arr.size()) {
+        break;
+      }
+      sum += arr[right];
+    } else {
+      sum -= arr[left++];
+    }
+  }
+  return len;
+}
+```
+
 * Max subarray sum
 https://leetcode.com/problems/maximum-subarray/
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
