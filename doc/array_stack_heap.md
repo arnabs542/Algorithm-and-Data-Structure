@@ -471,6 +471,37 @@ int localMin(vector<int> nums){
 
 ```
 
+* Longest subarray that can be integrated
+
+Longest subarray that can be integrated so that items in subarray is ascending order and step is 1.
+
+```CPP
+int LongestIntegratedLength(vector<int> nums){
+  int len = 0;
+  int max_v = 0;
+  int min_v = 0;
+  set<int> s;
+  for (int i = 0; i < nums.size(); i++) {
+    max_v = INT_MIN;
+    min_v = INT_MAX;
+    for (int j = i; j < nums.size(); j++) {
+      if (s.find(nums[j])!=s.end()) {
+        break;
+      }
+      set.insert(nums[j]);
+      max_v = max(max_v, nums[j]);
+      min_v = min(min_v, nums[j]);
+      if (max_v - min_v == j - i) {
+        len = max(len, j - i + 1);
+      }
+    }
+    s.clear();
+  }
+  return len;
+}
+
+```
+
 ### Array split/Cut/Partition Problem
 
 Same idea as before, need to Preprocess the array, most split will need some sum preprocess. and then try different split
