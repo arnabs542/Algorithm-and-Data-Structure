@@ -154,31 +154,92 @@ int findUnsortedSubarray(vector<int>& nums) {
 ```
 
 
-* Longest Sum SubArray Length: Subarray sum equal to target
+* Subarray sum number that equals to certain target
+https://leetcode.com/problems/subarray-sum-equals-k/#/description
+Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
 
 ```CPP
-int LongestSumSubArrayLength(vector<int> nums, int k){
-  int len = nums.size();
-  int l = 0; //left index
-  int r = 0;//right index
-  int sum=0;
-  int ret = 0;
-  while(r<len){
-    sum+=nums[r];
-    if(sum==k){
-      ret = max(r-l+1,ret);
-      sum -=nums[l++];
-    }else if(sum<k){
-      r++;
-    }else{
-      sum-=nums[l++];
+int subarraySum(vector<int>& nums, int k) {
+    //notice if the array is all positive, it is different
+    //easy way is to do O(N^2), calculate all subarry starting from 0->len-1, to end
+    //if we want to do O(N), need a map to record
+    int len = nums.size();
+    int sum = 0;
+    int ret = 0;
+    map<int,int> m; //key is sum value, val is how many times it appears
+    //if sum-k==0, then it means it has sum value from begining to current ==k, need to count
+    m[0] = 1;  
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        if(m.find(sum-k)!=m.end())
+            ret+=m[sum-k];
+        m[sum]++;
     }
-  }
+    return ret;    
+}
 
-  return ret;
+//if we do not insert init value, it would be
+m[0]=0;
+for(int i=0;i<len;i++){
+    sum+=nums[i];
+    if(sum==k)  //count how many times sum from begining
+        ret++;
+    if(m.find(sum-k)!=m.end())
+        ret+=m[sum-k];
+    m[sum]++;
+}
+
+```
+
+* Follow up: Longest Subarray with sum to k
+
+```CPP
+int Longestsubarray(vector<int> nums, int k){
+  int ret = 0;
+  int sum = 0;
+  map<int,int> m;//key is sum val, val is index
+  for(int i=0;i<nums.size();i++){
+    sum+=nums[i];
+    if(m.find(sum-k)!=m.end()){
+      ret = max(ret, i-m[sum-k]); //get the length
+    }
+    /if sum is already there, we do not record index since we need left most index to get longest
+    if(m.find(sum)==m.end())  
+      m[sum] = i;
+  }
 
 }
 
+```
+
+* Follow Up: If subarray contains all positive
+
+```CPP
+//use two pointers
+int Longestsubarray(vector<int> arr, int k){
+  if (arr.size()==0 || k==0) {
+    return 0;
+  }
+  int left = 0;
+  int right = 0;
+  int sum = arr[0];
+  int len = 0;
+  while (right < arr.size()) {
+    if (sum == k) {
+      len = max(len, right - left + 1);
+      sum -= arr[left++];
+    } else if (sum < k) {
+      right++;
+      if (right == arr.size()) {
+        break;
+      }
+      sum += arr[right];
+    } else {
+      sum -= arr[left++];
+    }
+  }
+  return len;
+}
 ```
 
 * Follow up: subarray sum to multiple of k
@@ -238,93 +299,6 @@ int findMaxLength(vector<int>& nums) {
 
 ```
 
-* Subarray sum number that equals to certain target
-https://leetcode.com/problems/subarray-sum-equals-k/#/description
-Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
-
-```CPP
-int subarraySum(vector<int>& nums, int k) {
-    //notice if the array is all positive, it is different
-    //easy way is to do O(N^2), calculate all subarry starting from 0->len-1, to end
-    //if we want to do O(N), need a map to record
-    int len = nums.size();
-    int sum = 0;
-    int ret = 0;
-    map<int,int> m; //key is sum value, val is how many times it appears
-    //if sum-k==0, then it means it has sum value from begining to current ==k, need to count
-    m[0] = 1;  
-    for(int i=0;i<len;i++){
-        sum+=nums[i];
-        if(m.find(sum-k)!=m.end())
-            ret+=m[sum-k];
-        m[sum]++;
-    }
-    return ret;    
-}
-
-//if we do not insert init value, it would be
-m[0]=0;
-for(int i=0;i<len;i++){
-    sum+=nums[i];
-    if(sum==k)  //count how many times sum from begining
-        ret++;
-    if(m.find(sum-k)!=m.end())
-        ret+=m[sum-k];
-    m[sum]++;
-}
-
-```
-
-* Follow up: Longest Subarray with sum to k
-
-```CPP
-int Longestsubarray(vector<int> nums, int k){
-  int ret = 0;
-  int sum = 0;
-  map<int,int> m;//key is sum val, val is index
-  for(int i=0;i<nums.size();i++){
-    sum+=nums[i];
-    if(m.find(sum-k)!=m.end()){
-      ret = max(ret, i-m[sum-k]); //get the length
-    }
-    /if sum is already there, we do not record index since we need left most index to get longest
-    if(m.find(sum)==m.end())  
-      m[sum] = i;
-  }
-
-}
-
-```
-
-* Follow Up: If subrray contains all positive
-
-```CPP
-//use two pointers
-int Longestsubarray(vector<int> arr, int k){
-  if (arr.size()==0 || k==0) {
-    return 0;
-  }
-  int left = 0;
-  int right = 0;
-  int sum = arr[0];
-  int len = 0;
-  while (right < arr.size()) {
-    if (sum == k) {
-      len = max(len, right - left + 1);
-      sum -= arr[left++];
-    } else if (sum < k) {
-      right++;
-      if (right == arr.size()) {
-        break;
-      }
-      sum += arr[right];
-    } else {
-      sum -= arr[left++];
-    }
-  }
-  return len;
-}
-```
 
 * Max subarray sum
 https://leetcode.com/problems/maximum-subarray/
@@ -347,8 +321,36 @@ int maxSubArray(vector<int>& nums) {
 }
 ```
 
+* Follow up: max sub matrix size
+
+Sub matrix num: O(n^4). algorithm search from row 1->row n, then from row 2->row n
+
+```CPP
+int maxSubarea(vector<vector<int>> m){
+  int ret = INT_MIN;
+  int cur = 0;
+  int row = m.size();
+  int col = m[0].size();
+  for (int i = 0; i < row; i++) {
+    vector<int> s(col,0);
+    for (int j = i; j < row; j++) {
+      cur = 0;
+      for (int k = 0; k < col; k++) {
+        s[k] += m[j][k];
+        cur += s[k];
+        ret = max(max, cur);
+        cur = cur < 0 ? 0 : cur;
+      }
+    }
+  }
+  return ret;
+}
+```
+
+Most Matrix problem will be transmitted to sub array problem
+
 * Maximum Product Subarray
-//https://leetcode.com/problems/maximum-product-subarray/#/description
+https://leetcode.com/problems/maximum-product-subarray/#/description
 
 Find the contiguous subarray within an array (containing at least one number) which has the largest product.
 
