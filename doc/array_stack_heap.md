@@ -6,6 +6,10 @@
   - [Array re-order](#array-re-order)
   - [Sub Array](#sub-array)
     - [Classical Sub-Array Problem](#classical-sub-array-problem)
+      - [Common Tchnqiues](#common-tchnqiues)
+      - [Two sum](#two-sum)
+      - [Sub Array Sum, longest/shortest](#sub-array-sum-longestshortest)
+      - [Subarray Pattern](#subarray-pattern)
     - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
   - [Typical three pointers problems](#typical-three-pointers-problems)
   - [Histogram](#histogram)
@@ -78,7 +82,14 @@ void moveZeroes(vector<int>& nums) {
 
 ### Classical Sub-Array Problem
 
-* Two sum
+#### Common Tchnqiues
+
+1. preprocess: sum all
+2. two pointers
+3. DP
+4. Hash Map to record index or occurence
+
+#### Two sum
 https://leetcode.com/problems/two-sum/#/description
 Given an array of integers, return indices of the two numbers such that they add up to a specific target.
 
@@ -101,6 +112,8 @@ vector<int> twoSum(vector<int>& nums, int target) {
     }
 }
 ```
+
+#### Sub Array Sum, longest/shortest
 
 * Longest substring length to make sure whole string is sorted
 https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
@@ -271,35 +284,6 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 ```
 
-* Contiguous subarray with equal number of 0 and 1
-https://leetcode.com/problems/contiguous-array
-Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
-
-```CPP
-int findMaxLength(vector<int>& nums) {
-    int len=nums.size();
-    int ret = 0;
-    int shift = 0; //shift: num of 0 - num of 1
-    map<int,int> m; //key is shift, val is index. find two index that has same shift, len in between has same 0 and 1
-    m[0]=-1;
-    for(int i=0;i<len;i++){
-        if(nums[i]==1){
-            shift++;
-        }else{
-            shift--;
-        }
-        if(m.find(shift)!=m.end()){
-            ret = max(ret,i-m[shift]);
-        }else{
-            m[shift]=i;
-        }  
-    }
-    return ret;
-}
-
-```
-
-
 * Max subarray sum
 https://leetcode.com/problems/maximum-subarray/
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
@@ -461,6 +445,36 @@ int countRangeSum(vector<int>& nums, int lower, int upper) {
 }
 ```
 
+#### Subarray Pattern
+
+* Contiguous subarray with equal number of 0 and 1
+https://leetcode.com/problems/contiguous-array
+Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
+
+```CPP
+int findMaxLength(vector<int>& nums) {
+    int len=nums.size();
+    int ret = 0;
+    int shift = 0; //shift: num of 0 - num of 1
+    map<int,int> m; //key is shift, val is index. find two index that has same shift, len in between has same 0 and 1
+    m[0]=-1;
+    for(int i=0;i<len;i++){
+        if(nums[i]==1){
+            shift++;
+        }else{
+            shift--;
+        }
+        if(m.find(shift)!=m.end()){
+            ret = max(ret,i-m[shift]);
+        }else{
+            m[shift]=i;
+        }  
+    }
+    return ret;
+}
+
+```
+
 * Max Consecutive Ones(with flip most k zeros)
 https://leetcode.com/problems/max-consecutive-ones-ii/
 Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most k 0.
@@ -491,38 +505,6 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
 }
 ```
 
-* Local minimum
-
-Find array if there is local min(left and right is larger) and return index
-
-```CPP
-//Binary search
-
-int localMin(vector<int> nums){
-  int len=nums.size();
-  if(nums[0]<nums[1] || len==1 )
-    return 0;
-  if(nums[len-1]<nums[len-2])
-    return len-1;
-
-  int left = 1;
-  int right = len-2;
-  int mid = 0;
-  while(left<right){
-    mid = left+(right-left)/2;
-    if(nums[mid]>nums[mid+1]){
-      left = mid+1;  //there will be local min right half
-    }else if(nums[mid]>nums[mid-1]){
-      right = mid-1;
-    }else{
-      return mid;
-    }
-  }
-  return left;
-
-}
-
-```
 
 * Longest subarray that can be integrated
 
