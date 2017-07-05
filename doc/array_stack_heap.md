@@ -11,7 +11,9 @@
       - [Sub Array Sum, longest/shortest](#sub-array-sum-longestshortest)
       - [Subarray Pattern](#subarray-pattern)
     - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
-  - [Typical three pointers problems](#typical-three-pointers-problems)
+  - [Three pointers problems](#three-pointers-problems)
+    - [3 Sum](#3-sum)
+    - [Valid-triangle-number](#valid-triangle-number)
   - [Histogram](#histogram)
     - [Water container problem](#water-container-problem)
     - [Array Change problem](#array-change-problem)
@@ -590,12 +592,15 @@ bool splitArray(vector<int>& nums) {
 
 ```
 
-## Typical three pointers problems
+## Three pointers problems
 > Common techniques
 * Sort the array
 * Fix the first pointer, and define left and right, search from beginning and end
 * define the condition properly
 
+### 3 Sum
+
+https://leetcode.com/problems/3sum/#/description
 ```CPP
 vector<vector<int>> threeSum(vector<int>& nums) {
     sort(nums.begin(),nums.end());
@@ -636,7 +641,7 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 
 ```
 
-* Valid-triangle-number
+### Valid-triangle-number
 
 There are lots of problem can be soled by similar idea.
 

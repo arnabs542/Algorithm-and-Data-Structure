@@ -196,9 +196,9 @@ bool isSame(TreeNode * ns, TreeNode * nt){
 ```
 
 # Serialize and Deserialize Binary Tree
-
+https://leetcode.com/problems/serialize-and-deserialize-binary-tree/#/description
 ```CPP
-string SerializeTree(TreeNode* root){
+string serialize(TreeNode* root){
   string ret;
   SerializeTreeHelper(ret, root);
   return ret;
@@ -216,21 +216,22 @@ void SerializeTreeHelper(string &s, TreeNode* root){
   }
 }
 
-TreeNode* DeserializeTree(string s){
-  if(s.empty())
-    return NULL;
-  int index = 0;
-  return DeserializeTreehelp(s, index);
+// Decodes your encoded data to tree.
+TreeNode* deserialize(string data) {         
+    if(data.empty())
+        return NULL;
+    int index = 0;
+    return deserialize_helper(data, index);
 }
 
-TreeNode* DeserializeTreehelp(string &s, index &i){
-  if(s[index]=='#'){
-    index++;
-    if(index<s.size()){
-      index ++; //pass ','
-      return NULL;
+ TreeNode* deserialize_helper(string& data, int & index) {
+    if(data[index]=='#'){
+        index++;
+        if (index < data.size())
+            index++;
+        return NULL;
     }
-  }else{
+
     TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
     string cur = "";
     int start = index;
@@ -241,11 +242,10 @@ TreeNode* DeserializeTreehelp(string &s, index &i){
     node->val = stoi(cur);
     index++; //pass ','
 
-    node->left = DeserializeTreehelp(s,index);
-    node->right = DeserializeTreehelp(s,index);
+    node->left = deserialize_helper(data,index);
+    node->right = deserialize_helper(data,index);
 
     return node;
-  }
 }
 ```
 

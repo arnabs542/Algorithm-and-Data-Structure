@@ -18,6 +18,7 @@
       - [String as calculator](#string-as-calculator)
       - [Expression operators](#expression-operators)
     - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
+      - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
   - [Rearrange string](#rearrange-string)
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
@@ -353,7 +354,9 @@ bool isSubsequence(string s, string t) {
 
 ## String Stream representation Problem
 
-Typically this problem will have incoming string stream, with each char represent certain meaning(could be char, number, or encoding way), and need to process this stream to get some results
+Typically this problem will have incoming string stream, with each char represent certain meaning(could be char, number, or encoding way), and need to process this stream to get some results.
+
+* Common solution: Use some index to pass over and recursively modify, index better to be reference type
 
 ### Combination
 
@@ -591,6 +594,60 @@ TreeNode* help(string &s, int& i){
         node->right = help(s, ++i);
         i++;    // )
     }
+    return node;
+}
+```
+
+#### Serialize and Deserialize Binary Tree
+https://leetcode.com/problems/serialize-and-deserialize-binary-tree/#/description
+```CPP
+string serialize(TreeNode* root){
+  string ret;
+  SerializeTreeHelper(ret, root);
+  return ret;
+}
+
+void SerializeTreeHelper(string &s, TreeNode* root){
+  if(root==NULL){
+    s = s+'#';
+    s = s+',';
+  }else{
+    s = s+to_string(root->val);
+    s = s+',';
+    SerializeTreeHelper(s,root->left);
+    SerializeTreeHelper(s,root->right);
+  }
+}
+
+// Decodes your encoded data to tree.
+TreeNode* deserialize(string data) {         
+    if(data.empty())
+        return NULL;
+    int index = 0;
+    return deserialize_helper(data, index);
+}
+
+ TreeNode* deserialize_helper(string& data, int & index) {
+    if(data[index]=='#'){
+        index++;
+        if (index < data.size())
+            index++;
+        return NULL;
+    }
+
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    string cur = "";
+    int start = index;
+    while(data[index]!=','){
+        index++;
+    }
+    cur = data.substr(start,index-start);
+    node->val = stoi(cur);
+    index++; //pass ','
+
+    node->left = deserialize_helper(data,index);
+    node->right = deserialize_helper(data,index);
+
     return node;
 }
 ```
