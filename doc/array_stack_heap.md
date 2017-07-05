@@ -88,6 +88,7 @@ void moveZeroes(vector<int>& nums) {
 2. two pointers
 3. DP
 4. Hash Map to record index or occurence
+5. Matrix problem: transfer to subarray problem
 
 #### Two sum
 https://leetcode.com/problems/two-sum/#/description
