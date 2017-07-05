@@ -64,7 +64,7 @@ void moveZeroes(vector<int>& nums) {
 
 ## Sub Array
 > Common techniques
-* solve the sub problem: the same problem mapping to subarry ending in current index i, so can get the results from i-1
+* solve the sub problem: the same problem mapping to subarray ending in current index i, so can get the results from i-1
 * two pointer to get these longest/smallest problem
   * two pointers could start both from beginning: with different move forward conditions:
   * The idea is to use two pointers to transfer original problem into sub problem between [l,r]
