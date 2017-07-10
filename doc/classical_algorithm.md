@@ -10,8 +10,16 @@
     - [Example](#example)
   - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
-- [BackTracking](#backtracking)
+- [Sort](#sort)
+  - [Quick Sort](#quick-sort)
+  - [Select Sort](#select-sort)
+    - [Partial Selection: Find K-th smallest](#partial-selection-find-k-th-smallest)
+  - [Bucket Sort:](#bucket-sort)
+  - [Merge Sort](#merge-sort)
+    - [Find kth element in two sorted arrays](#find-kth-element-in-two-sorted-arrays)
+- [BackTracking/Recurisve](#backtrackingrecurisve)
   - [Common logic](#common-logic)
+  - [Permutation](#permutation)
 - [Others](#others)
   - [BFPRT](#bfprt)
   - [Half Majority](#half-majority)
@@ -641,7 +649,195 @@ int maximalSquare(vector<vector<char>>& matrix) {
 
 ```
 
-# BackTracking
+# Sort
+
+## Quick Sort
+```CPP
+void qSort(int a[], int start, int end){
+	if(start>=end)
+		return;
+	int i = start;
+	int j = end-1;
+	int pivot = a[start];
+
+	while(i<j){
+		do{
+			i++;
+		}while(i<end&&x[i]<pivot);
+
+		do{
+			j--;
+		}while(j>=start&&x[j]>pivot);
+
+		swap(a[i],a[j]);
+	}
+	swap(a,pivot,a[j]);
+	qSort(x, start, j-1);
+       qSort(x, j + 1, end);
+
+}
+```
+
+## Select Sort
+```CPP
+void selectsort(vector<int> num){
+	int len = num.size();
+	for(int i=0;i<len-1;i++){
+		for(int j=i+1;j<len;j++){
+			if(num[j]<num[j]){
+				swap(num[i],num[j]);
+			}
+		}
+	}
+}
+```
+
+### Partial Selection: Find K-th smallest
+```CPP
+int selectsort(vector<int> num, int k){
+	int len = num.size();
+	for(int i=0;i<k;i++){
+		for(int j=i+1;j<len;j++){
+			if(num[j]<num[i]){
+				swap(num[j],num[i]);
+			}
+		}
+
+	}
+	return nums[k-1];
+}
+
+```
+
+## Bucket Sort:
+Used heavily when values are bounded into certain range
+```CPP
+void bucketSort(vector<int> in) {
+	vector<int> bucket(120, 0);
+	for (int i = 0; i < in.size(); i++) {
+		bucket[i]++;
+	}
+	int index = 0;
+	for (int i = 0; i < 120;i++) {
+		while (bucket[i] > 0) {
+			in[index] = i;
+			index++;
+			bucket[i]--;
+		}
+	}
+}
+
+```
+
+Example will be:
+https://leetcode.com/problems/maximum-gap/
+
+Given an unsorted array, find the maximum difference between the successive elements in its sorted form.
+Try to solve it in linear time/space.
+Return 0 if the array contains less than 2 elements.
+You may assume all elements in the array are non-negative integers and fit in the 32-bit signed integer range
+
+```CPP
+int maximumGap(vector<int>& nums) {
+		int max_g = INT_MIN;
+		int min_g = INT_MAX;
+		int len = nums.size();
+		if (len <= 1)
+			return 0;
+
+		for (int i = 0; i<len; i++) {
+			max_g = max(max_g, nums[i]);
+			min_g = min(min_g, nums[i]);
+		}
+		int bucket_size = max(1, (max_g - min_g) / (len - 1));
+		int bucket_num = (max_g - min_g) / bucket_size + 1;
+
+		if (bucket_num <= 1)
+			return (max_g - min_g);
+		vector<int> bucket_max(bucket_num, INT_MIN);
+		vector<int> bucket_min(bucket_num, INT_MAX);
+		vector<int> bucket_count(bucket_num, 0);
+		int index;
+		//using bucket, we basic sort this array
+		for (int i = 0; i<len; i++) {
+
+			index = (nums[i] - min_g) / bucket_size;
+			bucket_count[index]++;
+			bucket_min[index] = min(bucket_min[index], nums[i]);
+			bucket_max[index] = max(bucket_max[index], nums[i]);
+		}
+
+		int maxGap = INT_MIN;
+		int last_max = min_g;//max number in last bucket
+		for (int i = 0; i<bucket_num; i++) {
+			if (bucket_count[i]>0) {
+				maxGap = max(maxGap, bucket_min[i] - last_max);
+				last_max = bucket_max[i];
+			}
+		}
+		return maxGap;
+
+	}
+
+```
+
+## Merge Sort
+
+### Find kth element in two sorted arrays
+General idea:
+
+* If A[k/2] < B[k/2], kth element is within A[k/2...k]+B[1...k/2]
+* If A[k/2] > B[k/2]，kth element is within A[1...k/2]+B[k/2...k]
+
+https://leetcode.com/problems/median-of-two-sorted-arrays/
+
+There are two sorted arrays nums1 and nums2 of size m and n respectively.
+Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+Example 1:
+nums1 = [1, 3]
+nums2 = [2]
+The median is 2.0
+Example 2:
+nums1 = [1, 2]
+nums2 = [3, 4]
+The median is (2 + 3)/2 = 2.5
+
+```CPP
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+		int m = nums1.size(), n = nums2.size();
+		int k = (m + n) / 2;
+		int num1 = findKth(nums1, 0, m, nums2, 0, n, k + 1);
+		if ((n + m) % 2 == 0)
+		{
+			int num2 = findKth(nums1, 0, m, nums2, 0, n, k);
+			return (num1 + num2) / 2.0;
+		}
+		else return num1;
+	}
+	int findKth(vector<int> & nums1, int nums1_left, int nums1_right, vector<int>& nums2, int nums2_left, int nums2_right, int k)
+	{
+		int m = nums1_right - nums1_left;
+		int n = nums2_right - nums2_left;
+		if (m > n) return findKth(nums2, nums2_left, nums2_right, nums1, nums1_left, nums1_right, k);
+		else if (m == 0)
+			return nums2[nums2_left + k - 1];
+		else if (k == 1)
+			return min(nums1[nums1_left], nums2[nums2_left]);
+		else {
+			int s1LeftCount = min(k / 2, m);
+			int s2LeftCount = k - s1LeftCount;
+			if (nums1[nums1_left + s1LeftCount - 1] == nums2[nums2_left + s2LeftCount - 1])
+				return nums1[nums1_left + s1LeftCount - 1];
+			else if (nums1[nums1_left + s1LeftCount - 1] < nums2[nums2_left + s2LeftCount - 1])
+				return findKth(nums1, nums1_left + s1LeftCount, nums1_right, nums2, nums2_left, nums2_right, k - s1LeftCount);
+			else
+				return findKth(nums1, nums1_left, nums1_right, nums2, nums2_left + s2LeftCount, nums2_right, k - s2LeftCount);
+		}
+	}
+
+```
+
+# BackTracking/Recurisve
 
 ## Common logic
 
@@ -671,6 +867,41 @@ void help(int &ret, int start, void * param) {
 }
 
 
+
+```
+## Permutation
+
+Get all permutation of array
+
+```CPP
+vector<vector<int>> permuteUnique(vector<int>& nums) {
+		vector<vector<int>> ret;
+		vector<int> cur;
+		vector<bool> visit(nums.size(), false);
+		std::sort(nums.begin(), nums.end());
+		permute_helper(ret, cur, nums, visit, nums.size());
+
+		return ret;
+
+	}
+
+	void permute_helper(vector<vector<int>>& ret, vector<int>& cur, vector<int>& nums, vector<bool> visit, int len) {
+		if (cur.size() == len) {
+			ret.push_back(cur);
+			return;
+		}
+		int prev = INT_MAX;
+		for (int i = 0; i<len; i++) {
+			if (visit[i] == false && nums[i] != prev) {
+				cur.push_back(nums[i]);
+				visit[i] = true;
+				prev = nums[i];
+				permute_helper(ret, cur, nums, visit, len);
+				cur.pop_back();
+				visit[i] = false;
+			}
+		}
+	}
 
 ```
 
