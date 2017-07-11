@@ -118,7 +118,7 @@ vector<int> twoSum(vector<int>& nums, int target) {
 
 #### Sub Array Sum, longest/shortest
 
-* Longest substring length to make sure whole string is sorted
+* Shortest substring length to make sure whole string is sorted
 https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
 
 [1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
@@ -154,7 +154,7 @@ int findUnsortedSubarray(vector<int>& nums) {
     if (l == -1) {
         return 0;
     }
-    //from left to rightm record value not ascending, find right most
+    //from left to right record value not ascending, find right most
     int max_v = nums[0];
     int r = -1;
     for (int i = 1; i <len; i++) {
