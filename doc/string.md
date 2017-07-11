@@ -10,8 +10,8 @@
       - [Minimum windows substring](#minimum-windows-substring)
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
-  - [Find substring in String](#find-substring-in-string)
-    - [KMP](#kmp)
+    - [Find substring in String](#find-substring-in-string)
+      - [KMP](#kmp)
   - [Subsequence Problem](#subsequence-problem)
   - [String Stream representation Problem](#string-stream-representation-problem)
     - [Combination](#combination)
@@ -225,7 +225,7 @@ string findLongestWord(string s, vector<string>& d) {
 }
 
 ```
-## Find substring in String
+### Find substring in String
 Implemention of strstr()
 ```
 const char * strstr ( const char * str1, const char * str2 );
@@ -233,7 +233,7 @@ const char * strstr ( const char * str1, const char * str2 );
 ```
 Returns a pointer to the first occurrence of str2 in str1, or a null pointer if str2 is not part of str1.
 
-```CPP
+```
 const char * strstr ( const char * str1, const char * str2 ){
 	for(;;++str1){
 		char *h = str1;
@@ -244,11 +244,11 @@ const char * strstr ( const char * str1, const char * str2 ){
 		if(!*h) return NULL;
 	}
 }
-/**/
+
 ```
 
 
-### KMP
+#### KMP
 
 Used to check whether str2 is a substring of str1
 
