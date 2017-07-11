@@ -148,7 +148,7 @@ int findUnsortedSubarray(vector<int>& nums) {
         if (nums[i] > min_v) {
           l = i;
         } else {
-          min_v = min(min_v, nums[i]);
+          min_v = nums[i];
         }
     }
     if (l == -1) {
@@ -161,7 +161,7 @@ int findUnsortedSubarray(vector<int>& nums) {
         if (nums[i] < max_v) {
           r = i;
         } else {
-          max_v = max(max_v, nums[i]);
+          max_v = nums[i];
         }
     }
     return r - l + 1;        
