@@ -9,7 +9,7 @@
 - [DP](#dp)
 - [Big data](#big-data)
 - [Graph](#graph)
-- [Classdical Algorithm](#classdical-algorithm)
+- [Classical Algorithm](#classical-algorithm)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -39,6 +39,6 @@
 # Graph
 [Graph Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/Graph.md)
 
-# Classdical Algorithm
+# Classical Algorithm
 
-[Matrix etc.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
+[Other Classical algorithms.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
