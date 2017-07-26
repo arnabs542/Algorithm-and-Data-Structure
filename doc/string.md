@@ -259,10 +259,9 @@ bool checkInclusion(string s1, string s2) {
         cnt++;
     }
     for(int l=0,r=0;r<s2.size();r++){
-        if(m.find(s2[r])!=m.end()){
+        if(m.find(s2[r])!=m.end() && m[s2[r]]-->0){
             //m[s2[r]] could be smaller than 0, so s2[r] pays off and have more, leaving for l to move
-            if(m[s2[r]]-->0)  
-                cnt--;
+            cnt--;
             while(cnt==0){//include all in s1
                 if(r-l+1==s1.size())  {
                     return true;
