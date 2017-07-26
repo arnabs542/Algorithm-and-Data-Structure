@@ -33,3 +33,33 @@ bool checkInclusion(string s1, string s2) {
 
     return false;
 }
+
+bool checkInclusion(string s1, string s2) {
+    if(s1.size()==0)
+        return true;
+    unordered_map<char,int> m;
+    int l = 0;
+    int r = 0;
+    int cnt = 0;
+    for(int i=0;i<s1.size();i++){
+        m[s1[i]]++;  //s2 own s1
+        cnt++;
+    }
+    for(int l=0,r=0;r<s2.size();r++){
+        if(m.find(s2[r])!=m.end()){
+            //m[s2[r]] could be smaller than 0, so s2[r] pays off and have more, leaving for l to move
+            if(m[s2[r]]-->0)
+                cnt--;
+            while(cnt==0){//include all in s1
+                if(r-l+1==s1.size())  {
+                    return true;
+                }
+                if(m.find(s2[l])!=m.end() && m[s2[l]]++==0){
+                    cnt++;
+                }
+                l++;
+            }
+        }
+    }
+    return false;
+}

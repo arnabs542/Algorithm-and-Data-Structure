@@ -9,6 +9,7 @@
       - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
       - [Minimum windows substring](#minimum-windows-substring)
       - [Permutation of string](#permutation-of-string)
+      - [Common solution Summary](#common-solution-summary)
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [Find substring in String](#find-substring-in-string)
@@ -33,12 +34,6 @@
 ## Substring problem
 
 ### Longest/shortest substring with conditions
-
-> Common solutions
-
-* use two pointers to mark left and right,
-* use a map<char,int> to record how many times a char occur.
-* may need to use some reference cnt to check condition satisfy
 
 #### Longest Substring Without Repeating Characters
 https://leetcode.com/problems/longest-substring-without-repeating-characters/#/description
@@ -155,6 +150,42 @@ string minWindow(string s, string t) {
     int len = INT_MAX;
     int cnt = t.size();
     while(r<s.size()){
+        if(m[s[r]]-->0){
+            cnt--;
+        }
+        r++;
+        while(cnt==0){
+            if(r-l<len){
+                len = r-l;
+                ret = s.substr(l,r-l);
+            }
+            if(m[s[l]]++==0){
+                cnt++;
+            }
+            l++;
+        }
+
+    }
+
+    return ret;
+}
+
+```
+
+Or we can do map check for l and r move
+
+```CPP
+string minWindow(string s, string t) {
+    map<char,int> m; //char and its occurence
+    for(int i=0;i<t.size();i++){
+        m[t[i]]++;
+    }
+    int l=0;
+    int r = 0;
+    string ret = "";
+    int len = INT_MAX;
+    int cnt = t.size();
+    while(r<s.size()){
         if(m.find(s[r])!=m.end() && m[s[r]]-->0){
             cnt--;
         }
@@ -213,6 +244,46 @@ bool checkInclusion(string s1, string s2) {
 }
 ```
 
+Or we can do map check for l and r move
+
+```CPP
+bool checkInclusion(string s1, string s2) {
+    if(s1.size()==0)
+        return true;
+    unordered_map<char,int> m;
+    int l = 0;
+    int r = 0;
+    int cnt = 0;
+    for(int i=0;i<s1.size();i++){
+        m[s1[i]]++;  //s2 own s1
+        cnt++;
+    }
+    for(int l=0,r=0;r<s2.size();r++){
+        if(m.find(s2[r])!=m.end()){
+            //m[s2[r]] could be smaller than 0, so s2[r] pays off and have more, leaving for l to move
+            if(m[s2[r]]-->0)  
+                cnt--;
+            while(cnt==0){//include all in s1
+                if(r-l+1==s1.size())  {
+                    return true;
+                }
+                if(m.find(s2[l])!=m.end() && m[s2[l]]++==0){
+                    cnt++;
+                }
+                l++;
+            }
+        }
+    }
+    return false;
+}
+```
+
+#### Common solution Summary
+* use two pointers to mark left and right,
+* use a map<char,int> to record how many times a char occur.
+  * move r first to pay off map val
+* may need to use some reference cnt to check condition satisfy
+* map val could be <0(overpay, leave for l move), but cnt only changes when condition matches
 
 ### Substring Problem from 2 or more strings
 
