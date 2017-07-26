@@ -145,39 +145,32 @@ Minimum window is "BANC".
 
 ```CPP
 string minWindow(string s, string t) {
-        map<char,int> m; //char and its occurence
-        for(int i=0;i<t.size();i++){
-            m[t[i]]++;
+    map<char,int> m; //char and its occurence
+    for(int i=0;i<t.size();i++){
+        m[t[i]]++;
+    }
+    int l=0;
+    int r = 0;
+    string ret = "";
+    int len = INT_MAX;
+    int cnt = t.size();
+    while(r<s.size()){
+        if(m.find(s[r])!=m.end() && m[s[r]]-->0){
+            cnt--;
         }
-        int l=0;
-        int r = 0;
-        string ret = "";
-        int len = INT_MAX;
-        int cnt = t.size();
-        while(r<s.size()){
-            if(m.find(s[r])!=m.end()){
-                if(m[s[r]]>0){
-                    cnt--;
-                }
-                m[s[r]]--;  //this could be negative, means s has more s[r] than t has s[r]
+        r++;
+        while(cnt==0){
+            if(r-l<len){
+                len = r-l;
+                ret = s.substr(l,r-l);
             }
-            r++;
-
-            while(cnt==0){
-                if(r-l<len){
-                    len = r-l;
-                    ret = s.substr(l,r-l);
-                }
-                if(m.find(s[l])!=m.end()){
-                    if(m[s[l]]==0){
-                        cnt++; //move out s[l], substring will not include whole t
-                    }
-                    m[s[l]]++;
-                }
-                l++;
+            if(m.find(s[l])!=m.end() && m[s[l]]++==0){
+                cnt++;
             }
+            l++;
         }
-        return ret;
+    }
+    return ret;
 }
 ```
 
