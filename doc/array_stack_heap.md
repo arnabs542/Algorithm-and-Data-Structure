@@ -826,7 +826,7 @@ vector<int> smallestRange(vector<vector<int>>& nums) {
     typedef vector<int>::iterator vi;
     struct comp {
         bool operator()(pair<vi, vi> p1, pair<vi, vi> p2) {
-            return *p1.first > *p2.first;
+            return * p1.first > * p2.first;
         }
     };
 
@@ -847,8 +847,8 @@ vector<int> smallestRange(vector<vector<int>>& nums) {
         if (cur.first == cur.second)   //reach one list's end
             break;
         pq.push(cur);  //push cur min's next item in vector
-        l = *pq.top().first;
-        h = max(h, *cur.first);
+        l = * pq.top().first;
+        h = max(h, * cur.first);
         if (h - l < ret[1] - ret[0])
             ret = {l, h};
     }
