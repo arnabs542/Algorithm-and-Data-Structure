@@ -24,8 +24,11 @@
   - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
   - [Interval sort](#interval-sort)
   - [Two heaps to record different attributes for one task](#two-heaps-to-record-different-attributes-for-one-task)
+    - [Task schedule](#task-schedule)
+    - [Max Tree](#max-tree)
 - [Stack/Queue](#stackqueue)
   - [Min Stack](#min-stack)
+  - [Stack To minic function call](#stack-to-minic-function-call)
   - [Other Stack Problem](#other-stack-problem)
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
   - [Monotonic stack](#monotonic-stack)
@@ -219,7 +222,7 @@ int Longestsubarray(vector<int> nums, int k){
     if(m.find(sum-k)!=m.end()){
       ret = max(ret, i-m[sum-k]); //get the length
     }
-    /if sum is already there, we do not record index since we need left most index to get longest
+    //if sum is already there, we do not record index since we need left most index to get longest
     if(m.find(sum)==m.end())  
       m[sum] = i;
   }
@@ -989,9 +992,173 @@ public:
  }
 ```
 
+## Rearrange: Hash Map with Priority queue
+
+
+* we need to record both hash map with val representing count, and have another priority queue based on hash map val
+
+* every round pop from priority queue, decrease count,
+
+* re push back to priority_queue
+
+### Rearrange String k Distance Apart
+
+* Key idea is to use hash map and priority queue. hash map's key is char and val is how many times it appears, pq is to record via map's val
+
+* Every time just to process map and pq. pop pq with counter decrease and re push to pq
+
+https://leetcode.com/problems/rearrange-string-k-distance-apart/#/description
+
+Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
+
+Example 1:
+s = "aabbcc", k = 3
+Result: "abcabc"
+
+The same letters are at least distance 3 from each other.
+Example 2:
+s = "aaabc", k = 3
+Answer: ""
+
+It is not possible to rearrange the string.
+Example 3:
+s = "aaadbbcc", k = 2
+Answer: "abacabcd"
+Another possible answer is: "abcabcda"
+The same letters are at least distance 2 from each other.
+
+```CPP
+string rearrangeString(string s, int k) {
+    int len = s.size();
+    if(k==0)
+        return s;
+
+    map<char,int> m;
+    for(int i=0;i<s.size();i++){
+        m[s[i]]++;
+    }
+    string ret = "";
+
+    priority_queue<pair<int,char>> pq;  //count and char
+    for(auto i:m){
+        pq.push(make_pair(i.second,i.first)); //heap via char's occurence count
+    }
+
+    while(!pq.empty()){
+        vector<pair<int,char>> tmp;
+        int cnt = min(len,k);
+        for(int i=0;i<cnt;i++){
+            if(!pq.empty()){
+                pair<int,char> cur = pq.top();
+                if(--cur.first>0)
+                    tmp.push_back(cur);
+                ret+=cur.second;
+                pq.pop();
+                len--;
+            }else{
+                return "";
+            }
+        }
+        for(int i=0;i<tmp.size();i++){
+            pq.push(tmp[i]);
+        }
+    }
+
+    return ret;
+}
+```
+
+Another method
+```CPP
+string rearrangeString(string s, int k) {
+    int len = s.size();
+    if(k==0)
+        return s;
+
+    vector<int> cnt(26,0);
+    for(int i=0;i<len;i++)
+        cnt[s[i]-'a']++;
+    string ret = "";
+    //keep track of the most left position that one character can appear.
+    vector<int> valid(26,0);
+
+    for(int i=0;i<len;i++){
+        int pos = findMaxleft(cnt, valid, i);
+        if(pos==-1)
+            return "";
+        cnt[pos]--;
+        valid[pos] = i+k;
+        ret += char('a'+pos);
+
+    }
+    return ret;
+}
+
+int findMaxleft(vector<int> &cnt, vector<int> &valid, int index){
+    int pos = -1;
+    int v = INT_MIN;
+    for(int i=0;i<cnt.size();i++){
+       if(cnt[i]>0 && cnt[i]>v && index>=valid[i]){
+           v = cnt[i];
+           pos = i;
+       }
+   }
+   return pos;
+}
+```
+
+### Task schedule
+https://leetcode.com/problems/task-scheduler/#/description
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+
+Example 1:
+Input: tasks = ['A','A','A','B','B','B'], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+```CPP
+int leastInterval(vector<char>& tasks, int n) {
+    map<char,int> m;
+    for(int i=0;i<tasks.size();i++){
+        m[tasks[i]]++;
+    }
+    priority_queue<int> pq; //heap for task's count
+    for(auto i:m){
+        pq.push(i.second);
+    }
+    int ret = 0;
+    int cycle = n+1;
+    while(!pq.empty()){
+        int t = 0;
+        vector<int> tmp;
+        for(int i=0;i<cycle;i++){
+            if(!pq.empty()){
+                tmp.push_back(pq.top());
+                pq.pop();
+                t++;
+            }
+        }
+        for (int i=0;i<tmp.size();i++) {
+            if (--tmp[i]>0) {
+                pq.push(tmp[i]);
+            }
+        }
+        ret += !pq.empty() ? cycle : t;
+    }
+
+    return ret;
+}
+```
+
 ### Max Tree
 
 We can use max heap and heap insert.
+
 ```CPP
 struct TreeNode{
   int val;
@@ -1072,6 +1239,97 @@ int getMin() {
     return min_s.top();
 }
 ```
+
+## Stack To minic function call
+
+https://leetcode.com/problems/exclusive-time-of-functions/#/description
+
+
+Given the running logs of n functions that are executed in a nonpreemptive single threaded CPU, find the exclusive time of these functions.
+Each function has a unique id, start from 0 to n-1. A function may be called recursively or by another function.
+A log is a string has this format : function_id:start_or_end:timestamp. For example, "0:start:0" means function 0 starts from the very beginning of time 0. "0:end:0" means function 0 ends to the very end of time 0.
+Exclusive time of a function is defined as the time spent within this function, the time spent by calling other functions should not be considered as this function's exclusive time. You should return the exclusive time of each function sorted by their function id.
+
+Example 1:
+Input:
+n = 2
+logs =
+["0:start:0",
+ "1:start:2",
+ "1:end:5",
+ "0:end:6"]
+Output:[3, 4]
+Explanation:
+Function 0 starts at time 0, then it executes 2 units of time and reaches the end of time 1.
+Now function 0 calls function 1, function 1 starts at time 2, executes 4 units of time and end at time 5.
+Function 0 is running again at time 6, and also end at the time 6, thus executes 1 unit of time.
+So function 0 totally execute 2 + 1 = 3 units of time, and function 1 totally execute 4 units of time.
+
+```CPP
+vector<int> exclusiveTime(int n, vector<string>& logs) {
+    vector<int> ret(n,0); //func id as index, time is value
+    stack<pair<int,int>> s; //func id, current execution time, when start, push, when end, pop
+
+    for(int i=0;i<logs.size();i++){
+        int index = 0;
+        int id = checkid(logs[i],index);
+        int label = checklabel(logs[i],index);
+        int t = checktime(logs[i],index);
+        if(label==0){
+            s.push(make_pair(id,t));
+        }else{
+            pair<int,int> cur = s.top();
+            int last = t-cur.second+1;
+            ret[cur.first]+=last;
+            s.pop();
+            if (!s.empty()) {
+              //to remove over count, not time for s.top().first id
+                ret[s.top().first] -= last;
+            }
+        }
+    }
+
+
+    return ret;
+}
+
+int checkid(string s, int &index){
+    int ret = 0;
+    while(index<s.size()){
+        if(s[index]==':'){
+            index++;
+            break;
+        }
+        ret = ret*10+s[index]-'0';
+        index++;
+    }
+    return ret;
+}
+
+int checklabel(string s,int &index){
+    int ret = 0;
+
+    if(s[index]=='s'){
+        index = index + 6;
+        ret = 0;
+    }else{
+        index = index + 4;
+        ret = 1;
+    }
+    return ret;
+}
+
+int checktime(string s, int &index){
+    int ret = 0;
+    while(index<s.size()){
+        ret = ret*10+s[index]-'0';
+        index++;
+    }
+    return ret;
+}
+```
+
+
 
 ## Other Stack Problem
 * Convert a stack to Queue:
