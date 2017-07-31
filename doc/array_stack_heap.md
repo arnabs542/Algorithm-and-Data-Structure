@@ -21,11 +21,14 @@
 - [Heap](#heap)
   - [Top K problem](#top-k-problem)
   - [Search in sorted list of vectors](#search-in-sorted-list-of-vectors)
-  - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
+  - [Two Heaps](#two-heaps)
+    - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
+    - [Max value with constraint](#max-value-with-constraint)
   - [Interval sort](#interval-sort)
-  - [Two heaps to record different attributes for one task](#two-heaps-to-record-different-attributes-for-one-task)
+  - [Rearrange:Hash Map with Priority queue](#rearrangehash-map-with-priority-queue)
+    - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
     - [Task schedule](#task-schedule)
-    - [Max Tree](#max-tree)
+  - [Max Tree](#max-tree)
 - [Stack/Queue](#stackqueue)
   - [Min Stack](#min-stack)
   - [Stack To minic function call](#stack-to-minic-function-call)
@@ -857,8 +860,9 @@ vector<int> smallestRange(vector<vector<int>>& nums) {
 
 ```
 
+## Two Heaps
 
-## Find the median value in data stream on the fly:
+### Find the median value in data stream on the fly:
 
 Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
 https://leetcode.com/problems/find-median-from-data-stream/
@@ -897,6 +901,55 @@ https://leetcode.com/problems/find-median-from-data-stream/
      }
  }
  ```
+
+### Max value with constraint
+
+ You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
+
+  ```CPP
+  struct cost_compare{
+      bool operator()(pair<int,int> a, pair<int,int> b){
+          return a.first>b.first;
+      }
+  };
+
+  struct profit_compare{
+      bool operator()(pair<int,int> a, pair<int,int> b){
+          return a.second<b.second;
+      }
+  };
+
+  int findMaximizedCapital(int k, int W, vector<int>& Profits, vector<int>& Capital) {
+     priority_queue<pair<int,int>,vector<pair<int,int>>,cost_compare> cost; //min heap for cost
+     priority_queue<pair<int,int>,vector<pair<int,int>>,profit_compare> profit; //max heap for profit
+
+
+     int len = Capital.size();
+     pair<int,int> cur;
+     for(int i=0;i<len;i++){
+       cur = make_pair(Capital[i],Profits[i]);
+       cost.push(cur);
+     }
+     int picks = 0;
+     while(k>0){
+
+       while(!cost.empty() && W>=cost.top().first){
+          //only pick possible project, do not trade yet
+          profit.push(cost.top());
+          cost.pop();
+       }
+       if(profit.empty())
+          break;
+      //deal the real transaction here
+        cur = profit.top();
+        W = W + cur.second;
+        profit.pop();
+        k--;
+     }
+     return W;    
+  }
+ ```
+
 ## Interval sort
 
 //https://leetcode.com/problems/meeting-rooms-ii/
@@ -942,57 +995,7 @@ public:
 };
 ```
 
-## Two heaps to record different attributes for one task
-
-* IPO/Max profit:
-
- You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
-
- ```CPP
- struct cost_compare{
-     bool operator()(pair<int,int> a, pair<int,int> b){
-         return a.first>b.first;
-     }
- };
-
- struct profit_compare{
-     bool operator()(pair<int,int> a, pair<int,int> b){
-         return a.second<b.second;
-     }
- };
-
- int findMaximizedCapital(int k, int W, vector<int>& Profits, vector<int>& Capital) {
-    priority_queue<pair<int,int>,vector<pair<int,int>>,cost_compare> cost; //min heap for cost
-    priority_queue<pair<int,int>,vector<pair<int,int>>,profit_compare> profit; //max heap for profit
-
-
-    int len = Capital.size();
-    pair<int,int> cur;
-    for(int i=0;i<len;i++){
-      cur = make_pair(Capital[i],Profits[i]);
-      cost.push(cur);
-    }
-    int picks = 0;
-    while(k>0){
-
-      while(!cost.empty() && W>=cost.top().first){
-         //only pick possible project, do not trade yet
-         profit.push(cost.top());
-         cost.pop();
-      }
-      if(profit.empty())
-         break;
-     //deal the real transaction here
-       cur = profit.top();
-       W = W + cur.second;
-       profit.pop();
-       k--;
-    }
-    return W;    
- }
-```
-
-## Rearrange: Hash Map with Priority queue
+## Rearrange:Hash Map with Priority queue
 
 
 * we need to record both hash map with val representing count, and have another priority queue based on hash map val
@@ -1155,7 +1158,7 @@ int leastInterval(vector<char>& tasks, int n) {
 }
 ```
 
-### Max Tree
+## Max Tree
 
 We can use max heap and heap insert.
 
