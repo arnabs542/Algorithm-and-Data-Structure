@@ -4,6 +4,7 @@
 
 - [Array](#array)
   - [Array re-order](#array-re-order)
+    - [Detect duplicate](#detect-duplicate)
   - [Sub Array](#sub-array)
     - [Classical Sub-Array Problem](#classical-sub-array-problem)
       - [Common Tchnqiues](#common-tchnqiues)
@@ -28,6 +29,7 @@
   - [Rearrange:Hash Map with Priority queue](#rearrangehash-map-with-priority-queue)
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
     - [Task schedule](#task-schedule)
+  - [Auto completion system](#auto-completion-system)
   - [Max Tree](#max-tree)
 - [Stack/Queue](#stackqueue)
   - [Min Stack](#min-stack)
@@ -68,7 +70,39 @@ void moveZeroes(vector<int>& nums) {
 }
 ```
 
+### Detect duplicate
 
+https://leetcode.com/problems/set-mismatch/description/
+
+The set S originally contains numbers from 1 to n. But unfortunately, due to the data error, one of the numbers in the set got duplicated to another number in the set, which results in repetition of one number and loss of another number.
+
+Given an array nums representing the data status of this set after the error. Your task is to firstly find the number occurs twice and then find the number that is missing. Return them in the form of an array.
+
+Example 1:
+
+Input: nums = [1,2,2,4]
+
+Output: [2,3]
+
+```CPP
+vector<int> findErrorNums(vector<int>& nums) {
+    vector<int> ret;
+    for (int i = 0; i < nums.size(); i++) {
+        while (nums[nums[i]-1] != nums[i]) {
+            swap(nums[nums[i]-1], nums[i]);
+        }
+    }
+    for (int i = 0; i < nums.size(); i++) {
+        if (nums[i] != i+1){
+            ret.push_back(nums[i]);
+            ret.push_back(i+1);
+            return ret;
+        }
+
+    }
+    return ret;        
+}
+```
 
 ## Sub Array
 > Common techniques
@@ -1155,6 +1189,56 @@ int leastInterval(vector<char>& tasks, int n) {
     }
 
     return ret;
+}
+```
+
+## Auto completion system
+
+https://leetcode.com/problems/design-search-autocomplete-system/description/
+
+```CPP
+struct mycompare{
+  bool operator()(const pair<string, int> &a, const pair<string, int> &b){
+    return a.second > b.second || a.second == b.second && a.first < b.first;
+  }
+};
+
+AutocompleteSystem(vector<string> sentences, vector<int> times) {
+    for (int i = 0; i < times.size(); i++)
+        dict[sentences[i]] += times[i];
+    data.clear();
+}
+
+vector<string> input(char c) {
+    if (c == '#') {
+        dict[data]++;
+        data.clear();
+        return {};
+    }else{
+        data+=c;
+        priority_queue<pair<string, int>, vector<pair<string, int>>, mycompare> pq;
+        for (auto &p : dict) {
+            bool match = true;
+            for (int i = 0; i < data.size(); i++) {
+                if (data[i] != p.first[i]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                pq.push(p);
+                if (pq.size() > 3)
+                    pq.pop();
+            }
+        }
+
+        vector<string> res(pq.size());
+        for (int i = pq.size() - 1; i >= 0; i--) {
+            res[i] = pq.top().first;
+            pq.pop();
+        }
+        return res;
+    }
 }
 ```
 

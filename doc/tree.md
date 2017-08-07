@@ -70,6 +70,28 @@ void inOrder(TreeNode* root){
 }
 ```
 
+Follow up: Inorder Successor in BST
+
+https://leetcode.com/problems/inorder-successor-in-bst/
+
+```CPP
+TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+
+    TreeNode* ret;
+    while(root!=NULL){
+        if(root->val<=p->val){
+            root = root->right;
+        }else{
+            ret = root;
+            root = root->left;
+        }
+    }
+
+    return ret;
+}
+```
+
+
 ## Post order
 * In pre order case, we print out center, left, right. post order requires left, right, center
 * so we can push stack center, right, left, and reverse use another stack
