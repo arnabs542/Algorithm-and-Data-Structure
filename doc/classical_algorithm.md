@@ -36,6 +36,8 @@
   - [Interval overlap](#interval-overlap)
     - [Merge intervals](#merge-intervals)
     - [Interval Overlap](#interval-overlap)
+- [Trie](#trie)
+  - [Example: Detect Words](#example-detect-words)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1377,4 +1379,102 @@ int findMinArrowShots(vector<pair<int, int>>& points) {
     }
     return overlap.size();
 }
+```
+
+# Trie
+
+In computer science, a trie, also called digital tree and sometimes radix tree or prefix tree (as they can be searched by prefixes), is a kind of search tree—an ordered tree data structure that is used to store a dynamic set or associative array where the keys are usually strings.
+
+## Example: Detect Words
+
+Design a data structure that supports the following two operations:
+
+void addWord(word)
+
+bool search(word)
+
+search(word) can search a literal word or a regular expression string containing only letters a-z or .. A . means it can represent any one letter.
+
+For example:
+
+addWord("bad")
+
+addWord("dad")
+
+addWord("mad")
+
+search("pad") -> false
+
+search("bad") -> true
+
+search(".ad") -> true
+
+search("b..") -> true
+
+
+```CPP
+class WordDictionary {
+public:
+    struct TrieNode{
+        bool end = false;
+        struct TrieNode * child[26];
+    };
+
+    TrieNode * root = new TrieNode();
+    // Adds a word into the data structure.
+    void addWord(string word) {
+        TrieNode * p = root;
+        int len= word.size();
+        for(int i=0;i<len;i++){
+            int pos = word[i]-'a';
+            if(p->child[pos] == NULL){
+                p->child[pos] = new TrieNode();
+            }
+
+            p = p->child[pos];
+        }
+        p->end = true;//mark the end of tree
+
+    }
+
+    // Returns if the word is in the data structure. A word could
+    // contain the dot character '.' to represent any one letter.
+    bool search(string word) {
+        return searchvalid(word,root);
+    }
+
+    bool searchvalid(string word, TrieNode * p){
+
+        if(p==NULL)
+            return false;
+        int len = word.size();
+        if(len == 0)
+            return p->end;
+
+        for(int i=0;i<len;i++){
+            if(word[i]=='.'){
+                //check all possible solution
+
+                for(int j=0;j<26;j++){
+                    if(p->child[j]!=NULL){
+                         //check all possible solutions
+                         if(searchvalid(word.substr(i+1,len-i),p->child[j]))
+                            return true;
+                    }
+                }
+                return false;
+
+            }else{
+                int pos=word[i]-'a';
+                if(p->child[pos] == NULL)
+                    return false;
+
+                p=p->child[pos];
+            }
+        }
+
+        return p->end;
+    }
+};
+
 ```
