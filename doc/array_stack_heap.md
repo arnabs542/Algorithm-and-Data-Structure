@@ -254,11 +254,11 @@ int Longestsubarray(vector<int> nums, int k){
   int ret = 0;
   int sum = 0;
   map<int,int> m;//key is sum val, val is index
+  m[0] = 0;  //so if sum-k = 0, means sum==k, we can have len
   for(int i=0;i<nums.size();i++){
     sum+=nums[i];
-    
     if(m.find(sum-k)!=m.end()){
-      ret = max(ret, i-m[sum-k]); //get the length
+      ret = max(ret, i-m[sum-k]+1); //get the length
     }
     //if sum is already there, we do not record index since we need left most index to get longest
     if(m.find(sum)==m.end())  
