@@ -256,6 +256,7 @@ int Longestsubarray(vector<int> nums, int k){
   map<int,int> m;//key is sum val, val is index
   for(int i=0;i<nums.size();i++){
     sum+=nums[i];
+    
     if(m.find(sum-k)!=m.end()){
       ret = max(ret, i-m[sum-k]); //get the length
     }
