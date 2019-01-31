@@ -9,7 +9,6 @@
       - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
       - [Minimum windows substring](#minimum-windows-substring)
     - [Two pointers problem](#two-pointers-problem)
-      - [Count Char num problem](#count-char-num-problem)
       - [Common solution Summary](#common-solution-summary)
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
@@ -205,6 +204,13 @@ string minWindow(string s, string t) {
 
 ### Two pointers problem
 
+#### Common solution Summary
+* use two pointers to mark left and right,
+* use a map<char,int> to record how many times a char occur. or index of certain char
+  * move r first to pay off map val
+* may need to use some reference cnt to check condition satisfy
+* map val could be <0(overpay, leave for l move), but cnt only changes when condition matches
+
 
 https://leetcode.com/problems/partition-labels/
 
@@ -244,9 +250,6 @@ public:
     }
 };
 ```
-
-
-#### Count Char num problem
 
 https://leetcode.com/problems/permutation-in-string/#/description
 
@@ -364,12 +367,6 @@ int leastInterval(vector<char>& tasks, int n) {
 }
 ```
 
-#### Common solution Summary
-* use two pointers to mark left and right,
-* use a map<char,int> to record how many times a char occur.
-  * move r first to pay off map val
-* may need to use some reference cnt to check condition satisfy
-* map val could be <0(overpay, leave for l move), but cnt only changes when condition matches
 
 ### Substring Problem from 2 or more strings
 
