@@ -8,7 +8,8 @@
       - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
       - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
       - [Minimum windows substring](#minimum-windows-substring)
-      - [Permutation of string](#permutation-of-string)
+    - [Two pointers problem](#two-pointers-problem)
+      - [Count Char num problem](#count-char-num-problem)
       - [Common solution Summary](#common-solution-summary)
     - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
       - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
@@ -202,52 +203,8 @@ string minWindow(string s, string t) {
 }
 ```
 
-### Schedule/Partition
-https://leetcode.com/problems/task-scheduler/#/description
-Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+### Two pointers problem
 
-However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
-
-You need to return the least number of intervals the CPU will take to finish all the given tasks.
-
-Example 1:
-Input: tasks = ['A','A','A','B','B','B'], n = 2
-Output: 8
-Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
-
-```CPP
-int leastInterval(vector<char>& tasks, int n) {
-    map<char,int> m;
-    for(int i=0;i<tasks.size();i++){
-        m[tasks[i]]++;
-    }
-    priority_queue<int> pq; //heap for task's count
-    for(auto i:m){
-        pq.push(i.second);
-    }
-    int ret = 0;
-    int cycle = n+1;
-    while(!pq.empty()){
-        int t = 0;
-        vector<int> tmp;
-        for(int i=0;i<cycle;i++){
-            if(!pq.empty()){
-                tmp.push_back(pq.top());
-                pq.pop();
-                t++;
-            }
-        }
-        for (int i=0;i<tmp.size();i++) {
-            if (--tmp[i]>0) {
-                pq.push(tmp[i]);
-            }
-        }
-        ret += !pq.empty() ? cycle : t;
-    }
-
-    return ret;
-}
-```
 
 https://leetcode.com/problems/partition-labels/
 
@@ -268,18 +225,19 @@ public:
         unordered_map<char, int> m;
         vector<int> res;
         for(int i = 0; i < S.size(); i++){
-            m[S[i]] = i;
+            m[S[i]] = i; //record right most index.
         }
         int i = 0;
-        int slow = 0;
+        int l = 0;
         while(i < S.size()){
-            int fast = m[S[i]];
-            while(i < fast){
-                fast = max(fast, m[S[i]]);
+            int r = m[S[i]];
+            //check for current index level, all index smaller will not have char beyond right most fast
+            while(i < r){
+                r = max(r, m[S[i]]);
                 i++;
             }
-            res.push_back(fast-slow+1);
-            slow = fast+1;
+            res.push_back(r-l+1);
+            l = r+1;
             i++;
         }
         return res;
@@ -288,7 +246,7 @@ public:
 ```
 
 
-#### Permutation of string
+#### Count Char num problem
 
 https://leetcode.com/problems/permutation-in-string/#/description
 
@@ -357,6 +315,52 @@ bool checkInclusion(string s1, string s2) {
         }
     }
     return false;
+}
+```
+
+https://leetcode.com/problems/task-scheduler/#/description
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+
+Example 1:
+Input: tasks = ['A','A','A','B','B','B'], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+```CPP
+int leastInterval(vector<char>& tasks, int n) {
+    map<char,int> m;
+    for(int i=0;i<tasks.size();i++){
+        m[tasks[i]]++;
+    }
+    priority_queue<int> pq; //heap for task's count
+    for(auto i:m){
+        pq.push(i.second);
+    }
+    int ret = 0;
+    int cycle = n+1;
+    while(!pq.empty()){
+        int t = 0;
+        vector<int> tmp;
+        for(int i=0;i<cycle;i++){
+            if(!pq.empty()){
+                tmp.push_back(pq.top());
+                pq.pop();
+                t++;
+            }
+        }
+        for (int i=0;i<tmp.size();i++) {
+            if (--tmp[i]>0) {
+                pq.push(tmp[i]);
+            }
+        }
+        ret += !pq.empty() ? cycle : t;
+    }
+
+    return ret;
 }
 ```
 
