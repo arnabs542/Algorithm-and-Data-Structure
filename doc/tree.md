@@ -152,7 +152,31 @@ void postOrder(TreeNode* root){
 }
 ```
 
-## next node(Descendant Node) via in order traversal
+##  In order in BST and its variation 
+
+in general can be used as formation of
+
+```CPP
+stack<Treenode* node> s;
+s.push(root)
+while(!s.empty()){
+  //Go to leftmost
+  while(node->left){
+      node = node->left;
+      s.push(node);
+  }
+  //mark(could be print, count, any operation)
+  print(s.top());
+  //Go to right
+  node = s.top()->right;
+  //processed current, pop
+  s.pop();
+  
+}
+
+```
+
+### next node(Descendant Node) via in order traversal
 
 * assume there is parent pointer. for any given node, get its next via in order
 
@@ -187,6 +211,208 @@ TreeNode* getLeftMost(TreeNode* node){
 }
 
 ```
+
+### K-th Smallest
+
+https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+
+```CPP
+//https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+/*
+Given a binary search tree, write a function kthSmallest to find the kth smallest element in it.
+*/
+//method 1: ierative
+class Solution {
+public:
+  int kthSmallest(TreeNode* root, int k) {
+    //in order traversal
+    stack<TreeNode*> s;
+    int cnt = 0;
+    int ret = 0;
+    while (true) {
+      while (root) {
+        s.push(root);
+        root = root->left;
+      }
+      cnt++;
+      root = s.top()->right;
+
+      if (cnt == k) {
+        break;
+      }
+      s.pop();
+
+    }
+    return s.top()->val;
+
+  }
+};
+
+//recursive
+class Solution {
+private:
+  int cnt = 0;
+  int num;
+public:
+  int kthSmallest(TreeNode* root, int k) {
+    cnt = k;
+    help(root);
+    return num;
+  }
+
+  void help(TreeNode* root) {
+    if (cnt>0) {
+      if (root->left)
+        help(root->left);
+      cnt--;
+      if (cnt == 0) {
+        num = root->val;
+        return;
+      }
+      if (root->right)
+        help(root->right);
+    }
+  }
+};
+
+```
+
+### Range problem
+
+* Print range
+
+```CPP
+//Print range
+void printbstkeys(Tnode *root, int k1, int k2)
+{
+  if (root == NULL)
+    return;
+  printbstKey(root->left, k1, k2);
+  if (root->data >= k1 && root->data <= k2)
+    printf(" %d ", root->data);
+  printbstKey(root->right, k1, k2);
+  return;
+}
+
+/*
+To avoid unwanted traversals we can compare current node's
+data with K1 for left subtree and K2 for right subtree.
+*/
+
+void printbstkeys(Tnode *root, int k1, int k2)
+{
+  if (root == NULL)
+    return;
+  if (root->data >= k1)
+    printbstKey(root->left, k1, k2);
+  if (root->data >= k1 && root->data <= k2)
+    printf(" %d ", root->data);
+  if (root->data<k2)
+    printbstKey(root->right, k1, k2);
+  return;
+}
+
+```
+
+* 
+
+
+### Closest value
+
+https://leetcode.com/problems/closest-binary-search-tree-value/
+
+```CPP
+//https://leetcode.com/problems/closest-binary-search-tree-value/
+//recursive
+class Solution {
+public:
+  int closestValue(TreeNode* root, double target) {
+      /* 
+      found the value via in order traverse, maintain cur and next, until cur<target<next or next<target<cur 
+      */
+      int cur = root->val;
+      if(cur>target){
+          root = root->left;
+      }else{
+          root = root->right;
+      }
+      if(root==NULL)
+          return cur;
+      int next = closestValue(root, target);
+      
+      return abs(cur-target)>abs(next-target)?next:cur;
+  }
+};
+
+//iterative
+class Solution {
+public:
+  int closestValue(TreeNode* root, double target) {
+      /* 
+      found the value via in order traverse, maintain cur and next, until cur<target<next or next<target<cur 
+      */
+      int cloest = root->val;
+      while(root!=NULL){
+          if(abs(cloest - target) >= abs(root->val- target))
+              cloest = root->val;
+          
+          if(root->val>target){
+              root = root->left;
+          }else{
+              root = root->right;
+          }
+      }
+      return cloest;
+  }
+};
+
+```
+
+https://leetcode.com/problems/closest-binary-search-tree-value-ii/
+
+Given a non-empty binary search tree and a target value, find k values in the BST that are closest to the target.
+
+Note:
+Given target value is a floating point.
+You may assume k is always valid, that is: k ≤ total nodes.
+You are guaranteed to have only one unique set of k values in the BST that are closest to the target.
+
+```CPP
+class Solution {
+public:
+  vector<int> closestKValues(TreeNode* root, double target, int k) {
+    vector<int> ret;
+    priority_queue<pair<double, int>> pq;
+
+    dfs_help(root, target, k, pq);
+    while (!pq.empty()) {
+      pair<double, int> tmp = pq.top();
+      ret.push_back(tmp.second);
+      pq.pop();
+    }
+    return ret;
+  }
+
+  void dfs_help(TreeNode* root, double target, int k, priority_queue<pair<double, int>> &pq) {
+    if (root == NULL)
+      return;
+
+    if (pq.size() < k) {
+      pq.push(make_pair(abs(target - root->val), root->val));
+    }
+    else {
+      if (abs(root->val - target)<abs(pq.top().first)) {
+        pq.push(make_pair(abs(target - root->val), root->val));
+        pq.pop();
+      }
+    }
+    dfs_help(root->left, target, k, pq);
+    dfs_help(root->right, target, k, pq);
+  }
+};
+
+```
+
 
 
 # Sub-Tree problems
@@ -272,7 +498,59 @@ TreeNode* deserialize(string data) {
 }
 ```
 
-# Morris Traversal
+# Traversal
+
+## BFS/DFS
+
+* BFS
+
+```CPP
+public Void BFS()
+{
+  Queue q = new Queue();
+  q.push_back(root);//You don't need to write the root here, it will be written in the loop
+  while (q.count > 0)
+  {
+    Node n = q.pop_front();
+    Console.Writeln(n.Value); //Only write the value when you dequeue it
+    if (n.left != null)
+    {
+      q.push_back(n.left);//enqueue the left child
+    }
+    if (n.right != null)
+    {
+      q.push_back(n.right);//enque the right child
+    }
+  }
+}
+```
+
+* DFS
+
+```CPP
+void printLevel(BinaryTree *p, int level) {
+  if (!p) return;
+  if (level == 1) {
+    cout << p->data << " ";
+  }
+  else {
+    printLevel(p->left, level - 1);
+    printLevel(p->right, level - 1);
+  }
+}
+
+void printLevelOrder(BinaryTree *root) {
+  int height = maxHeight(root);
+  for (int level = 1; level <= height; level++) {
+    printLevel(root, level);
+    cout << endl;
+  }
+}
+
+```
+
+
+## Morris Traversal
 
 * why we use recursive in tree traveral(pre,in,post): idea is to trversal to current node, node's left and return to current node, node'right and return to current node;
 * basically visit the node 3 times
@@ -446,24 +724,24 @@ bool isBST(int &ret, int &min, int &max, TreeNode* root){
 
 ```CPP
 //https://leetcode.com/problems/diameter-of-binary-tree/
-int diameterOfBinaryTree(TreeNode* root) {
-      if(!root)
-        return 0;
-      int ret = 0;
-      help(root,ret);
-      return ret-1;  //node number-1
-}
-int help(TreeNode* root, int &max_depth){
-  if(root==NULL)
-    return 0;
+    int diameterOfBinaryTree(TreeNode* root) {
 
-  int depth_left = help(root->left, max_depth);
-  int depth_right = help(root->right, max_depth);
-  int depth_cur = depth_left + depth_right + 1; //max length for cur node as root
-  max_depth = max(depth_cur, max_depth);
-  return max(depth_left,depth_right)+1;  //max branch length for current node/height
+    if(root == NULL) return 0;
+      int res = depth(root->left) + depth(root->right);
+      return max(res, max(diameterOfBinaryTree(root->left), diameterOfBinaryTree(root->right)));
+    }
+
+    
+    int depth(TreeNode* root){
+        if(root == NULL) return 0;
+        return  1+max(depth(root->left), depth(root->right));
+    }
 }
 ```
+
+
+
+
 # Tree topology
 
 ## Find largest BST topology(return number of node in this topology) in Binary tree
