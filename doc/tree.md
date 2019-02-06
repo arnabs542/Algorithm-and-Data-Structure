@@ -13,7 +13,10 @@
     - [Closest value](#closest-value)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
-- [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
+- [Tree to Array/String](#tree-to-arraystring)
+  - [Array to Tree](#array-to-tree)
+  - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
+  - [](#)
 - [Traversal](#traversal-1)
   - [BFS/DFS](#bfsdfs)
   - [Morris Traversal](#morris-traversal)
@@ -29,6 +32,7 @@
   - [Dose A tree has B tree in its subtree?](#dose-a-tree-has-b-tree-in-its-subtree)
   - [Calculate number of nodes in binary tree](#calculate-number-of-nodes-in-binary-tree)
   - [return all possible BST given N](#return-all-possible-bst-given-n)
+- [Trie/prefix Tree](#trieprefix-tree)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
