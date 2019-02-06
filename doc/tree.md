@@ -450,7 +450,69 @@ bool isSame(TreeNode * ns, TreeNode * nt){
 
 ```
 
-# Serialize and Deserialize Binary Tree
+# Tree to Array/String
+
+## Array to Tree
+
+https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
+
+```CPP
+class Solution {
+public:
+  TreeNode* sortedArrayToBST(vector<int>& nums) {
+
+    return helper(nums, 0, nums.size() - 1);
+
+  }
+
+  TreeNode* helper(vector<int>& nums, int start, int end) {
+
+    if (start>end)
+      return NULL;
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    int mid = (start + end) / 2;
+    node->val = nums[mid];
+    node->left = helper(nums, start, mid - 1);
+    node->right = helper(nums, mid + 1, end);
+
+    return node;
+  }
+};
+
+
+class Solution {
+public:
+  TreeNode* sortedListToBST(ListNode* head) {
+    int len = 0;
+    ListNode* cur = head;
+    while (cur) {
+      len++;
+      cur = cur->next;
+    }
+
+    return sortedListToBSTConstruct(head, 0, len - 1);
+  }
+
+
+  TreeNode* sortedListToBSTConstruct(ListNode* &head, int start, int end) {
+    if (start>end)
+      return NULL;
+    int mid = (start + end) / 2;
+    TreeNode * left = sortedListToBSTConstruct(head, start, mid - 1);
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    node->val = head->val;
+    head = head->next;
+    TreeNode * right = sortedListToBSTConstruct(head, mid + 1, end);
+    node->left = left;
+    node->right = right;
+    return node;
+  }
+
+};
+
+```
+
+## Serialize and Deserialize Binary Tree
 https://leetcode.com/problems/serialize-and-deserialize-binary-tree/#/description
 ```CPP
 string serialize(TreeNode* root){
@@ -503,6 +565,8 @@ TreeNode* deserialize(string data) {
     return node;
 }
 ```
+
+## 
 
 # Traversal
 
@@ -767,4 +831,83 @@ bool isBST(int &ret, int &min, int &max, TreeNode* root){
 
 ## return all possible BST given N
 
-* suppose
+
+# Trie/prefix Tree
+
+In computer science, a trie, or prefix tree, is an ordered tree data structure that is used to store a dynamic set or associative array where the keys are usually strings. Unlike a binary search tree, no node in the tree stores the key associated with that node; instead, its position in the tree defines the key with which it is associated. All the descendants of a node have a common prefix of the string associated with that node, and the root is associated with the empty string. Values are normally not associated with every node, only with leaves and some inner nodes that correspond to keys of interest. For the space-optimized presentation of prefix tree, see compact prefix tree.
+
+* Root node dose not have character
+* The characters added up from root to certain node represents the string to that node.
+* Cons: memory occupation, 26^i for every level(i is the level), so we can implement using linked list or dynamic array
+
+
+```CPP
+class TrieNode {
+public:
+  // Initialize your data structure here.
+  TrieNode() {
+    end = false;
+    for (int i = 0; i<26; i++) {
+      child[i] = NULL;
+    }
+  }
+  bool end;
+  TrieNode *child[26];
+};
+
+class Trie {
+public:
+  Trie() {
+    root = new TrieNode();
+  }
+  // Inserts a word into the trie.
+  void insert(string word, TrieNode *root) {
+    TrieNode *p = root;
+    int len = word.size();
+    for (int i = 0; i<len; i++) {
+      int pos = word[i] - 'a';
+      if (p->child[pos] == NULL) {
+        p->child[pos] = new TrieNode();
+      }
+      p = p->child[pos];
+    }
+    p->end = true;
+  }
+  // Returns if the word is in the trie.
+  bool search(string word) {
+    TrieNode *p = root;
+    int len = word.size();
+    int pos;
+    for (int i = 0; i<len; i++) {
+      pos = word[i] - 'a';
+      if (p->child[pos] != NULL) {
+        p = p->child[pos];
+      }
+      else {
+        return false;
+      }
+    }
+    return p->end;
+  }
+  // Returns if there is any word in the trie
+  // that starts with the given prefix.
+  bool startsWith(string prefix) {
+    TrieNode *p = root;
+    int len = prefix.size();
+    int pos;
+    for (int i = 0; i<len; i++) {
+      pos = prefix[i] - 'a';
+      if (p->child[pos] != NULL) {
+        p = p->child[pos];
+      }
+      else {
+        return false;
+      }
+    }
+  }
+private:
+  TrieNode* root;
+};
+
+```
+
