@@ -15,6 +15,7 @@
   - [SubTree of another](#subtree-of-another)
 - [Tree to Array/String](#tree-to-arraystring)
   - [Array to Tree](#array-to-tree)
+  - [Reconstruct Tree](#reconstruct-tree)
   - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
   - [](#)
 - [Traversal](#traversal-1)
@@ -514,6 +515,61 @@ public:
 
 };
 
+```
+
+## Reconstruct Tree
+
+Re construct Tree from in-order and post-order
+https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/ 
+
+```CPP
+
+       13
+     /    \
+    2      3
+   / \    /
+  5   6  7
+        / \
+       8   9
+            \
+            10
+            /
+          12
+
+5,  2,  6,  13,  8,  7,  9,  12,  10,  3
+---left--- root  ---------right---------
+
+5,  6,  2,  8,  12,  10,  9,  7,  3,  13
+---left---  ---------right---------- root 
+
+
+class Solution {
+private:
+        unordered_map<int, int> inm; // inorder map [inorder[i], i]
+
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int n = inorder.size(), i = 0;
+        for(auto val: inorder) inm[val] = i++; // build inm for dfs 
+        
+        return dfs(inorder, 0, n - 1, postorder, 0, n - 1);
+    }
+    
+    TreeNode* dfs(vector<int>& inorder, int ileft, int iright, vector<int>& postorder, int pleft, int pright) {
+        if(ileft > iright) return nullptr;
+        
+        int val = postorder[pright]; // root value
+        TreeNode *root = new TreeNode(val);
+        if(ileft == iright) return root;
+        
+        int iroot = inm[val];
+        int nleft = iroot - ileft; // length of left subtree
+        root->right = dfs(inorder, iroot + 1, iright, postorder, pleft + nleft, pright - 1);
+        root->left = dfs(inorder, ileft, iroot - 1, postorder, pleft, pleft + nleft - 1);
+        
+        return root;
+    }
+};
 ```
 
 ## Serialize and Deserialize Binary Tree
