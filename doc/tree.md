@@ -522,55 +522,114 @@ public:
 Re construct Tree from in-order and post-order
 https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/ 
 
+Let us see the process of constructing tree from in[] = {4, 8, 2, 5, 1, 6, 3, 7} and post[] = {8, 4, 5, 2, 6, 7, 3, 1}
+
+1) We first find the last node in post[]. The last node is “1”, we know this value is root as root always appear in the end of postorder traversal.
+
+2) We search “1” in in[] to find left and right subtrees of root. Everything on left of “1” in in[] is in left subtree and everything on right is in right subtree.
+
+         1
+       /    \
+[4, 8, 2, 5]   [6, 3, 7] 
+3) We recur the above process for following two.
+….b) Recur for in[] = {6, 3, 7} and post[] = {6, 7, 3}
+…….Make the created tree as right child of root.
+….a) Recur for in[] = {4, 8, 2, 5} and post[] = {8, 4, 5, 2}.
+…….Make the created tree as left child of root.
+
 ```CPP
 
-       13
-     /    \
-    2      3
-   / \    /
-  5   6  7
-        / \
-       8   9
-            \
-            10
-            /
-          12
-
-5,  2,  6,  13,  8,  7,  9,  12,  10,  3
----left--- root  ---------right---------
-
-5,  6,  2,  8,  12,  10,  9,  7,  3,  13
----left---  ---------right---------- root 
-
-
 class Solution {
-private:
-        unordered_map<int, int> inm; // inorder map [inorder[i], i]
-
 public:
-    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
-        int n = inorder.size(), i = 0;
-        for(auto val: inorder) inm[val] = i++; // build inm for dfs 
+    unordered_map<int, int> inorder_map;
+    TreeNode* traverse(vector<int>& inorder, vector<int>& postorder, int start, int end, int &pivot){
+        if(start > end)
+            return NULL;
         
-        return dfs(inorder, 0, n - 1, postorder, 0, n - 1);
+        int value = postorder[pivot];
+        TreeNode *newnode = new TreeNode(value);
+        pivot--;
+        
+        newnode->right = traverse(inorder, postorder, inorder_map[value]+1, end, pivot);
+        newnode->left = traverse(inorder, postorder, start, inorder_map[value]-1, pivot);
+        return newnode;
     }
     
-    TreeNode* dfs(vector<int>& inorder, int ileft, int iright, vector<int>& postorder, int pleft, int pright) {
-        if(ileft > iright) return nullptr;
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
         
-        int val = postorder[pright]; // root value
-        TreeNode *root = new TreeNode(val);
-        if(ileft == iright) return root;
+        //reverse(postorder.begin(), postorder.end());
         
-        int iroot = inm[val];
-        int nleft = iroot - ileft; // length of left subtree
-        root->right = dfs(inorder, iroot + 1, iright, postorder, pleft + nleft, pright - 1);
-        root->left = dfs(inorder, ileft, iroot - 1, postorder, pleft, pleft + nleft - 1);
+        for(int i = 0; i < postorder.size(); i++){
+            inorder_map[inorder[i]] = i;
+        }
+        
+        int pivot = inorder.size()-1;
+        return traverse(inorder, postorder, 0, postorder.size()-1, pivot);
+        
+    }
+};
+```
+
+Re construct Tree from in-order and pre-order
+https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+
+Given preorder and inorder traversal of a tree, construct the binary tree.
+
+Note:
+You may assume that duplicates do not exist in the tree.
+
+For example, given
+
+preorder = [3,9,20,15,7]
+inorder = [9,3,15,20,7]
+Return the following binary tree:
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+```CPP
+
+class Solution {
+public:
+    
+    map<int,int> index;
+    
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+
+        for (int i = 0; i < inorder.size(); i++){
+            index[inorder[i]] = i;
+
+        }
+        return help(preorder, 0, inorder.size()-1, inorder,0,inorder.size()-1);
+    }
+    
+    TreeNode* help(vector<int>& preorder, int preStart, int preEnd, 
+                   vector<int>& inorder, int inStart, int inEnd)
+    {
+        if(preStart > preEnd || inStart > inEnd) 
+            return NULL;
+        
+        if (inStart == inEnd)
+            return new TreeNode(inorder[inStart]);
+        
+        TreeNode *root = new TreeNode(preorder[preStart]); //current recursive root
+        
+        int inRoot = index[preorder[preStart]]; //get the index of current root in inorder
+        int left = inRoot - inStart;
+        int right = inEnd - inRoot;
+        
+        root->left = help(preorder, preStart+1, preStart+left, inorder, inStart, inRoot-1);
+        root->right = help(preorder, preStart+left+1, preEnd, inorder, inRoot+1, inEnd);
         
         return root;
     }
 };
 ```
+
+
 
 ## Serialize and Deserialize Binary Tree
 https://leetcode.com/problems/serialize-and-deserialize-binary-tree/#/description
