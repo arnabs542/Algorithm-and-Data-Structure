@@ -424,6 +424,101 @@ public:
 
 ```
 
+### Recover BST
+
+https://leetcode.com/problems/recover-binary-search-tree/
+
+Two elements of a binary search tree (BST) are swapped by mistake.
+
+Recover the tree without changing its structure.
+
+Example 1:
+
+Input: [1,3,null,null,2]
+
+   1
+  /
+ 3
+  \
+   2
+
+Output: [3,1,null,null,2]
+
+   3
+  /
+ 1
+  \
+   2
+Example 2:
+
+Input: [3,1,4,null,null,2]
+
+  3
+ / \
+1   4
+   /
+  2
+
+Output: [2,1,4,null,null,3]
+
+  2
+ / \
+1   4
+   /
+  3
+Follow up:
+
+A solution using O(n) space is pretty straight forward.
+Could you devise a constant space solution?
+
+
+```CPP
+/**
+for example 6, 3, 4, 5, 2
+
+find the first: 6, then first second, which is 2
+
+*/
+
+class Solution {
+public:
+    TreeNode* first = NULL;
+    TreeNode* second = NULL;
+    TreeNode* predecessor = NULL;
+    
+    void swap(TreeNode* a, TreeNode* b) {
+        int tmp = a->val;
+        a->val = b->val;
+        b->val = tmp;
+    }
+    
+    
+    void findswap(TreeNode* root) {
+        if(root == NULL)
+            return;
+        findswap(root->left);
+        //inorder: predecessor should < root
+        if(predecessor!=NULL && root->val < predecessor->val){
+            //find the first
+            if (first == NULL) 
+                first = predecessor;
+            //find second
+            if (first !=NULL)  
+                second = root;
+        }
+        predecessor = root;
+        findswap(root->right);  
+    }
+    
+    void recoverTree(TreeNode* node) {
+        findswap(node);
+        swap(first,second);  
+    }
+};
+```
+
+
+
 
 
 # Sub-Tree problems
