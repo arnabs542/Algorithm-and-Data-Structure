@@ -187,6 +187,80 @@ while(!s.empty()){
 
 ```
 
+### In order traverse pattern
+
+```CPP
+void traverse(TreeNode *root) {
+    //did some thing
+    traverse(root->left);
+    traverse(root->right);
+}
+```
+
+### Node insert/delete
+
+* Insert
+
+```CPP
+TreeNode* insertIntoBST(TreeNode *root, int val){
+  if(root==NULL){
+    return new TreeNode(val);
+  }
+  root->left = insertIntoBST(root->left, val);
+  root->right = insertIntoBST(root->right, val);
+}
+```
+
+* Delete
+
+need to find the node first
+
+```CPP
+TreeNode* deleteNode(TreeNode* root, int key) {
+    if (root->val == key) {
+        // found the node, delete
+    } else if (root->val > key) {
+        root->left = deleteNode(root->left, key);
+    } else if (root->val < key) {
+        root->right = deleteNode(root->right, key);
+    }
+    return root;
+}
+```
+
+after found the node, we need to deal with delete, it could be one leaf, so just delete, or in middle, so need to link other branch node 
+
+
+```CPP
+TreeNode* deleteNode(TreeNode* root, int key) {
+    if (root->val == key) {
+        if (root->left == NULL){
+            return root->right; 
+        }else if(root->right == NULL){
+            return root->left; 
+        }else {
+          //other wise, need to pop largest node in left branch, or smallest in right branch
+          //in here, we just get smallest in right branch
+          TreeNode* minNode = getMin(node->right);
+          root->val = minNode->val;
+          root->right = deleteNode(root->right, minNode->val);
+        }
+    } else if (root->val > key) {
+        root->left = deleteNode(root->left, key);
+    } else if (root->val < key) {
+        root->right = deleteNode(root->right, key);
+    }
+    return root;
+}
+
+TreeNode* getMin(TreeNode* node) {
+    // left in BST
+    while (node->left != null) node = node->left;
+    return node;
+}
+```
+
+
 ### next node(Descendant Node) via in order traversal
 
 * assume there is parent pointer. for any given node, get its next via in order
@@ -476,7 +550,7 @@ Could you devise a constant space solution?
 /**
 for example 6, 3, 4, 5, 2
 
-find the first: 6, then first second, which is 2
+find the first: 6, then find second, which is 2
 
 */
 
