@@ -7,7 +7,10 @@
     - [Binary search for Target](#binary-search-for-target)
       - [Key points](#key-points)
     - [Boundary in Binary Search](#boundary-in-binary-search)
-      - [Key points](#key-points-1)
+      - [Find Left Boundary](#find-left-boundary)
+        - [Key points](#key-points-1)
+      - [Find Right Boundary](#find-right-boundary)
+        - [Key Points](#key-points)
   - [Local Minimum](#local-minimum)
   - [Numerical(Square) Calculation](#numericalsquare-calculation)
 - [Matrix Problem](#matrix-problem)
@@ -92,7 +95,7 @@ int binarySearch(int[] nums, int target) {
 
 #### Key points
 
-1. use ```<=``` or not ```<```:
+1. why use ```<=``` or not ```<```:
 
 The end condition for ```while(left <= right)``` is ```left = right + 1```, so the ```[left, right]``` will becomes ```[right+1, right]```, which is not possible, so it is correct ending condition, since we have searched into impossible state.
 
@@ -100,7 +103,7 @@ The end condition for ```while(left <= right)``` is ```left = right + 1```, so t
 but for end condition for ```while(left < right)``` is ```left = right```, so the ```[left, right]``` will becomes ```[right, right]```, which is possible, and we will not visit ```right``` value.
 
 
-2. use ```left=mid-1 / right = mid+1``` or not ```left =mid/ right = mid```
+2. why use ```left=mid-1 / right = mid+1``` , not ```left =mid/ right = mid```
 
 Also we need to consider whether we need to move mid index. since our search range is ```[left, right]```, so if mid is not target, then we should search ```[left, mid-1]```, or ```[mid+1, right]```
 
@@ -110,7 +113,7 @@ find mid value left and right boudary of ```nums = [1,2,2,2,3]```
 
 ### Boundary in Binary Search
 
-1. Find Left Boundary
+#### Find Left Boundary
 
 ```CPP
 int left_bound(int[] nums, int target) {
@@ -132,7 +135,7 @@ int left_bound(int[] nums, int target) {
 }
 ```
 
-#### Key points
+##### Key points
 
 1. why use ```<```, not ```<=```
 
@@ -179,6 +182,47 @@ int left_bound(int[] nums, int target) {
     return left;
 }
 ```
+#### Find Right Boundary
+
+```CPP
+int right_bound(int[] nums, int target) {
+    if (nums.length == 0) return -1;
+    int left = 0, right = nums.length;
+
+    while (left < right) {
+        int mid = (left + right) / 2;
+        if (nums[mid] == target) {
+            left = mid + 1; 
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid;
+        }
+    }
+    return left - 1; // why this?
+}
+```
+
+##### Key Points
+
+1. boundary search
+
+Key point is continue explore the boudary even if we find equal
+
+```CPP
+if (nums[mid] == target) {
+    left = mid + 1; 
+```
+
+2. why return ```left-1```, not ```right```, do we search right boundary?
+
+because its ending condition is ```left==right```, so return left is same as return right. but since we have 
+```CPP
+if (nums[mid] == target) {
+    left = mid + 1; 
+```
+
+so ending time, ```num[left]``` will not be equal to ```target```.
 
 
 
