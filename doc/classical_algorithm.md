@@ -3,6 +3,11 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Binary search](#binary-search)
+  - [Binary Search Framework](#binary-search-framework)
+    - [Binary search for Target](#binary-search-for-target)
+      - [Key points](#key-points)
+    - [Boundary in Binary Search](#boundary-in-binary-search)
+      - [Key points](#key-points-1)
   - [Local Minimum](#local-minimum)
   - [Numerical(Square) Calculation](#numericalsquare-calculation)
 - [Matrix Problem](#matrix-problem)
@@ -44,6 +49,138 @@
 # Binary search
 
 Anything that can split the Search space can use Binary search
+
+## Binary Search Framework 
+
+```CPP
+int binarySearch(int[] nums, int target) {
+    int left = 0, right = nums.size() - 1;
+
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] == target) {
+            ...
+        } else if (nums[mid] < target) {
+            left = ...
+        } else if (nums[mid] > target) {
+            right = ...
+        }
+    }
+    return ...;
+}
+```
+
+### Binary search for Target
+
+```CPP
+int binarySearch(int[] nums, int target) {
+    int left = 0; 
+    int right = nums.length - 1; // length
+
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        if(nums[mid] == target)
+            return mid; 
+        else if (nums[mid] < target)
+            left = mid + 1; // 
+        else if (nums[mid] > target)
+            right = mid - 1; // 
+    }
+    return -1;
+}
+```
+
+#### Key points
+
+1. use ```<=``` or not ```<```:
+
+The end condition for ```while(left <= right)``` is ```left = right + 1```, so the ```[left, right]``` will becomes ```[right+1, right]```, which is not possible, so it is correct ending condition, since we have searched into impossible state.
+
+
+but for end condition for ```while(left < right)``` is ```left = right```, so the ```[left, right]``` will becomes ```[right, right]```, which is possible, and we will not visit ```right``` value.
+
+
+2. use ```left=mid-1 / right = mid+1``` or not ```left =mid/ right = mid```
+
+Also we need to consider whether we need to move mid index. since our search range is ```[left, right]```, so if mid is not target, then we should search ```[left, mid-1]```, or ```[mid+1, right]```
+
+3. Limitation of former algorithm: Hard to return the boundary
+
+find mid value left and right boudary of ```nums = [1,2,2,2,3]``` 
+
+### Boundary in Binary Search
+
+1. Find Left Boundary
+
+```CPP
+int left_bound(int[] nums, int target) {
+    if (nums.length == 0) return -1;
+    int left = 0;
+    int right = nums.length; //why right is 1 above boundary?
+
+    while (left < right) { // why <? not <=?
+        int mid = (left + right) / 2;
+        if (nums[mid] == target) {
+            right = mid;
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid; // 
+        }
+    }
+    return left;
+}
+```
+
+#### Key points
+
+1. why use ```<```, not ```<=```
+
+search range here is ```[left, right)```, which dose not include right, since we just need to find left boundary. so for ```while (left < right)```, the ending condition is ```left==right```, and our search range ```[left, right)``` will be exmpty in this case, so condition is good.
+
+2. why no ```return -1```
+
+since the boudary here means "how many items are less(for left) or more(for right) than target value". 
+
+for ```nums = [2,3,5,7], target = 1``` will return 0. means 0 item is less than 1. for ```nums = [2,3,5,7], target = 8```, will return 4, means 4 items are smaller than 8.
+
+so our func return will be in range of ```[0, size+1]```.
+
+3. why use ```left=mid+1```, not ```left=mid``` as before
+
+since our search range is ```[left, right)```, so after ```num[mid]``` has been checked, our next search should be dividied into ```[left, mid)``` and ```[mid+1, right)```
+
+4. why we return ```left```, not ```mid``` or ```right```
+
+actually it is same since our ending condition is ```left == right```
+
+* we can also use former approach to do
+
+```CPP
+int left_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    // search range is [left, right]
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            // range becomes [mid+1, right]
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            // range becomes [left, mid-1]
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            right = mid - 1;
+        }
+    }
+    // since our ending condition is left == right + 1, so if target > all items
+    // we end up left be more than max item. so need to check
+    if (left >= nums.length || nums[left] != target)
+        return -1;
+    return left;
+}
+```
+
+
 
 ## Local Minimum
 
