@@ -11,8 +11,17 @@
         - [Key points](#key-points-1)
       - [Find Right Boundary](#find-right-boundary)
         - [Key Points](#key-points)
+      - [All three together](#all-three-together)
   - [Local Minimum](#local-minimum)
   - [Numerical(Square) Calculation](#numericalsquare-calculation)
+- [Sliding Window](#sliding-window)
+  - [Sliding window pattern](#sliding-window-pattern)
+  - [Mini Sub string](#mini-sub-string)
+  - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
+  - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
+- [Two Poniter](#two-poniter)
+  - [Fast-Slow pointers](#fast-slow-pointers)
+  - [Left-Right Pointers](#left-right-pointers)
 - [Matrix Problem](#matrix-problem)
   - [Sub region or Path in Matrix](#sub-region-or-path-in-matrix)
     - [Example](#example)
@@ -225,6 +234,65 @@ if (nums[mid] == target) {
 so ending time, ```num[left]``` will not be equal to ```target```.
 
 
+#### All three together
+
+```CPP
+int binary_search(int[] nums, int target) {
+    int left = 0, right = nums.length - 1; 
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1; 
+        } else if(nums[mid] == target) {
+            // 
+            return mid;
+        }
+    }
+    // 
+    return -1;
+}
+
+int left_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            // continue search and lock left 
+            right = mid - 1;
+        }
+    }
+    // check over boundary
+    if (left >= nums.length || nums[left] != target)
+        return -1;
+    return left;
+}
+
+
+int right_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            // continue search and lock right 
+            left = mid + 1;
+        }
+    }
+    // check over boundary
+    if (right < 0 || nums[right] != target)
+        return -1;
+    return right;
+}
+```
 
 ## Local Minimum
 
@@ -291,6 +359,232 @@ bool judgeSquareSum(int c) {
     return false;
 }
 ```
+
+# Sliding Window
+
+## Sliding window pattern
+
+```CPP
+int left = 0, right = 0;
+
+while (right < s.size()) {
+    window.add(s[right]);
+    right++;
+
+    while (valid) {
+        window.remove(s[left]);
+        left++;
+    }
+}
+```
+
+## Mini Sub string
+
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+```
+Example:
+
+Input: S = "ADOBECODEBANC", T = "ABC"
+Output: "BANC"
+Note:
+
+If there is no such window in S that covers all characters in T, return the empty string "".
+If there is such window, you are guaranteed that there will always be only one unique minimum window in S.
+```
+
+We use the pattern and code will be 
+
+```CPP
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        string s, t;
+
+        int left = 0, right = 0;
+        string res = s;
+
+        // two counters
+        unordered_map<char, int> window;
+        unordered_map<char, int> needs;
+        for (char c : t) 
+          needs[c]++;
+
+        // record how many char in windows match condition
+        int match = 0; 
+
+        while (right < s.size()) {
+            char c1 = s[right];
+            if (needs.count(c1)) {
+                window[c1]++; // 
+                if (window[c1] == needs[c1])
+                    //  c1 has same occurance in needs and window
+                    match++;
+            }
+            right++;
+
+            // all chars match
+            while (match == needs.size()) {
+                if (right - left < minLen) {
+                    // update min sgtring
+                    start = left;
+                    minLen = right - left;
+                  }
+                char c2 = s[left];
+                if (needs.count(c2)) {
+                    window[c2]--; // remove from window
+                    if (window[c2] < needs[c2])
+                        // c2 dose not meet requirements
+                        match--;
+                }
+                left++;
+            }
+        }
+        return minLen == INT_MAX ?"" : s.substr(start, minLen);
+    }
+};
+
+
+```
+
+## Find All Anagrams in a String
+
+https://leetcode.com/problems/find-all-anagrams-in-a-string/
+
+Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
+
+Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+
+The order of output does not matter.
+
+```
+Example 1:
+
+Input:
+s: "cbaebabacd" p: "abc"
+
+Output:
+[0, 6]
+
+Explanation:
+The substring with start index = 0 is "cba", which is an anagram of "abc".
+The substring with start index = 6 is "bac", which is an anagram of "abc".
+Example 2:
+
+Input:
+s: "abab" p: "ab"
+
+Output:
+[0, 1, 2]
+
+Explanation:
+The substring with start index = 0 is "ab", which is an anagram of "ab".
+The substring with start index = 1 is "ba", which is an anagram of "ab".
+The substring with start index = 2 is "ab", which is an anagram of "ab".
+```
+
+
+The same solution as before:
+
+```CPP
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string t) {
+        vector<int> res;
+        int left = 0, right = 0;
+        unordered_map<char, int> needs;
+        unordered_map<char, int> window;
+        for (char c : t) needs[c]++;
+        int match = 0;
+
+        while (right < s.size()) {
+            char c1 = s[right];
+            if (needs.count(c1)) {
+                window[c1]++;
+                if (window[c1] == needs[c1])
+                    match++;
+            }
+            right++;
+
+            while (match == needs.size()) {
+                //match anagrams
+                if (right - left == t.size()) {
+                    res.push_back(left);
+                }
+                char c2 = s[left];
+                if (needs.count(c2)) {
+                    window[c2]--;
+                    if (window[c2] < needs[c2])
+                        match--;
+                }
+                left++;
+            }
+        }
+        return res;
+    }
+};
+```
+
+##  Longest Substring Without Repeating Characters
+
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+```
+Example 1:
+
+Input: "abcabcbb"
+Output: 3 
+Explanation: The answer is "abc", with the length of 3. 
+Example 2:
+
+Input: "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3. 
+             Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+```
+
+* For substring, slide window is no brainer
+
+```CPP
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+            int left = 0, right = 0;
+            unordered_map<char, int> window;
+            int res = 0; // record longest length
+
+            while (right < s.size()) {
+                char c1 = s[right];
+                window[c1]++;
+                right++;
+                //repeating char appear, so move left
+                while (window[c1] > 1) {
+                    char c2 = s[left];
+                    window[c2]--;
+                    left++;
+                }
+                res = max(res, right - left);
+            }
+            return res;
+    }
+};
+```
+
+# Two Poniter 
+
+## Fast-Slow pointers
+
+## Left-Right Pointers
+
+
+
+
 
 
 
