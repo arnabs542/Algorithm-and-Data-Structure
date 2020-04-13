@@ -2,7 +2,8 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Array,Queue,Stack,Priority Queue(Heap)](#arrayqueuestackpriority-queueheap)
+- [Array](#array)
+- [Heap and Stack](#heap-and-stack)
 - [String](#string)
 - [Link List](#link-list)
 - [Tree](#tree)
@@ -13,9 +14,12 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Array,Queue,Stack,Priority Queue(Heap)
+# Array
 
-[Array,Queue,Stack,Priority Queue Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/array_stack_heap.md)
+[Array](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/array.md)
+
+# Heap and Stack
+[Stack, Priority Queue Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/heap_stack.md)
 
 # String
 [String](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/string.md)
