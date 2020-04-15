@@ -170,7 +170,7 @@ See more about Skiplist : https://en.wikipedia.org/wiki/Skip_list
 
 Note that duplicates may exist in the Skiplist, your code needs to handle this situation.
 
-![skiplist](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/tree/master/doc/img/skiplist.png)
+![skiplist](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/tree/master/img/skiplist.png)
 
 
 
