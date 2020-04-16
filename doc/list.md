@@ -5,7 +5,9 @@
 - [Linked List](#linked-list)
 - [Skip List](#skip-list)
   - [Architecture](#architecture)
-  - [Basic Operation](#basic-operation)
+    - [A naïve (but common) implementation](#a-na%C3%AFve-but-common-implementation)
+    - [Improved Version](#improved-version)
+  - [Applications](#applications)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -141,7 +143,101 @@ http://ticki.github.io/blog/skip-lists-done-right/
 * Making it lockless is simple.
 * It does well in persistent (slow) storage (often even better than AVL and EH).
 
-## Basic Operation
+### A naïve (but common) implementation
+
+
+Our skip list consists of (in this case, three) lists, stacked such that the n‘th list visits a subset of the node the n - 1‘th list does. This subset is defined by a probability distribution, which we will get back to later.
+
+![skiplist1](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/skiplist1.png)
+
+
+Self-balancing Binary Search Trees often have complex algorithms to keep the tree balanced, but skip lists are easier: They aren’t trees, they’re similar to trees in some ways, but they are not trees.
+
+Every node in the skip list is given a “height”, defined by the highest level containing the node (similarly, the number of decendants of a leaf containing the same value). As an example, in the above diagram, “42” has height 2, “25” has height 3, and “11” has height 1.
+
+When we insert, we assign the node a height, following the probability distribution: ```p(n)=2 ^(l-n)```. To obtain this distribution, we flip a coin until it hits tails, and count the flips:
+
+```CPP
+define generate_level():
+    // First we apply some mask which makes sure that we don't get a level
+    // above our desired level. Then we find the first set bit.
+    ffz(random() & ((1 << max_level) - 1))
+```
+
+By this distribution, statistically the parent layer would contain half as many nodes, so searching is amortized ```O(log n) ```.
+
+
+
+```CPP
+// Recursive skip list insertion function.
+define insert(elem, root, height, level):
+    if right of root < elem:
+        //If right isn't "overshot" (i.e. we are going to long), we go right.
+        return insert(elem, right of root, height, level)
+    else:
+        if level = 0:
+            // We're at bottom level and the right node is overshot, hence
+            // we've reached our goal, so we insert the node inbetween root
+            // and the node next to root.
+            old ← right of root
+            right of root ← elem
+            right of elem ← old
+        else:
+            if level ≤ height:
+                // Our level is below the height, hence we need to insert a
+                // link before we go on.
+                old ← right of root
+                right of root ← elem
+                right of elem ← old
+
+            // Go a level down.
+            return insert(elem, below root, height, level - 1)
+```
+
+As an example, here’s a diagram, the curved lines marks overshoots/edges where a new node is inserted:
+
+![skiplist2](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/skiplist2.png)
+
+
+### Improved Version
+
+if there is n elements, we likely to have 2n storage sapce, which is certainly no small amount, especially if you consider what each node contains, a pointer to the inner data, the node right and down, giving 5 pointers in total, so a single structure of n nodes consists of approximately 6n pointers.
+
+
+
+But memory isn’t even the main concern! When you need to follow a pointer on every decrease (apprx. 50% of all the links), possibly leading to cache misses. It turns out that there is a really simple fix for solving this:
+
+Instead of linking vertically, a good implementation should consist of a singly linked list, in which each node contains an array (representing the nodes above) with pointers to later nodes:
+
+![skiplist3](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/skiplist3.png)
+
+If you represent the links (“shortcuts”) through dynamic arrays, you will still often get cache miss. Particularly, you might get a cache miss on both the node itself (which is not data local) and/or the dynamic array. As such, I recommend using a fixed-size array (beware of the two negative downsides: 1. more space usage, 2. a hard limit on the highest level, and the implication of linear upperbound when h > c. Furthermore, you should keep small enough to fit a cache line.).
+
+Searching is done by following the top shortcuts as long as you don’t overshoot your target, then you decrement the level and repeat, until you reach the lowest level and overshoot. Here’s an example of searching for “22”:
+
+![skiplist4](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/skiplist4.png)
+
+```CPP
+define search(skip_list, needle):
+    // Initialize to the first node at the highest level.
+    level ← max_level
+    current_node ← root of skip_list
+
+    loop:
+        // Go right until we overshoot.
+        while level'th shortcut of current_node < needle:
+            current_node ← level'th shortcut of current_node
+
+        if level = 0:
+            // We hit our target.
+            return current_node
+        else:
+            // Decrement the level.
+            level ← level - 1
+```
+
+
+## Applications
 
 https://leetcode.com/problems/design-skiplist/
 
@@ -172,6 +268,87 @@ Note that duplicates may exist in the Skiplist, your code needs to handle this s
 
 ![skiplist](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/skiplist.gif)
 
+```CPP
 
+//The right pointer point to the node in the same level but bigger than this. And the down pointer point to the node in the next level with the same value.
+
+struct Node {
+    Node *right, *down;
+    int val;
+    Node(Node *right, Node *down, int val): right(right), down(down), val(val) {}
+};
+
+class Skiplist {
+    Node* head;
+    
+public:
+    Skiplist() { 
+        head = new Node(NULL, NULL, 0); 
+    }
+
+    vector<Node*> insertPoints;
+
+    bool search(int num) {
+        Node *p = head;
+        while(p) {
+            //go right until over shot
+            while(p->right and p->right->val < num) {
+              p = p->right;
+            }
+            //then go down
+            if(!p->right or p->right->val > num) {
+              p = p->down;
+            }
+            else {
+              return true;
+            }
+        }
+        return false;
+    }
+
+    void add(int num) {
+        insertPoints.clear();
+        Node *p = head;
+        while(p) {
+            while(p->right and p->right->val < num) {
+              p = p->right;
+            }
+            insertPoints.push_back(p);
+            p = p->down;
+        }
+
+        Node* downNode = NULL;
+        bool insertUp = true;
+        while(insertUp and insertPoints.size()) {
+            Node *ins = insertPoints.back();
+            insertPoints.pop_back();
+
+            ins->right = new Node(ins->right, downNode, num);
+            downNode = ins->right;
+
+            insertUp = (rand() & 1) == 0;
+        }
+        if(insertUp) {
+            head = new Node(new Node(NULL, downNode, num), head, 0);
+        }
+    }
+    
+
+    bool erase(int num) {
+        Node *p = head;
+        bool seen = false;
+        while(p) {
+            while(p->right and p->right->val < num) p = p->right;
+            if(!p->right or p->right->val > num) p = p->down;
+            else {
+                seen = true;
+                p->right = p->right->right;
+                p = p->down;
+            }
+        }
+        return seen;
+    }
+};
+```
 
 
