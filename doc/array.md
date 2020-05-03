@@ -6,11 +6,22 @@
   - [Array re-order](#array-re-order)
     - [Detect duplicate](#detect-duplicate)
   - [Sub Array](#sub-array)
-    - [Classical Sub-Array Problem](#classical-sub-array-problem)
-      - [Common Tchnqiues](#common-tchnqiues)
+    - [Common Tchnqiues](#common-tchnqiues)
+    - [Sub Array Sum](#sub-array-sum)
       - [Two sum](#two-sum)
-      - [Sub Array Sum, longest/shortest](#sub-array-sum-longestshortest)
-      - [Subarray Pattern](#subarray-pattern)
+      - [Subarray sum number that equals to certain target](#subarray-sum-number-that-equals-to-certain-target)
+      - [Maximum Size Subarray Sum Equals k](#maximum-size-subarray-sum-equals-k)
+        - [Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive](#follow-up-maximum-size-subarray-sum-equals-k-if-subarray-contains-all-positive)
+      - [Follow up: subarray sum to multiple of k](#follow-up-subarray-sum-to-multiple-of-k)
+      - [Max subarray sum](#max-subarray-sum)
+        - [Follow up: max sub matrix size](#follow-up-max-sub-matrix-size)
+      - [Maximum Product Subarray](#maximum-product-subarray)
+      - [Count of range sum](#count-of-range-sum)
+    - [Subarray Reorder](#subarray-reorder)
+      - [Shortest substring length to make sure whole string is sorted](#shortest-substring-length-to-make-sure-whole-string-is-sorted)
+    - [Subarray Pattern](#subarray-pattern)
+      - [Contiguous subarray with equal number of 0 and 1](#contiguous-subarray-with-equal-number-of-0-and-1)
+      - [Max Consecutive Ones(with flip most k zeros)](#max-consecutive-oneswith-flip-most-k-zeros)
     - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
   - [Three pointers problems](#three-pointers-problems)
     - [3 Sum](#3-sum)
@@ -59,11 +70,15 @@ The set S originally contains numbers from 1 to n. But unfortunately, due to the
 
 Given an array nums representing the data status of this set after the error. Your task is to firstly find the number occurs twice and then find the number that is missing. Return them in the form of an array.
 
+```
 Example 1:
 
 Input: nums = [1,2,2,4]
 
 Output: [2,3]
+```
+
+The idea is using array indexing, that is putting each nums[i] into the position with index nums[i] - 1. Then, the array becomes [1,2,3,4,5...,n]. So we can find the duplicate number when nums[i] != i+1.
 
 ```CPP
 vector<int> findErrorNums(vector<int>& nums) {
@@ -103,15 +118,16 @@ vector<int> findErrorNums(vector<int>& nums) {
   * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
 
 
-### Classical Sub-Array Problem
-
-#### Common Tchnqiues
+### Common Tchnqiues
 
 1. preprocess: sum all
 2. two pointers
 3. DP
 4. Hash Map to record index or occurence
 5. Matrix problem: transfer to subarray problem
+
+
+### Sub Array Sum
 
 #### Two sum
 https://leetcode.com/problems/two-sum/#/description
@@ -137,69 +153,18 @@ vector<int> twoSum(vector<int>& nums, int target) {
 }
 ```
 
-#### Sub Array Sum, longest/shortest
 
-* Shortest substring length to make sure whole string is sorted
-https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
-
-[1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
-
-
-
-```CPP
-//O(n) in time, O(1) extra memory
-//from left->right, record max. from right->left, record min
-/*
-[1,5,3,4,2,6,7]
-left->right: [1,5,R,R,R,6,7], right value which is smaller than max is 2
-right->left:[1,L,L,L,L,2,6,7], left value which is larger than min is 5
-
-re sort L->R
-*/
-
-int findUnsortedSubarray(vector<int>& nums) {
-    int len = nums.size();
-    if (len==0 || len == 1) {
-        return 0;
-    }
-    //from right to left, record value not descending. find left most
-    int min_v = nums[len - 1];
-    int l = -1;
-    for (int i = len - 2; i >=0; i--) {
-        if (nums[i] > min_v) {
-          l = i;
-        } else {
-          min_v = nums[i];
-        }
-    }
-    if (l == -1) {
-        return 0;
-    }
-    //from left to right record value not ascending, find right most
-    int max_v = nums[0];
-    int r = -1;
-    for (int i = 1; i <len; i++) {
-        if (nums[i] < max_v) {
-          r = i;
-        } else {
-          max_v = nums[i];
-        }
-    }
-    return r - l + 1;        
-}
-
-```
-
-
-* Subarray sum number that equals to certain target
+#### Subarray sum number that equals to certain target
 https://leetcode.com/problems/subarray-sum-equals-k/#/description
 Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
 
+we know the key to solve this problem is ```SUM[i, j]```. So if we know ```SUM[0, i - 1]``` and ```SUM[0, j]```, then we can easily get ```SUM[i, j]```. To achieve this, we just need to go through the array, calculate the current sum and save number of all seen PreSum to a HashMap. Time complexity O(n), Space complexity O(n).
+
 ```CPP
+
+// Hash Map: K is sum value from 0->K, value is occurence times
+
 int subarraySum(vector<int>& nums, int k) {
-    //notice if the array is all positive, it is different
-    //easy way is to do O(N^2), calculate all subarry starting from 0->len-1, to end
-    //if we want to do O(N), need a map to record
     int len = nums.size();
     int sum = 0;
     int ret = 0;
@@ -216,21 +181,55 @@ int subarraySum(vector<int>& nums, int k) {
 }
 
 //if we do not insert init value, it would be
-m[0]=0;
-for(int i=0;i<len;i++){
-    sum+=nums[i];
-    if(sum==k)  //count how many times sum from begining
-        ret++;
-    if(m.find(sum-k)!=m.end())
-        ret+=m[sum-k];
-    m[sum]++;
+int subarraySum(vector<int>& nums, int k) {
+    int len = nums.size();
+    long long sum = 0;
+    int ret = 0;
+    unordered_map<int,int> m; //key is sum value, val is how many times it appears
+    //m[0] = 0;  //if sum-k==0, then it means it has sum value from begining to current ==k, need to count
+    for(int i=0;i<len;i++){
+        sum+=nums[i];
+        if(sum==k)
+            ret++;
+        if(m.find(sum-k)!=m.end())
+            ret+=m[sum-k];
+        m[sum]++;
+    }
+
+    return ret;    
 }
 
 ```
 
-* Follow up: Longest Subarray with sum to k
+#### Maximum Size Subarray Sum Equals k
+
+https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
+
+Given an array nums and a target value k, find the maximum length of a subarray that sums to k. If there isn't one, return 0 instead.
+
+Note:
+The sum of the entire nums array is guaranteed to fit within the 32-bit signed integer range.
+
+```
+Example 1:
+
+Input: nums = [1, -1, 5, -2, 3], k = 3
+Output: 4 
+Explanation: The subarray [1, -1, 5, -2] sums to 3 and is the longest.
+Example 2:
+
+Input: nums = [-2, -1, 2, 1], k = 1
+Output: 2 
+Explanation: The subarray [-1, 2] sums to 1 and is the longest.
+```
+
+Follow Up:
+Can you do it in O(n) time?
 
 ```CPP
+
+//K is current sum from begining of array, value is left most index that has the K
+
 int Longestsubarray(vector<int> nums, int k){
   int ret = 0;
   int sum = 0;
@@ -250,7 +249,7 @@ int Longestsubarray(vector<int> nums, int k){
 
 ```
 
-* Follow Up: If subarray contains all positive
+##### Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive
 
 ```CPP
 //use two pointers
@@ -280,7 +279,7 @@ int Longestsubarray(vector<int> arr, int k){
 }
 ```
 
-* Follow up: subarray sum to multiple of k
+#### Follow up: subarray sum to multiple of k
 https://leetcode.com/problems/continuous-subarray-sum/#/description
 
 Given a list of non-negative numbers and a target integer k, write a function to check if the array has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up to n*k where n is also an integer.
@@ -309,11 +308,14 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 ```
 
-* Max subarray sum
+#### Max subarray sum
 https://leetcode.com/problems/maximum-subarray/
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+```
 For example, given the array [-2,1,-3,4,-1,2,1,-5,4],
 the contiguous subarray [4,-1,2,1] has the largest sum = 6.
+```
+
 ```CPP
 int maxSubArray(vector<int>& nums) {
     int len = nums.size();
@@ -330,7 +332,9 @@ int maxSubArray(vector<int>& nums) {
 }
 ```
 
-* Follow up: max sub matrix size
+> Most Matrix problem will be transmitted to sub array problem
+
+##### Follow up: max sub matrix size
 
 Sub matrix num: O(n^4). algorithm search from row 1->row n, then from row 2->row n
 
@@ -356,15 +360,15 @@ int maxSubarea(vector<vector<int>> m){
 }
 ```
 
-Most Matrix problem will be transmitted to sub array problem
-
-* Maximum Product Subarray
+#### Maximum Product Subarray
 https://leetcode.com/problems/maximum-product-subarray/#/description
 
 Find the contiguous subarray within an array (containing at least one number) which has the largest product.
-
+```
 For example, given the array [2,3,-2,4],
 the contiguous subarray [2,3] has the largest product = 6.
+```
+
 
 ```CPP
 int maxProduct(vector<int>& nums) {
@@ -445,7 +449,7 @@ vector<int> productExceptSelf(vector<int>& nums) {
 
 ```
 
-* Count of range sum
+#### Count of range sum
 https://leetcode.com/problems/count-of-range-sum/#/description
 Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
 
@@ -470,9 +474,62 @@ int countRangeSum(vector<int>& nums, int lower, int upper) {
 }
 ```
 
-#### Subarray Pattern
+### Subarray Reorder
 
-* Contiguous subarray with equal number of 0 and 1
+#### Shortest substring length to make sure whole string is sorted
+https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
+
+[1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
+
+
+
+```CPP
+//O(n) in time, O(1) extra memory
+//from left->right, record max. from right->left, record min
+/*
+[1,5,3,4,2,6,7]
+left->right: [1,5,R,R,R,6,7], right value which is smaller than max is 2
+right->left:[1,L,L,L,L,2,6,7], left value which is larger than min is 5
+
+re sort L->R
+*/
+
+int findUnsortedSubarray(vector<int>& nums) {
+    int len = nums.size();
+    if (len==0 || len == 1) {
+        return 0;
+    }
+    //from right to left, record value not descending. find left most
+    int min_v = nums[len - 1];
+    int l = -1;
+    for (int i = len - 2; i >=0; i--) {
+        if (nums[i] > min_v) {
+          l = i;
+        } else {
+          min_v = nums[i];
+        }
+    }
+    if (l == -1) {
+        return 0;
+    }
+    //from left to right record value not ascending, find right most
+    int max_v = nums[0];
+    int r = -1;
+    for (int i = 1; i <len; i++) {
+        if (nums[i] < max_v) {
+          r = i;
+        } else {
+          max_v = nums[i];
+        }
+    }
+    return r - l + 1;        
+}
+
+```
+
+### Subarray Pattern
+
+#### Contiguous subarray with equal number of 0 and 1
 https://leetcode.com/problems/contiguous-array
 Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
 
@@ -500,15 +557,18 @@ int findMaxLength(vector<int>& nums) {
 
 ```
 
-* Max Consecutive Ones(with flip most k zeros)
+#### Max Consecutive Ones(with flip most k zeros)
 https://leetcode.com/problems/max-consecutive-ones-ii/
 Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most k 0.
-
+```
 Example 1:
 Input: [1,0,1,1,0], k =1
 Output: 4
 Explanation: Flip the first zero will get the the maximum number of consecutive 1s.
     After flipping, the maximum number of consecutive 1s is 4.
+```
+
+
 ```CPP
 int findMaxConsecutiveOnes(vector<int>& nums) {
     int len = nums.size();
