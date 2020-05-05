@@ -2,105 +2,45 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Array](#array)
-  - [Array re-order](#array-re-order)
-    - [Detect duplicate](#detect-duplicate)
-  - [Sub Array](#sub-array)
-    - [Common Tchnqiues](#common-tchnqiues)
-    - [Sub Array Sum](#sub-array-sum)
-      - [Two sum](#two-sum)
-      - [Subarray sum number that equals to certain target](#subarray-sum-number-that-equals-to-certain-target)
-      - [Maximum Size Subarray Sum Equals k](#maximum-size-subarray-sum-equals-k)
-        - [Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive](#follow-up-maximum-size-subarray-sum-equals-k-if-subarray-contains-all-positive)
-        - [Follow up: subarray sum to multiple of k](#follow-up-subarray-sum-to-multiple-of-k)
-      - [Max subarray sum](#max-subarray-sum)
-        - [Follow up: max sub matrix size](#follow-up-max-sub-matrix-size)
-      - [Maximum Product Subarray](#maximum-product-subarray)
-      - [Count of range sum](#count-of-range-sum)
-    - [Subarray Reorder](#subarray-reorder)
-      - [Shortest substring length to make sure whole string is sorted](#shortest-substring-length-to-make-sure-whole-string-is-sorted)
-    - [Subarray Pattern](#subarray-pattern)
-      - [Contiguous subarray with equal number of 0 and 1](#contiguous-subarray-with-equal-number-of-0-and-1)
-      - [Max Consecutive Ones(with flip most k zeros)](#max-consecutive-oneswith-flip-most-k-zeros)
-    - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
-  - [Three pointers problems](#three-pointers-problems)
-    - [3 Sum](#3-sum)
+- [Sub Array](#sub-array)
+  - [Common Tchnqiues](#common-tchnqiues)
+  - [Sub Array Sum](#sub-array-sum)
+    - [Two sum](#two-sum)
+    - [Subarray sum number that equals to certain target](#subarray-sum-number-that-equals-to-certain-target)
+    - [Maximum Size Subarray Sum Equals k](#maximum-size-subarray-sum-equals-k)
+      - [Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive](#follow-up-maximum-size-subarray-sum-equals-k-if-subarray-contains-all-positive)
+      - [Follow up: subarray sum to multiple of k](#follow-up-subarray-sum-to-multiple-of-k)
+    - [Max subarray sum](#max-subarray-sum)
+      - [Follow up: max sub matrix size](#follow-up-max-sub-matrix-size)
+    - [Maximum Product Subarray](#maximum-product-subarray)
+    - [Count of range sum](#count-of-range-sum)
+  - [Subarray Reorder](#subarray-reorder)
+    - [Common technqiue](#common-technqiue)
+    - [Move array elements](#move-array-elements)
+    - [Reorder array(Detect Duplicate)](#reorder-arraydetect-duplicate)
+    - [Shortest substring length to make sure whole string is sorted](#shortest-substring-length-to-make-sure-whole-string-is-sorted)
+  - [Subarray Pattern](#subarray-pattern)
+    - [Contiguous subarray with equal number of 0 and 1](#contiguous-subarray-with-equal-number-of-0-and-1)
+    - [Max Consecutive Ones(with flip most k zeros)](#max-consecutive-oneswith-flip-most-k-zeros)
+  - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
+- [Three pointers problems](#three-pointers-problems)
+  - [3 Sum](#3-sum)
     - [Valid-triangle-number](#valid-triangle-number)
-  - [Histogram](#histogram)
-    - [Water container problem](#water-container-problem)
-    - [Array Change problem](#array-change-problem)
-      - [Make nums inside array even](#make-nums-inside-array-even)
+- [Sliding Windows](#sliding-windows)
+  - [Mini Sub string](#mini-sub-string)
+  - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
+  - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
+- [Histogram](#histogram)
+  - [Water container problem](#water-container-problem)
+  - [Array Change problem](#array-change-problem)
+    - [Make nums inside array even](#make-nums-inside-array-even)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-# Array
 
-## Array re-order
 
-* one for loop for main array, and the other pointer moving if condition meet
-
-https://leetcode.com/problems/move-zeroes/#/description
-
-Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
-For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be [1, 3, 12, 0, 0].
-
-```CPP
-void moveZeroes(vector<int>& nums) {
-    int next = 0;
-    // move all the nonzero elements advance
-    for (int i=0; i<nums.size(); i++) {
-        if (nums[i] != 0) {
-            nums[next] = nums[i];
-            next++;
-        }
-    }
-    while(next<nums.size()) {
-        nums[next] = 0;
-        next++;
-    }
-}
-```
-
-### Detect duplicate
-
-https://leetcode.com/problems/set-mismatch/description/
-
-The set S originally contains numbers from 1 to n. But unfortunately, due to the data error, one of the numbers in the set got duplicated to another number in the set, which results in repetition of one number and loss of another number.
-
-Given an array nums representing the data status of this set after the error. Your task is to firstly find the number occurs twice and then find the number that is missing. Return them in the form of an array.
-
-```
-Example 1:
-
-Input: nums = [1,2,2,4]
-
-Output: [2,3]
-```
-
-The idea is using array indexing, that is putting each nums[i] into the position with index nums[i] - 1. Then, the array becomes [1,2,3,4,5...,n]. So we can find the duplicate number when nums[i] != i+1.
-
-```CPP
-vector<int> findErrorNums(vector<int>& nums) {
-    vector<int> ret;
-    for (int i = 0; i < nums.size(); i++) {
-        while (nums[nums[i]-1] != nums[i]) {
-            swap(nums[nums[i]-1], nums[i]);
-        }
-    }
-    for (int i = 0; i < nums.size(); i++) {
-        if (nums[i] != i+1){
-            ret.push_back(nums[i]);
-            ret.push_back(i+1);
-            return ret;
-        }
-
-    }
-    return ret;        
-}
-```
-
-## Sub Array
+# Sub Array
 > Common techniques
 * solve the sub problem: the same problem mapping to subarray ending in current index i, so can get the results from i-1
 * two pointer to get these longest/smallest problem
@@ -118,7 +58,7 @@ vector<int> findErrorNums(vector<int>& nums) {
   * insert special case for hash set/map, like index -1, value 0. etc, so sum calculation including sum from beging to current or sum of current item
 
 
-### Common Tchnqiues
+## Common Tchnqiues
 
 1. preprocess: sum all
 2. two pointers
@@ -127,9 +67,9 @@ vector<int> findErrorNums(vector<int>& nums) {
 5. Matrix problem: transfer to subarray problem
 
 
-### Sub Array Sum
+## Sub Array Sum
 
-#### Two sum
+### Two sum
 https://leetcode.com/problems/two-sum/#/description
 Given an array of integers, return indices of the two numbers such that they add up to a specific target.
 
@@ -154,7 +94,7 @@ vector<int> twoSum(vector<int>& nums, int target) {
 ```
 
 
-#### Subarray sum number that equals to certain target
+### Subarray sum number that equals to certain target
 https://leetcode.com/problems/subarray-sum-equals-k/#/description
 Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
 
@@ -201,7 +141,7 @@ int subarraySum(vector<int>& nums, int k) {
 
 ```
 
-#### Maximum Size Subarray Sum Equals k
+### Maximum Size Subarray Sum Equals k
 
 https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
 
@@ -249,7 +189,7 @@ int Longestsubarray(vector<int> nums, int k){
 
 ```
 
-##### Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive
+#### Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive
 
 ```CPP
 //use two pointers
@@ -279,7 +219,7 @@ int Longestsubarray(vector<int> arr, int k){
 }
 ```
 
-##### Follow up: subarray sum to multiple of k
+#### Follow up: subarray sum to multiple of k
 https://leetcode.com/problems/continuous-subarray-sum/#/description
 
 Given a list of non-negative numbers and a target integer k, write a function to check if the array has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up to n*k where n is also an integer.
@@ -308,7 +248,7 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 
 ```
 
-#### Max subarray sum
+### Max subarray sum
 https://leetcode.com/problems/maximum-subarray/
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
 ```
@@ -334,7 +274,7 @@ int maxSubArray(vector<int>& nums) {
 
 > Most Matrix problem will be transmitted to sub array problem
 
-##### Follow up: max sub matrix size
+#### Follow up: max sub matrix size
 
 Sub matrix num: O(n^4). algorithm search from row 1->row n, then from row 2->row n
 
@@ -360,7 +300,7 @@ int maxSubarea(vector<vector<int>> m){
 }
 ```
 
-#### Maximum Product Subarray
+### Maximum Product Subarray
 https://leetcode.com/problems/maximum-product-subarray/#/description
 
 Find the contiguous subarray within an array (containing at least one number) which has the largest product.
@@ -449,7 +389,7 @@ vector<int> productExceptSelf(vector<int>& nums) {
 
 ```
 
-#### Count of range sum
+### Count of range sum
 https://leetcode.com/problems/count-of-range-sum/#/description
 Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
 
@@ -474,9 +414,76 @@ int countRangeSum(vector<int>& nums, int lower, int upper) {
 }
 ```
 
-### Subarray Reorder
+## Subarray Reorder
 
-#### Shortest substring length to make sure whole string is sorted
+### Common technqiue
+
+> Two pointer problem
+> one for loop for main array, and the other pointer moving if condition meet
+
+### Move array elements
+
+https://leetcode.com/problems/move-zeroes/#/description
+
+Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be [1, 3, 12, 0, 0].
+
+```CPP
+void moveZeroes(vector<int>& nums) {
+    int next = 0;
+    // move all the nonzero elements advance
+    for (int i=0; i<nums.size(); i++) {
+        if (nums[i] != 0) {
+            nums[next] = nums[i];
+            next++;
+        }
+    }
+    while(next<nums.size()) {
+        nums[next] = 0;
+        next++;
+    }
+}
+```
+
+### Reorder array(Detect Duplicate)
+
+https://leetcode.com/problems/set-mismatch/description/
+
+The set S originally contains numbers from 1 to n. But unfortunately, due to the data error, one of the numbers in the set got duplicated to another number in the set, which results in repetition of one number and loss of another number.
+
+Given an array nums representing the data status of this set after the error. Your task is to firstly find the number occurs twice and then find the number that is missing. Return them in the form of an array.
+
+```
+Example 1:
+
+Input: nums = [1,2,2,4]
+
+Output: [2,3]
+```
+
+The idea is using array indexing, that is putting each nums[i] into the position with index nums[i] - 1. Then, the array becomes [1,2,3,4,5...,n]. So we can find the duplicate number when nums[i] != i+1.
+
+```CPP
+vector<int> findErrorNums(vector<int>& nums) {
+    vector<int> ret;
+    for (int i = 0; i < nums.size(); i++) {
+        while (nums[nums[i]-1] != nums[i]) {
+            swap(nums[nums[i]-1], nums[i]);
+        }
+    }
+    for (int i = 0; i < nums.size(); i++) {
+        if (nums[i] != i+1){
+            ret.push_back(nums[i]);
+            ret.push_back(i+1);
+            return ret;
+        }
+
+    }
+    return ret;        
+}
+```
+
+### Shortest substring length to make sure whole string is sorted
 https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
 
 [1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
@@ -527,9 +534,9 @@ int findUnsortedSubarray(vector<int>& nums) {
 
 ```
 
-### Subarray Pattern
+## Subarray Pattern
 
-#### Contiguous subarray with equal number of 0 and 1
+### Contiguous subarray with equal number of 0 and 1
 https://leetcode.com/problems/contiguous-array
 Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
 
@@ -557,7 +564,7 @@ int findMaxLength(vector<int>& nums) {
 
 ```
 
-#### Max Consecutive Ones(with flip most k zeros)
+### Max Consecutive Ones(with flip most k zeros)
 https://leetcode.com/problems/max-consecutive-ones-ii/
 Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most k 0.
 ```
@@ -622,7 +629,7 @@ int LongestIntegratedLength(vector<int> nums){
 
 ```
 
-### Array split/Cut/Partition Problem
+## Array split/Cut/Partition Problem
 
 Same idea as before, need to Preprocess the array, most split will need some sum preprocess. and then try different split
 
@@ -674,15 +681,35 @@ bool splitArray(vector<int>& nums) {
 
 ```
 
-## Three pointers problems
+
+# Three pointers problems
 > Common techniques
 * Sort the array
 * Fix the first pointer, and define left and right, search from beginning and end
 * define the condition properly
 
-### 3 Sum
+## 3 Sum
 
 https://leetcode.com/problems/3sum/#/description
+
+Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+
+Note:
+The solution set must not contain duplicate triplets.
+
+```
+Example:
+
+Given array nums = [-1, 0, 1, 2, -1, -4],
+
+A solution set is:
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+
 ```CPP
 vector<vector<int>> threeSum(vector<int>& nums) {
     sort(nums.begin(),nums.end());
@@ -728,7 +755,22 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 There are lots of problem can be soled by similar idea.
 
 https://leetcode.com/problems/valid-triangle-number/#/description
-Given an unsorted array of positive integers. Find the number of triangles that can be formed with three different array elements as three sides of triangles.
+
+
+Given an array consists of non-negative integers, your task is to count the number of triplets chosen from the array that can make triangles if we take them as side lengths of a triangle.
+```
+Example 1:
+Input: [2,2,3,4]
+Output: 3
+Explanation:
+Valid combinations are: 
+2,3,4 (using the first 2)
+2,3,4 (using the second 2)
+2,2,3
+```
+Note:
+* The length of the given array won't exceed 1000.
+* The integers in the given array are in the range of [0, 1000].
 
 ```CPP
 int triangleNumber(vector<int>& nums) {
@@ -744,8 +786,10 @@ int triangleNumber(vector<int>& nums) {
               //all l>current l can form triangle 
                 ret+=r-l;
                 r--;
-            }else
-                l++;
+            }else {
+              l++;
+            }
+                
         }
     }
 
@@ -753,16 +797,232 @@ int triangleNumber(vector<int>& nums) {
 }
 ```
 
-## Histogram
+# Sliding Windows
+
+```CPP
+int left = 0, right = 0;
+
+while (right < s.size()) {
+  //Increase the window size 
+    window.add(s[right]);
+    right++;
+
+    while (window_can_be_shrink) {
+        //reduce the window
+        window.remove(s[left]);
+        left++;
+    }
+}
+```
+
+## Mini Sub string
+
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+```
+Example:
+
+Input: S = "ADOBECODEBANC", T = "ABC"
+Output: "BANC"
+Note:
+
+If there is no such window in S that covers all characters in T, return the empty string "".
+If there is such window, you are guaranteed that there will always be only one unique minimum window in S.
+```
+
+We use the pattern and code will be 
+
+```CPP
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        string s, t;
+
+        int left = 0, right = 0;
+        string res = s;
+
+        // two counters
+        unordered_map<char, int> window;
+        unordered_map<char, int> needs;
+        for (char c : t) 
+          needs[c]++;
+
+        // record how many char in windows match condition
+        int match = 0; 
+
+        while (right < s.size()) {
+            char c1 = s[right];
+            if (needs.count(c1)) {
+                window[c1]++; // 
+                if (window[c1] == needs[c1])
+                    //  c1 has same occurance in needs and window
+                    match++;
+            }
+            right++;
+
+            // all chars match
+            while (match == needs.size()) {
+                if (right - left < minLen) {
+                    // update min sgtring
+                    start = left;
+                    minLen = right - left;
+                  }
+                char c2 = s[left];
+                if (needs.count(c2)) {
+                    window[c2]--; // remove from window
+                    if (window[c2] < needs[c2])
+                        // c2 dose not meet requirements
+                        match--;
+                }
+                left++;
+            }
+        }
+        return minLen == INT_MAX ?"" : s.substr(start, minLen);
+    }
+};
+
+
+```
+
+## Find All Anagrams in a String
+
+https://leetcode.com/problems/find-all-anagrams-in-a-string/
+
+Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
+
+Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+
+The order of output does not matter.
+
+```
+Example 1:
+
+Input:
+s: "cbaebabacd" p: "abc"
+
+Output:
+[0, 6]
+
+Explanation:
+The substring with start index = 0 is "cba", which is an anagram of "abc".
+The substring with start index = 6 is "bac", which is an anagram of "abc".
+Example 2:
+
+Input:
+s: "abab" p: "ab"
+
+Output:
+[0, 1, 2]
+
+Explanation:
+The substring with start index = 0 is "ab", which is an anagram of "ab".
+The substring with start index = 1 is "ba", which is an anagram of "ab".
+The substring with start index = 2 is "ab", which is an anagram of "ab".
+```
+
+
+The same solution as before:
+
+```CPP
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string t) {
+        vector<int> res;
+        int left = 0, right = 0;
+        unordered_map<char, int> needs;
+        unordered_map<char, int> window;
+        for (char c : t) needs[c]++;
+        int match = 0;
+
+        while (right < s.size()) {
+            char c1 = s[right];
+            if (needs.count(c1)) {
+                window[c1]++;
+                if (window[c1] == needs[c1])
+                    match++;
+            }
+            right++;
+
+            while (match == needs.size()) {
+                //match anagrams
+                if (right - left == t.size()) {
+                    res.push_back(left);
+                }
+                char c2 = s[left];
+                if (needs.count(c2)) {
+                    window[c2]--;
+                    if (window[c2] < needs[c2])
+                        match--;
+                }
+                left++;
+            }
+        }
+        return res;
+    }
+};
+```
+
+##  Longest Substring Without Repeating Characters
+
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+```
+Example 1:
+
+Input: "abcabcbb"
+Output: 3 
+Explanation: The answer is "abc", with the length of 3. 
+Example 2:
+
+Input: "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3. 
+             Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+```
+
+* For substring, slide window is no brainer
+
+```CPP
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+            int left = 0, right = 0;
+            unordered_map<char, int> window;
+            int res = 0; // record longest length
+
+            while (right < s.size()) {
+                char c1 = s[right];
+                window[c1]++;
+                right++;
+                //repeating char appear, so move left
+                while (window[c1] > 1) {
+                    char c2 = s[left];
+                    window[c2]--;
+                    left++;
+                }
+                res = max(res, right - left);
+            }
+            return res;
+    }
+};
+```
+
+# Histogram
 Histogram problem includes like water container, max rectangle. etc.
 
-### Water container problem
+## Water container problem
 
-### Array Change problem
+## Array Change problem
 
 > Commonly problem such as change items in array so that certain condition meet
 
-#### Make nums inside array even
+### Make nums inside array even
 
 
 https://leetcode.com/problems/super-washing-machines/#/description
