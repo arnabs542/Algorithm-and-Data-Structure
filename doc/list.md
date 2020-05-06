@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Linked List](#linked-list)
+  - [Fine the Cycle in Linked List](#fine-the-cycle-in-linked-list)
 - [Skip List](#skip-list)
   - [Architecture](#architecture)
     - [A naïve (but common) implementation](#a-na%C3%AFve-but-common-implementation)
@@ -12,6 +13,47 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Linked List
+
+## Fine the Cycle in Linked List
+
+> Fast/Slow pointer
+
+```CPP
+bool hasCycle(ListNode* head) {
+    ListNode* fast; 
+    ListNode* slow;
+    fast = slow = head;
+    while (fast != null && fast->next != null) {
+        fast = fast->next->next;
+        slow = slow->next;
+
+        if (fast == slow) return true;
+    }
+    return false;
+}
+```
+
+This will find whether there is cycle, we can also find the interdection
+
+```CPP
+ListNode* detectCycle(ListNode* head) {
+    ListNode* fast; 
+    ListNode* slow;
+    fast = slow = head;
+    while (fast != null && fast.next != null) {
+        fast = fast.next.next;
+        slow = slow.next;
+        if (fast == slow) break;
+    }
+    // 上面的代码类似 hasCycle 函数
+    slow = head;
+    while (slow != fast) {
+        fast = fast.next;
+        slow = slow.next;
+    }
+    return slow;
+}
+```
 
 * Find and return the intersections of two lists. List could have loop
 

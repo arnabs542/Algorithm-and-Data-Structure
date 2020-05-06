@@ -2,37 +2,38 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [String](#string)
-  - [Substring problem](#substring-problem)
-    - [Longest/shortest substring with conditions](#longestshortest-substring-with-conditions)
-      - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
-      - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
-      - [Minimum windows substring](#minimum-windows-substring)
-    - [Two pointers problem](#two-pointers-problem)
-      - [Common solution Summary](#common-solution-summary)
-    - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
-      - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
+- [Substring problem](#substring-problem)
+  - [Longest/shortest substring with conditions](#longestshortest-substring-with-conditions)
+    - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
+    - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
+    - [Minimum windows substring](#minimum-windows-substring)
+  - [Two pointers problem](#two-pointers-problem)
+    - [Common solution Summary](#common-solution-summary)
+    - [string partition](#string-partition)
+    - [Permutation](#permutation)
+  - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
+    - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [Find substring in String](#find-substring-in-string)
-      - [KMP](#kmp)
-  - [Subsequence Problem](#subsequence-problem)
-  - [String Stream representation Problem](#string-stream-representation-problem)
-    - [Combination](#combination)
-    - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
-      - [String as calculator](#string-as-calculator)
-      - [Expression operators](#expression-operators)
-    - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
-      - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
+    - [KMP](#kmp)
+      - [KMP application](#kmp-application)
+- [Subsequence Problem](#subsequence-problem)
+- [String Stream representation Problem](#string-stream-representation-problem)
+  - [Combination](#combination)
+  - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
+    - [String as calculator](#string-as-calculator)
+    - [Expression operators](#expression-operators)
+  - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
+    - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# String
 
-## Substring problem
+# Substring problem
 
-### Longest/shortest substring with conditions
+## Longest/shortest substring with conditions
 
-#### Longest Substring Without Repeating Characters
+### Longest Substring Without Repeating Characters
 https://leetcode.com/problems/longest-substring-without-repeating-characters/#/description
 
 > substring problems: (if ending at certain position. sub problem:)
@@ -94,7 +95,7 @@ int lengthOfLongestSubstring(string s) {
 
 ```
 
-#### Longest Substring with At Most K Distinct Characters
+### Longest Substring with At Most K Distinct Characters
 
 https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
 
@@ -104,6 +105,8 @@ T is "ece" which its length is 3.
 
 ```CPP
 int lengthOfLongestSubstringKDistinct(string s, int k) {
+    //Two pointer solution
+    //map with k is char and value is occurence
     int ret = 0;
     int l=0;
     int r=0;
@@ -126,7 +129,7 @@ int lengthOfLongestSubstringKDistinct(string s, int k) {
 
 ```
 
-#### Minimum windows substring
+### Minimum windows substring
 https://leetcode.com/problems/minimum-window-substring/#/description
 Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
 
@@ -135,41 +138,6 @@ S = "ADOBECODEBANC"
 T = "ABC"
 Minimum window is "BANC".
 
-```CPP
-string minWindow(string s, string t) {
-    map<char,int> m; //char and its occurence
-    for(int i=0;i<t.size();i++){
-        m[t[i]]++;
-    }
-    int l=0;
-    int r = 0;
-    string ret = "";
-    int len = INT_MAX;
-    int cnt = t.size();
-    while(r<s.size()){
-        if(m[s[r]]-->0){
-            cnt--;
-        }
-        r++;
-        while(cnt==0){
-            if(r-l<len){
-                len = r-l;
-                ret = s.substr(l,r-l);
-            }
-            if(m[s[l]]++==0){
-                cnt++;
-            }
-            l++;
-        }
-
-    }
-
-    return ret;
-}
-
-```
-
-Or we can do map check for l and r move
 
 ```CPP
 string minWindow(string s, string t) {
@@ -202,15 +170,16 @@ string minWindow(string s, string t) {
 }
 ```
 
-### Two pointers problem
+## Two pointers problem
 
-#### Common solution Summary
+### Common solution Summary
 * use two pointers to mark left and right,
 * use a map<char,int> to record how many times a char occur. or index of certain char
   * move r first to pay off map val
 * may need to use some reference cnt to check condition satisfy
 * map val could be <0(overpay, leave for l move), but cnt only changes when condition matches
 
+### string partition
 
 https://leetcode.com/problems/partition-labels/
 
@@ -250,6 +219,8 @@ public:
     }
 };
 ```
+
+### Permutation
 
 https://leetcode.com/problems/permutation-in-string/#/description
 
@@ -368,7 +339,7 @@ int leastInterval(vector<char>& tasks, int n) {
 ```
 
 
-### Substring Problem from 2 or more strings
+## Substring Problem from 2 or more strings
 
 > Common problem description:
 
@@ -380,7 +351,7 @@ int leastInterval(vector<char>& tasks, int n) {
   * two pointers for original string and target string.
   * original pointer keeps on moving, target pointer only moves when certain condition meet
 
-#### Longest Word in Dictionary through Deleting
+### Longest Word in Dictionary through Deleting
 
 https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/#/description
 
@@ -421,7 +392,7 @@ const char * strstr ( const char * str1, const char * str2 );
 ```
 Returns a pointer to the first occurrence of str2 in str1, or a null pointer if str2 is not part of str1.
 
-```
+```CPP
 const char * strstr ( const char * str1, const char * str2 ){
 	for(;;++str1){
 		char *h = str1;
@@ -436,7 +407,7 @@ const char * strstr ( const char * str1, const char * str2 ){
 ```
 
 
-#### KMP
+### KMP
 
 Used to check whether str2 is a substring of str1
 
@@ -488,7 +459,7 @@ vector<int> getNextArray(vector<int> ms) {
 }
 ```
 
-* KMP application
+#### KMP application
 
 https://leetcode.com/problems/shortest-palindrome/#/description
 
@@ -535,10 +506,11 @@ string shortestPalindrome(string s) {
 }
 ```
 
-## Subsequence Problem
+# Subsequence Problem
 https://leetcode.com/problems/is-subsequence/#/description
 A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ace" is a subsequence of "abcde" while "aec" is not).
 
+```
 Example 1:
 s = "abc", t = "ahbgdc"
 Return true.
@@ -546,6 +518,9 @@ Return true.
 Example 2:
 s = "axc", t = "ahbgdc"
 Return false.
+```
+
+
 ```CPP
 bool isSubsequence(string s, string t) {
     int index = 0;
@@ -563,13 +538,13 @@ bool isSubsequence(string s, string t) {
 }
 ```
 
-## String Stream representation Problem
+# String Stream representation Problem
 
 Typically this problem will have incoming string stream, with each char represent certain meaning(could be char, number, or encoding way), and need to process this stream to get some results.
 
 * Common solution: Use some index to pass over and recursively modify, index better to be reference type
 
-### Combination
+## Combination
 
 * Reverse count and say
 
@@ -607,11 +582,11 @@ void help(string &in, int i, int cnt, string &one, vector<string> ret){
 
 ```
 
-### Expression(string as calculator expression)
+## Expression(string as calculator expression)
 
 Key of all these problem are caching the sign, and caching intermidtate(* ,/ or bracket) results in stack
 
-#### String as calculator
+### String as calculator
 
 https://leetcode.com/problems/basic-calculator-ii/#/description
 Implement a basic calculator to evaluate a simple expression string.
@@ -702,7 +677,7 @@ return ret;
 ```
 
 
-#### Expression operators
+### Expression operators
 
 https://leetcode.com/problems/expression-add-operators/#/description
 Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators (not unary) +, -, or * between the digits so they evaluate to the target value.
@@ -752,7 +727,7 @@ void help(string num, int i, string one, long val, long save, vector<string> &re
 
 ```
 
-### Data structure to string or vice verse
+## Data structure to string or vice verse
 
 > Key idea is recursive, and manipulate index in function. Need to split clearly what each layer should perform
 
@@ -809,7 +784,7 @@ TreeNode* help(string &s, int& i){
 }
 ```
 
-#### Serialize and Deserialize Binary Tree
+### Serialize and Deserialize Binary Tree
 https://leetcode.com/problems/serialize-and-deserialize-binary-tree/#/description
 ```CPP
 string serialize(TreeNode* root){
