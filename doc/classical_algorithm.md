@@ -29,7 +29,7 @@
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
 - [Sort](#sort)
   - [Quick Sort](#quick-sort)
-  - [Select Sort](#select-sort)
+  - [Select Sort Common](#select-sort-common)
     - [Partial Selection: Find K-th smallest](#partial-selection-find-k-th-smallest)
   - [Bucket Sort:](#bucket-sort)
   - [Merge Sort](#merge-sort)
@@ -1158,18 +1158,18 @@ void qSort(int a[], int start, int end){
 }
 ```
 
-## Select Sort
-```CPP
-void selectsort(vector<int> num){
-	int len = num.size();
-	for(int i=0;i<len-1;i++){
-		for(int j=i+1;j<len;j++){
-			if(num[j]<num[j]){
-				swap(num[i],num[j]);
-			}
-		}
-	}
-}
+## Select Sort Common 
+
+The basic idea is to use Quick Select algorithm to partition the array with pivot:
+
+```
+Put numbers < pivot to pivot's left
+Put numbers > pivot to pivot's right
+Then
+
+if indexOfPivot == k, return A[k]
+else if indexOfPivot < k, keep checking left part to pivot
+else if indexOfPivot > k, keep checking right part to pivot
 ```
 
 ### Partial Selection: Find K-th smallest
@@ -1188,6 +1188,58 @@ int selectsort(vector<int> num, int k){
 }
 
 ```
+
+https://leetcode.com/problems/kth-largest-element-in-an-array/
+
+Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+```
+Example 1:
+
+Input: [3,2,1,5,6,4] and k = 2
+Output: 5
+Example 2:
+
+Input: [3,2,3,1,2,4,5,5,6] and k = 4
+Output: 4
+```
+
+```CPP
+int findKthLargest(vector<int>& nums, int k) {
+        return quickSelect(nums, 0, nums.size()-1, k);
+    }
+    
+    int quickSelect(vector<int>& nums, int low, int high, int k) {
+      int pivot = low;
+
+      // use quick sort's idea
+      // put nums that are <= pivot to the left
+      // put nums that are  > pivot to the right
+      for (int j = low; j < high; j++) {
+        if (nums[j] <= nums[high]) {
+          swap(nums, pivot++, j);
+        }
+      }
+      swap(nums, pivot, high);
+
+      // count the nums that are > pivot from high
+      int count = high - pivot + 1;
+      // pivot is the one!
+      if (count == k) 
+          return nums[pivot];
+      // pivot is too small, so it must be on the right
+      if (count > k) {
+          return quickSelect(nums, pivot + 1, high, k);
+      }else {
+          return quickSelect(nums, low, pivot - 1, k - count);
+      }
+          
+      // pivot is too big, so it must be on the left
+      
+    }
+```
+
+
 
 ## Bucket Sort:
 Used heavily when values are bounded into certain range
