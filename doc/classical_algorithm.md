@@ -37,6 +37,9 @@
 - [BackTracking/Recurisve](#backtrackingrecurisve)
   - [Common logic](#common-logic)
   - [Permutation](#permutation)
+  - [SubSet](#subset)
+  - [Combination](#combination)
+  - [Application/Generate parentheses](#applicationgenerate-parentheses)
 - [Others](#others)
   - [BFPRT](#bfprt)
   - [Half Majority](#half-majority)
@@ -1336,10 +1339,10 @@ void help(int &ret, int start, void * param) {
 	}
 
 	for (i = start; i < param;i++) {
-		one_res.push_back();  //used mostly in vector
+		one_res.push_back();  //make a choice
     ret = f(); //some ret logic
 		help(ret, i+1/i, param);
-		one_res.pop_back(); //pop what pushed, for string case since we use local variable, no need to pop, noticing
+		one_res.pop_back(); //retrieve the choice
 	}
 }
 
@@ -1381,6 +1384,150 @@ vector<vector<int>> permuteUnique(vector<int>& nums) {
 	}
 
 ```
+
+## SubSet
+
+https://leetcode.com/problems/subsets/
+
+Given a set of distinct integers, nums, return all possible subsets (the power set).
+
+Note: The solution set must not contain duplicate subsets.
+
+```
+Example:
+
+Input: nums = [1,2,3]
+Output:
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+```
+
+```CPP
+class Solution {
+public:
+    vector<vector<int>> res;
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<int> track;
+        //record all path
+        backtrack(nums, 0, track);
+        return res;
+    }
+        
+    void backtrack(vector<int>& nums, int start, vector<int>& track) {
+        res.push_back(track);
+        for (int i = start; i < nums.size(); i++) {
+            // make choice
+            track.push_back(nums[i]);
+            // backtrack
+            backtrack(nums, i + 1, track);
+            // retreive choice
+            track.pop_back();
+        }
+    }
+
+};
+```
+
+## Combination
+
+https://leetcode.com/problems/combinations/
+
+Given two integers n and k, return all possible combinations of k numbers out of 1 ... n.
+
+```
+Example:
+
+Input: n = 4, k = 2
+Output:
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+```
+
+```CPP
+class Solution {
+public:
+    vector<vector<int>>res;
+    vector<vector<int>> combine(int n, int k) {
+        if (k <= 0 || n <= 0) 
+            return res;
+        vector<int> track;
+        backtrack(n, k, 1, track);
+        return res;
+    }
+    
+    void backtrack(int n, int k, int start, vector<int>& track) {
+        // to the bottom of tree(backtrack tree)
+        if (k == track.size()) {
+            res.push_back(track);
+            return;
+        }
+        // i from current start
+        for (int i = start; i <= n; i++) {
+            // make choice
+            track.push_back(i);
+            backtrack(n, k, i + 1, track);
+            // retreieve choice
+            track.pop_back();
+        }
+    }
+};
+```
+
+## Application/Generate parentheses
+
+https://leetcode.com/problems/generate-parentheses/
+
+```
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+For example, given n = 3, a solution set is:
+
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+```
+
+```CPP
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        vector<string> ret;
+        help(ret,"",n,n);
+        
+        return ret;
+    }
+    //left is number of "(", and right is number of ")"
+    void help(vector<string> &ret,string str, int left, int right){
+        if(left==0 && right==0){
+            ret.push_back(str);
+            return;
+        }
+        if(left>0)
+            help(ret,str+"(",left-1,right);
+        if(left<right) //valid Parentheses starts with "("
+            help(ret,str+")",left,right-1);
+    }
+};
+```
+
 
 # Others
 
