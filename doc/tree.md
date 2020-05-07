@@ -216,6 +216,10 @@ TreeNode* insertIntoBST(TreeNode *root, int val){
 
 * Delete
 
+https://leetcode.com/problems/delete-node-in-a-bst/
+
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+
 need to find the node first
 
 ```CPP
@@ -235,32 +239,39 @@ after found the node, we need to deal with delete, it could be one leaf, so just
 
 
 ```CPP
-TreeNode* deleteNode(TreeNode* root, int key) {
-    if (root->val == key) {
-        if (root->left == NULL){
-            return root->right; 
-        }else if(root->right == NULL){
-            return root->left; 
-        }else {
-          //other wise, need to pop largest node in left branch, or smallest in right branch
-          //in here, we just get smallest in right branch
-          TreeNode* minNode = getMin(node->right);
-          root->val = minNode->val;
-          root->right = deleteNode(root->right, minNode->val);
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root==NULL)
+            return NULL;
+        
+        if (root->val == key) {
+            if (root->left == NULL){
+                return root->right; 
+            }else if(root->right == NULL){
+                return root->left; 
+            }else {
+              //otherwise, need to pop largest node in left branch, or smallest in right branch
+              //in here, we just get smallest in right branch
+              TreeNode* minNode = getMin(root->right);
+              root->val = minNode->val;
+              root->right = deleteNode(root->right, minNode->val);
+            }
+        } else if (root->val > key) {
+            root->left = deleteNode(root->left, key);
+        } else if (root->val < key) {
+            root->right = deleteNode(root->right, key);
         }
-    } else if (root->val > key) {
-        root->left = deleteNode(root->left, key);
-    } else if (root->val < key) {
-        root->right = deleteNode(root->right, key);
+        return root;
     }
-    return root;
-}
-
-TreeNode* getMin(TreeNode* node) {
-    // left in BST
-    while (node->left != null) node = node->left;
-    return node;
-}
+    
+    TreeNode* getMin(TreeNode* node) {
+        // left in BST
+        while (node->left != NULL) 
+            node = node->left;
+        return node;
+    }
+};
 ```
 
 
@@ -349,17 +360,15 @@ public:
   }
 
   void help(TreeNode* root) {
-    if (cnt>0) {
-      if (root->left)
-        help(root->left);
-      cnt--;
-      if (cnt == 0) {
-        num = root->val;
-        return;
-      }
-      if (root->right)
-        help(root->right);
+    if (root->left)
+      help(root->left);
+    cnt--;
+    if (cnt == 0) {
+      num = root->val;
+      return;
     }
+    if (root->right)
+      help(root->right);
   }
 };
 
@@ -506,9 +515,9 @@ public:
 https://leetcode.com/problems/recover-binary-search-tree/
 
 Two elements of a binary search tree (BST) are swapped by mistake.
-
 Recover the tree without changing its structure.
 
+```
 Example 1:
 
 Input: [1,3,null,null,2]
@@ -547,7 +556,7 @@ Follow up:
 
 A solution using O(n) space is pretty straight forward.
 Could you devise a constant space solution?
-
+```
 
 ```CPP
 /**
