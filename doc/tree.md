@@ -474,7 +474,7 @@ bool isSame(TreeNode * ns, TreeNode * nt){
 
 ```
 
-# Tree to Array/String
+# Tree<->Array
 
 ## Array to Tree
 
@@ -538,61 +538,6 @@ public:
 
 ## Reconstruct Tree
 
-###Re construct Tree from in-order and post-order
-
-https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/ 
-
-Let us see the process of constructing tree from in[] = {4, 8, 2, 5, 1, 6, 3, 7} and post[] = {8, 4, 5, 2, 6, 7, 3, 1}
-
-1) We first find the last node in post[]. The last node is “1”, we know this value is root as root always appear in the end of postorder traversal.
-
-2) We search “1” in in[] to find left and right subtrees of root. Everything on left of “1” in in[] is in left subtree and everything on right is in right subtree.
-
-```
-
-         1
-       /    \
-[4, 8, 2, 5]   [6, 3, 7] 
-```
-3) We recur the above process for following two.
-….b) Recur for in[] = {6, 3, 7} and post[] = {6, 7, 3}
-…….Make the created tree as right child of root.
-….a) Recur for in[] = {4, 8, 2, 5} and post[] = {8, 4, 5, 2}.
-…….Make the created tree as left child of root.
-
-```CPP
-
-class Solution {
-public:
-    unordered_map<int, int> inorder_map;
-    TreeNode* traverse(vector<int>& inorder, vector<int>& postorder, int start, int end, int &pivot){
-        if(start > end)
-            return NULL;
-        
-        int value = postorder[pivot];
-        TreeNode *newnode = new TreeNode(value);
-        pivot--;
-        
-        newnode->right = traverse(inorder, postorder, inorder_map[value]+1, end, pivot);
-        newnode->left = traverse(inorder, postorder, start, inorder_map[value]-1, pivot);
-        return newnode;
-    }
-    
-    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
-        
-        //reverse(postorder.begin(), postorder.end());
-        
-        for(int i = 0; i < postorder.size(); i++){
-            inorder_map[inorder[i]] = i;
-        }
-        
-        int pivot = inorder.size()-1;
-        return traverse(inorder, postorder, 0, postorder.size()-1, pivot);
-        
-    }
-};
-```
-
 ### Re construct Tree from in-order and pre-order
 
 https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
@@ -654,6 +599,63 @@ public:
     }
 };
 ```
+
+###Re construct Tree from in-order and post-order
+
+https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/ 
+
+Let us see the process of constructing tree from in[] = {4, 8, 2, 5, 1, 6, 3, 7} and post[] = {8, 4, 5, 2, 6, 7, 3, 1}
+
+1) We first find the last node in post[]. The last node is “1”, we know this value is root as root always appear in the end of postorder traversal.
+
+2) We search “1” in in[] to find left and right subtrees of root. Everything on left of “1” in in[] is in left subtree and everything on right is in right subtree.
+
+```
+
+         1
+       /    \
+[4, 8, 2, 5]   [6, 3, 7] 
+```
+3) We recur the above process for following two.
+….b) Recur for in[] = {6, 3, 7} and post[] = {6, 7, 3}
+…….Make the created tree as right child of root.
+….a) Recur for in[] = {4, 8, 2, 5} and post[] = {8, 4, 5, 2}.
+…….Make the created tree as left child of root.
+
+```CPP
+
+class Solution {
+public:
+    unordered_map<int, int> inorder_map;
+    TreeNode* traverse(vector<int>& inorder, vector<int>& postorder, int start, int end, int &pivot){
+        if(start > end)
+            return NULL;
+        
+        int value = postorder[pivot];
+        TreeNode *newnode = new TreeNode(value);
+        pivot--;
+        
+        newnode->right = traverse(inorder, postorder, inorder_map[value]+1, end, pivot);
+        newnode->left = traverse(inorder, postorder, start, inorder_map[value]-1, pivot);
+        return newnode;
+    }
+    
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        
+        //reverse(postorder.begin(), postorder.end());
+        
+        for(int i = 0; i < postorder.size(); i++){
+            inorder_map[inorder[i]] = i;
+        }
+        
+        int pivot = inorder.size()-1;
+        return traverse(inorder, postorder, 0, postorder.size()-1, pivot);
+        
+    }
+};
+```
+
+
 
 
 
