@@ -7,7 +7,9 @@
   - [In order](#in-order)
   - [Post order](#post-order)
   - [In order in BST and its variation](#in-order-in-bst-and-its-variation)
+    - [Common Pattern](#common-pattern)
     - [In order traverse pattern](#in-order-traverse-pattern)
+    - [Inorder Successor in BST](#inorder-successor-in-bst)
     - [next node(Descendant Node) via in order traversal](#next-nodedescendant-node-via-in-order-traversal)
     - [K-th Smallest](#k-th-smallest)
     - [Range problem](#range-problem)
@@ -89,27 +91,6 @@ void inOrder(TreeNode* root){
 }
 ```
 
-Follow up: Inorder Successor in BST
-
-https://leetcode.com/problems/inorder-successor-in-bst/
-
-```CPP
-TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
-
-    TreeNode* ret;
-    while(root!=NULL){
-        if(root->val<=p->val){
-            root = root->right;
-        }else{
-            ret = root;
-            root = root->left;
-        }
-    }
-
-    return ret;
-}
-```
-
 
 ## Post order
 * In pre order case, we print out center, left, right. post order requires left, right, center
@@ -173,7 +154,7 @@ void postOrder(TreeNode* root){
 
 ##  In order in BST and its variation 
 
-in general can be used as formation of
+### Common Pattern
 
 ```CPP
 stack<Treenode* node> s;
@@ -205,7 +186,26 @@ void traverse(TreeNode *root) {
 }
 ```
 
+### Inorder Successor in BST
 
+https://leetcode.com/problems/inorder-successor-in-bst/
+
+```CPP
+TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+
+    TreeNode* ret;
+    while(root!=NULL){
+        if(root->val<=p->val){
+            root = root->right;
+        }else{
+            ret = root;
+            root = root->left;
+        }
+    }
+
+    return ret;
+}
+```
 
 
 
