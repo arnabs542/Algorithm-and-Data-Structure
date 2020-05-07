@@ -18,6 +18,7 @@
   - [Array to Tree](#array-to-tree)
   - [Reconstruct Tree](#reconstruct-tree)
     - [Re construct Tree from in-order and pre-order](#re-construct-tree-from-in-order-and-pre-order)
+    - [Re construct Tree from in-order and post-order](#re-construct-tree-from-in-order-and-post-order)
   - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
 - [Traversal](#traversal-1)
   - [BFS](#bfs)
@@ -599,7 +600,7 @@ public:
 };
 ```
 
-###Re construct Tree from in-order and post-order
+### Re construct Tree from in-order and post-order
 
 https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/ 
 
