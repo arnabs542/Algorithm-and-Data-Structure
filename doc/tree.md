@@ -14,12 +14,11 @@
     - [Closest value](#closest-value)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
-- [Tree to Array/String](#tree-to-arraystring)
+- [Tree<->Array](#tree-array)
   - [Array to Tree](#array-to-tree)
   - [Reconstruct Tree](#reconstruct-tree)
     - [Re construct Tree from in-order and pre-order](#re-construct-tree-from-in-order-and-pre-order)
   - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
-  - [](#)
 - [Traversal](#traversal-1)
   - [BFS](#bfs)
   - [DFS](#dfs)
@@ -655,10 +654,6 @@ public:
 };
 ```
 
-
-
-
-
 ## Serialize and Deserialize Binary Tree
 https://leetcode.com/problems/serialize-and-deserialize-binary-tree/#/description
 ```CPP
@@ -713,11 +708,7 @@ TreeNode* deserialize(string data) {
 }
 ```
 
-## 
-
 # Traversal
-
-
 
 ## BFS
 
@@ -773,8 +764,6 @@ void printLevelOrder(BinaryTree *root) {
 * basically visit the node 3 times
 * Morris traveral try to minic recursive, visit node 3 times
 * use lots of empty pointer
-
-
 
 
 # BST 
