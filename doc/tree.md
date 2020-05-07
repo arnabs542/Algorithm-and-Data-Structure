@@ -200,79 +200,8 @@ void traverse(TreeNode *root) {
 }
 ```
 
-### Node insert/delete
-
-* Insert
-
-```CPP
-TreeNode* insertIntoBST(TreeNode *root, int val){
-  if(root==NULL){
-    return new TreeNode(val);
-  }
-  root->left = insertIntoBST(root->left, val);
-  root->right = insertIntoBST(root->right, val);
-}
-```
-
-* Delete
-
-https://leetcode.com/problems/delete-node-in-a-bst/
-
-Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
-
-need to find the node first
-
-```CPP
-TreeNode* deleteNode(TreeNode* root, int key) {
-    if (root->val == key) {
-        // found the node, delete
-    } else if (root->val > key) {
-        root->left = deleteNode(root->left, key);
-    } else if (root->val < key) {
-        root->right = deleteNode(root->right, key);
-    }
-    return root;
-}
-```
-
-after found the node, we need to deal with delete, it could be one leaf, so just delete, or in middle, so need to link other branch node 
 
 
-```CPP
-class Solution {
-public:
-    TreeNode* deleteNode(TreeNode* root, int key) {
-        if (root==NULL)
-            return NULL;
-        
-        if (root->val == key) {
-            if (root->left == NULL){
-                return root->right; 
-            }else if(root->right == NULL){
-                return root->left; 
-            }else {
-              //otherwise, need to pop largest node in left branch, or smallest in right branch
-              //in here, we just get smallest in right branch
-              TreeNode* minNode = getMin(root->right);
-              root->val = minNode->val;
-              root->right = deleteNode(root->right, minNode->val);
-            }
-        } else if (root->val > key) {
-            root->left = deleteNode(root->left, key);
-        } else if (root->val < key) {
-            root->right = deleteNode(root->right, key);
-        }
-        return root;
-    }
-    
-    TreeNode* getMin(TreeNode* node) {
-        // left in BST
-        while (node->left != NULL) 
-            node = node->left;
-        return node;
-    }
-};
-```
 
 
 ### next node(Descendant Node) via in order traversal
@@ -510,102 +439,6 @@ public:
 
 ```
 
-### Recover BST
-
-https://leetcode.com/problems/recover-binary-search-tree/
-
-Two elements of a binary search tree (BST) are swapped by mistake.
-Recover the tree without changing its structure.
-
-```
-Example 1:
-
-Input: [1,3,null,null,2]
-
-   1
-  /
- 3
-  \
-   2
-
-Output: [3,1,null,null,2]
-
-   3
-  /
- 1
-  \
-   2
-Example 2:
-
-Input: [3,1,4,null,null,2]
-
-  3
- / \
-1   4
-   /
-  2
-
-Output: [2,1,4,null,null,3]
-
-  2
- / \
-1   4
-   /
-  3
-Follow up:
-
-A solution using O(n) space is pretty straight forward.
-Could you devise a constant space solution?
-```
-
-```CPP
-/**
-for example 6, 3, 4, 5, 2
-
-find the first: 6, then find second, which is 2
-
-*/
-
-class Solution {
-public:
-    TreeNode* first = NULL;
-    TreeNode* second = NULL;
-    TreeNode* predecessor = NULL;
-    
-    void swap(TreeNode* a, TreeNode* b) {
-        int tmp = a->val;
-        a->val = b->val;
-        b->val = tmp;
-    }
-    
-    
-    void findswap(TreeNode* root) {
-        if(root == NULL)
-            return;
-        findswap(root->left);
-        //inorder: predecessor should < root
-        if(predecessor!=NULL && root->val < predecessor->val){
-            //find the first
-            if (first == NULL) 
-                first = predecessor;
-            //find second
-            if (first !=NULL)  
-                second = root;
-        }
-        predecessor = root;
-        findswap(root->right);  
-    }
-    
-    void recoverTree(TreeNode* node) {
-        findswap(node);
-        swap(first,second);  
-    }
-};
-```
-
-
-
-
 
 # Sub-Tree problems
 
@@ -700,7 +533,8 @@ public:
 
 ## Reconstruct Tree
 
-Re construct Tree from in-order and post-order
+###Re construct Tree from in-order and post-order
+
 https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/ 
 
 Let us see the process of constructing tree from in[] = {4, 8, 2, 5, 1, 6, 3, 7} and post[] = {8, 4, 5, 2, 6, 7, 3, 1}
@@ -709,9 +543,12 @@ Let us see the process of constructing tree from in[] = {4, 8, 2, 5, 1, 6, 3, 7}
 
 2) We search “1” in in[] to find left and right subtrees of root. Everything on left of “1” in in[] is in left subtree and everything on right is in right subtree.
 
+```
+
          1
        /    \
 [4, 8, 2, 5]   [6, 3, 7] 
+```
 3) We recur the above process for following two.
 ….b) Recur for in[] = {6, 3, 7} and post[] = {6, 7, 3}
 …….Make the created tree as right child of root.
@@ -751,7 +588,8 @@ public:
 };
 ```
 
-Re construct Tree from in-order and pre-order
+### Re construct Tree from in-order and pre-order
+
 https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
 
 Given preorder and inorder traversal of a tree, construct the binary tree.
@@ -759,6 +597,7 @@ Given preorder and inorder traversal of a tree, construct the binary tree.
 Note:
 You may assume that duplicates do not exist in the tree.
 
+```
 For example, given
 
 preorder = [3,9,20,15,7]
@@ -770,6 +609,7 @@ Return the following binary tree:
   9  20
     /  \
    15   7
+```
 
 ```CPP
 
@@ -870,9 +710,9 @@ TreeNode* deserialize(string data) {
 
 # Traversal
 
-## BFS/DFS
 
-* BFS
+
+## BFS
 
 ```CPP
 public Void BFS()
@@ -895,7 +735,7 @@ public Void BFS()
 }
 ```
 
-* DFS
+## DFS
 
 ```CPP
 void printLevel(BinaryTree *p, int level) {
@@ -929,55 +769,122 @@ void printLevelOrder(BinaryTree *root) {
 
 
 
-# adjust two nodes that is switched in BST
 
-* first step is to find two nodes are switched, using in order traversal.
-* if plain array is not monotonically increasing, record the beginning of first decreasing subarray and end of last decreasing subarray
-* switch these two
+# BST 
 
-```CPP
-void recoverTree(TreeNode* root) {
-  vector<TreeNode*> tree_array;
-  inorderTraveral(tree_array,root);
+## Common Logic
 
-  //find beginning of first decreasing subarray
-  TreeNode* head;
-  for(int i=0;i<tree_array.size()-1;i++){
-    if(tree_array[i]->val>tree_array[i+1]->val){
-      head = tree_array[i];
-      break;
-    }
-  }
-  //find the end of last decreasing subarray
-  TreeNode* tail;
-  for(int i=tree_array.size()-1;i>0;i--){
-    if(tree_array[i]->val<tree_array[i-1]->val){
-      tail = tree_array[i];
-      break;
-    }
-  }
-  if(head == NULL && tail == NULL)
-      return;
-    int tmp = head->val;
-    head->val = tail->val;
-    tail->val = tmp;
-  }
+> Key idea is Recursive and do something for each node:
 
-void inorderTraveral(vector<TreeNode*> &tree_array, TreeNode* root){
-  if(root==NULL)
-    return;
-  inorderTraveral(tree_array,root->left);
-  tree_array.push_back(root);
-  inorderTraveral(tree_array,root->right);
-}
-```
-# Recursive to collect information in tree
-
-> Key idea is Recursive and collect same information for each node:
+> Some 
 
 >* collect same information for each node, and pass to its parents,
 >* information has 3 items: left branch's, right branch's, and sub branch for which current node as root
 >* repeat
+
+
+## Insert/Find/Delete Node
+
+### Find
+
+```CPP
+boolean isInBST(TreeNode* root, int target) {
+    if (root == null) return false;
+    if (root.val == target) return true;
+
+    return isInBST(root->left, target)
+        || isInBST(root->right, target);
+}
+
+//A better way
+boolean isInBST(TreeNode* root, int target) {
+    if (root == null) 
+      return false;
+    if (root->val == target)
+        return true;
+    if (root->val < target) 
+        return isInBST(root->right, target);
+    if (root->val > target)
+        return isInBST(root->left, target);
+    
+}
+```
+
+### Insert
+
+```CPP
+TreeNode insertIntoBST(TreeNode* root, int val) {
+    //find empty spot
+    if (root == null) 
+      return new TreeNode(val);
+
+    if (root->val < val) 
+        root->right = insertIntoBST(root->right, val);
+    if (root.val > val) 
+        root->left = insertIntoBST(root->left, val);
+    return root;
+}
+```
+
+### Delete
+
+https://leetcode.com/problems/delete-node-in-a-bst/
+
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+
+need to find the node first
+
+```CPP
+TreeNode* deleteNode(TreeNode* root, int key) {
+    if (root->val == key) {
+        // found the node, delete
+    } else if (root->val > key) {
+        root->left = deleteNode(root->left, key);
+    } else if (root->val < key) {
+        root->right = deleteNode(root->right, key);
+    }
+    return root;
+}
+```
+
+after found the node, we need to deal with delete, it could be one leaf, so just delete, or in middle, so need to link other branch node 
+
+
+```CPP
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root==NULL)
+            return NULL;
+        
+        if (root->val == key) {
+            if (root->left == NULL){
+                return root->right; 
+            }else if(root->right == NULL){
+                return root->left; 
+            }else {
+              //otherwise, need to pop largest node in left branch, or smallest in right branch
+              //in here, we just get smallest in right branch
+              TreeNode* minNode = getMin(root->right);
+              root->val = minNode->val;
+              root->right = deleteNode(root->right, minNode->val);
+            }
+        } else if (root->val > key) {
+            root->left = deleteNode(root->left, key);
+        } else if (root->val < key) {
+            root->right = deleteNode(root->right, key);
+        }
+        return root;
+    }
+    
+    TreeNode* getMin(TreeNode* node) {
+        // left in BST
+        while (node->left != NULL) 
+            node = node->left;
+        return node;
+    }
+};
+```
 
 ## Tree is Balanced Binary tree?
 ```CPP
@@ -1035,6 +942,102 @@ bool isBSThelper(TreeNode *root, long min, long max){
     }
 }
 ```
+
+## Recover BST
+
+https://leetcode.com/problems/recover-binary-search-tree/
+
+Two elements of a binary search tree (BST) are swapped by mistake.
+Recover the tree without changing its structure.
+
+```
+Example 1:
+
+Input: [1,3,null,null,2]
+
+   1
+  /
+ 3
+  \
+   2
+
+Output: [3,1,null,null,2]
+
+   3
+  /
+ 1
+  \
+   2
+Example 2:
+
+Input: [3,1,4,null,null,2]
+
+  3
+ / \
+1   4
+   /
+  2
+
+Output: [2,1,4,null,null,3]
+
+  2
+ / \
+1   4
+   /
+  3
+Follow up:
+
+A solution using O(n) space is pretty straight forward.
+Could you devise a constant space solution?
+```
+
+```CPP
+/**
+for example 6, 3, 4, 5, 2
+
+find the first: 6, then find second, which is 2
+
+*/
+
+class Solution {
+public:
+    TreeNode* first = NULL;
+    TreeNode* second = NULL;
+    TreeNode* predecessor = NULL;
+    
+    void swap(TreeNode* a, TreeNode* b) {
+        int tmp = a->val;
+        a->val = b->val;
+        b->val = tmp;
+    }
+    
+    
+    void findswap(TreeNode* root) {
+        if(root == NULL)
+            return;
+          //traverse in order to get sorted order
+        findswap(root->left);
+        //inorder: predecessor should < root
+        if(predecessor!=NULL && root->val < predecessor->val){
+            //find the first
+            if (first == NULL) 
+                first = predecessor;
+            //find second
+            if (first !=NULL)  
+                second = root;
+        }
+        predecessor = root;
+        findswap(root->right);  
+    }
+    
+    void recoverTree(TreeNode* node) {
+        findswap(node);
+        swap(first,second);  
+    }
+};
+```
+
+
 
 
 ## Find largest BST sub tree in a binary tree
