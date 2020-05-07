@@ -39,7 +39,9 @@
   - [Permutation](#permutation)
   - [SubSet](#subset)
   - [Combination](#combination)
-  - [Application/Generate parentheses](#applicationgenerate-parentheses)
+  - [Application](#application)
+    - [Letter Combinations of a Phone Number](#letter-combinations-of-a-phone-number)
+    - [Generate parentheses](#generate-parentheses)
 - [Others](#others)
   - [BFPRT](#bfprt)
   - [Half Majority](#half-majority)
@@ -1539,7 +1541,74 @@ public:
 };
 ```
 
-## Application/Generate parentheses
+## Application
+
+### Letter Combinations of a Phone Number
+
+https://leetcode.com/problems/letter-combinations-of-a-phone-number/ 
+
+Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent.
+
+A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+
+
+```
+Example:
+
+Input: "23"
+Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+```
+
+```CPP
+class Solution {
+private:
+    map<int,string> dic;
+public:
+    void init(){
+
+        dic[2] = "abc";  
+        dic[3] = "def";
+        dic[4] = "ghi";
+        dic[5] = "jkl";
+        dic[6] = "mno";
+        dic[7] = "pqrs";
+        dic[8] = "tuv";
+        dic[9] = "wxyz";
+    }
+    
+    vector<string> letterCombinations(string digits) {
+        vector<string> ret;
+        /* for this question, we need to create a look-up dictionary */
+       
+        if(digits.empty())
+            return ret;
+        
+        
+        init();
+        
+        string one = "";
+        help(ret,one,digits,0);
+        return ret;        
+    }
+    
+    void help(vector<string> &ret, string one, string& digits,int idx){
+        if(idx==digits.size()){
+            ret.push_back(one);
+            return;
+        }
+        //DO not over counts.
+        string letter = dic[digits[idx]-'0'];
+        for(int i=0;i<letter.size();i++){
+            
+            help(ret,one+letter[i],digits,idx+1);
+        }
+
+    }
+```
+
+
+
+### Generate parentheses
 
 https://leetcode.com/problems/generate-parentheses/
 
