@@ -123,9 +123,11 @@ Also we need to consider whether we need to move mid index. since our search ran
 
 3. Limitation of former algorithm: Hard to return the boundary
 
-find mid value left and right boudary of ```nums = [1,2,2,2,3]``` 
+
 
 ### Boundary in Binary Search
+
+> Q: find mid value left and right boudary of ```nums = [1,2,2,2,3]``` 
 
 #### Find Left Boundary
 

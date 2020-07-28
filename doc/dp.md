@@ -3,6 +3,10 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [General idea](#general-idea)
+- [DFS to DP](#dfs-to-dp)
+  - [Target Sum](#target-sum)
+    - [DFS solution](#dfs-solution)
+    - [DP Solution](#dp-solution)
 - [Min Matrix Path Sum](#min-matrix-path-sum)
 - [Using limited Variables instead of DP array](#using-limited-variables-instead-of-dp-array)
   - [Max Sum without adjacent](#max-sum-without-adjacent)
@@ -42,6 +46,93 @@
 
 > * Translate to DP
 
+## DFS to DP
+
+> Lots of problem can be solved in DFS manner but better in DP for better big(O) run time
+
+
+
+
+### Target Sum
+
+https://leetcode.com/problems/target-sum/
+
+You are given a list of non-negative integers, a1, a2, ..., an, and a target, S. Now you have 2 symbols + and -. For each integer, you should choose one from + and - as its new symbol.
+
+Find out how many ways to assign symbols to make sum of integers equal to target S.
+
+```
+Example 1:
+Input: nums is [1, 1, 1, 1, 1], S is 3. 
+Output: 5
+Explanation: 
+
+-1+1+1+1+1 = 3
++1-1+1+1+1 = 3
++1+1-1+1+1 = 3
++1+1+1-1+1 = 3
++1+1+1+1-1 = 3
+
+There are 5 ways to assign symbols to make the sum of nums be target 3
+
+
+1. The length of the given array is positive and will not exceed 20.
+2. The sum of elements in the given array will not exceed 1000.
+
+Your output answer is guaranteed to be fitted in a 32-bit integer.
+```
+
+#### DFS solution
+```CPP
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int S) {
+        int cnt=0;
+        help(nums,S,0,0,cnt);
+        return cnt;
+    }
+    
+    void help(vector<int>& nums, int S, int index,int sum, int & res){
+        if(index==nums.size()){
+            if(sum==S)
+                res++;
+            return;
+        }
+        int cur=nums[index];
+        help(nums,S,index+1,sum+cur,res);  //assign '+' to cur 
+        help(nums,S,index+1,sum-cur,res);  //assign '-' to cur 
+    }
+};
+```
+
+#### DP Solution
+
+```CPP
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int S) {
+        int ret = 0;
+        //row: index,
+        //col: all possible sum +1000 (+1000 because we need to get none-negative index)
+        //val: occurence
+        int len = nums.size();
+
+        std::vector<vector<int>> dp(len,vector<int>(2001,0));
+        //init, because we start with row>0
+        dp[0][nums[0] + 1000] += 1;
+        dp[0][-nums[0] + 1000] += 1;
+        for (int i = 1; i < len; i++) {
+            for (int sum = -1000; sum <= 1000; sum++) {
+                if (dp[i - 1][sum + 1000] > 0) {
+                    dp[i][sum + 1000 + nums[i]] += dp[i - 1][sum + 1000];
+                    dp[i][sum + 1000 - nums[i]] += dp[i - 1][sum + 1000];
+                }
+            }
+        }
+        return S > 1000 ? 0 : dp[len - 1][S + 1000];
+    }
+};
+```
 
 
 ## Min Matrix Path Sum

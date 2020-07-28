@@ -6,6 +6,7 @@
 - [Heap and Stack](#heap-and-stack)
 - [String](#string)
 - [Link List](#link-list)
+- [Binary Search](#binary-search)
 - [Tree](#tree)
 - [DP](#dp)
 - [Big data](#big-data)
@@ -28,6 +29,10 @@
 # Link List
 
 [Linked List Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/list.md)
+
+# Binary Search
+
+[Binary Search](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/binary_search.md)
 
 # Tree
 
