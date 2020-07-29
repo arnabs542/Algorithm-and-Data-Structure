@@ -8,6 +8,7 @@
 - [Link List](#link-list)
 - [Binary Search](#binary-search)
 - [Tree](#tree)
+- [Trie](#trie)
 - [DP](#dp)
 - [Big data](#big-data)
 - [Graph](#graph)
@@ -37,6 +38,10 @@
 # Tree
 
 [Tree Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/tree.md)
+
+# Trie
+
+[Other Classical algorithms.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/Trie.md)
 
 # DP
 
