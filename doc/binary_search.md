@@ -12,9 +12,9 @@
       - [Find Right Boundary](#find-right-boundary)
         - [Key Points](#key-points)
       - [All three together](#all-three-together)
-    - [Example](#example)
+    - [Example: first bad version](#example-first-bad-version)
   - [Local Minimum](#local-minimum)
-    - [Example](#example-1)
+    - [Example](#example)
   - [Numerical(Square) Calculation](#numericalsquare-calculation)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -257,7 +257,7 @@ int right_bound(int[] nums, int target) {
 }
 ```
 
-### Example
+### Example: first bad version
 
 https://leetcode.com/problems/first-bad-version/
 
