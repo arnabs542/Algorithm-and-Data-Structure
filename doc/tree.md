@@ -16,6 +16,7 @@
     - [Closest value](#closest-value)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
+  - [SubTree prune](#subtree-prune)
 - [Tree<->Array](#tree-array)
   - [Array to Tree](#array-to-tree)
   - [Reconstruct Tree](#reconstruct-tree)
@@ -473,6 +474,31 @@ bool isSame(TreeNode * ns, TreeNode * nt){
 }
 
 ```
+
+## SubTree prune
+https://leetcode.com/problems/binary-tree-pruning/
+
+We are given the head node root of a binary tree, where additionally every node's value is either a 0 or a 1.
+Return the same tree where every subtree (of the given tree) not containing a 1 has been removed.
+(Recall that the subtree of a node X is X, plus every node that is a descendant of X.)
+
+```CPP
+  TreeNode* pruneTree(TreeNode* root) {
+      if(root==NULL)
+          return NULL;
+      
+      root->left = pruneTree(root->left);
+      root->right= pruneTree(root->right);
+      
+      if(root->left==NULL && root->right==NULL && root->val==0)
+          return NULL;
+      else
+          return root;
+  }
+```
+
+
+
 
 # Tree<->Array
 

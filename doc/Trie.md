@@ -154,6 +154,7 @@ public:
     //Create Trie
     struct Trie {
         struct Trie* child[26];
+        //for each Trie node, put all suggested items starting with prefix
         vector<string> suggest = {};
     };
     

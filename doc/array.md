@@ -7,6 +7,7 @@
   - [Sub Array Sum](#sub-array-sum)
     - [Two sum](#two-sum)
     - [Subarray sum number that equals to certain target](#subarray-sum-number-that-equals-to-certain-target)
+    - [Find Two Non-overlapping Sub-arrays Each With Target Sum](#find-two-non-overlapping-sub-arrays-each-with-target-sum)
     - [Maximum Size Subarray Sum Equals k](#maximum-size-subarray-sum-equals-k)
       - [Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive](#follow-up-maximum-size-subarray-sum-equals-k-if-subarray-contains-all-positive)
       - [Follow up: subarray sum to multiple of k](#follow-up-subarray-sum-to-multiple-of-k)
@@ -140,6 +141,71 @@ int subarraySum(vector<int>& nums, int k) {
 }
 
 ```
+
+### Find Two Non-overlapping Sub-arrays Each With Target Sum
+
+https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/
+
+Given an array of integers arr and an integer target.
+
+You have to find two non-overlapping sub-arrays of arr each with sum equal target. There can be multiple answers so you have to find an answer where the sum of the lengths of the two sub-arrays is minimum.
+
+Return the minimum sum of the lengths of the two required sub-arrays, or return -1 if you cannot find such two sub-arrays.
+
+ 
+```
+Example 1:
+
+Input: arr = [3,2,2,4,3], target = 3
+Output: 2
+Explanation: Only two sub-arrays have sum = 3 ([3] and [3]). The sum of their lengths is 2.
+Example 2:
+
+Input: arr = [7,3,4,7], target = 7
+Output: 2
+Explanation: Although we have three non-overlapping sub-arrays of sum = 7 ([7], [3,4] and [7]), but we will choose the first and third sub-arrays as the sum of their lengths is 2.
+Example 3:
+
+Input: arr = [4,3,2,6,2,3,4], target = 6
+Output: -1
+Explanation: We have only one sub-array of sum = 6.
+```
+
+```CPP
+class Solution {
+public:
+    int minSumOfLengths(vector<int>& arr, int target) {
+        
+        int sum=0; //sum: index
+        int l = INT_MAX;
+        int ret = INT_MAX;
+        unordered_map<int,int> m;
+        m[0]=-1;
+        for(int i=0;i<arr.size();i++){
+            sum += arr[i];
+            m[sum] =i;  
+        }
+        sum=0;
+        //check for both left and right subarry to ensure no overlap
+        for(int i=0;i<arr.size();i++){
+            sum += arr[i];
+
+            //check min len sub array added to target from left to i
+            if(m.find(sum-target)!=m.end() ){
+                l = min(l,i-m[sum-target]);
+            }
+            
+            //check  sub array from i+1 -> right
+            if(m.find(sum+target)!=m.end() && l<INT_MAX){
+                ret = min(ret, l+m[sum+target]-i);
+            }
+        }
+
+        return ret==INT_MAX?-1:ret;
+    }
+};
+```
+
 
 ### Maximum Size Subarray Sum Equals k
 

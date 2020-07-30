@@ -34,7 +34,7 @@
 - [Valid parentheses and longest valid parentheses](#valid-parentheses-and-longest-valid-parentheses)
 - [Minimum cuts needed for a palindrome partitioning](#minimum-cuts-needed-for-a-palindrome-partitioning)
 - [Regular expression](#regular-expression)
-- [Number of island](#number-of-island)
+- [Stock Buy/Sell](#stock-buysell)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1218,4 +1218,54 @@ bool isMatch(string s, string p) {
 ```
 
 
-## Number of island
+## Stock Buy/Sell
+
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/
+
+Say you have an array for which the i-th element is the price of a given stock on day i.
+Design an algorithm to find the maximum profit. You may complete at most k transactions.
+
+Note:
+You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+
+```
+Example 1:
+
+Input: [2,4,1], k = 2
+Output: 2
+Explanation: Buy on day 1 (price = 2) and sell on day 2 (price = 4), profit = 4-2 = 2.
+Example 2:
+
+Input: [3,2,6,5,0,3], k = 2
+Output: 7
+Explanation: Buy on day 2 (price = 2) and sell on day 3 (price = 6), profit = 6-2 = 4.
+             Then buy on day 5 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.
+
+```
+
+we can convert this into a DP 
+
+```CPP
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        int res =0;
+        //k >= prices.size() / 2 means we can have as many times operations
+        if (k >= prices.size() / 2) {
+            for (int i = 1; i < prices.size(); ++i) 
+                res += max(0, prices[i] - prices[i - 1]);
+            return res;
+        }
+            
+        vector<int> buys(k + 1, INT_MIN), sells(k + 1, 0); //max profit up to i for buy and sell
+        for (auto p : prices){
+            for (auto i = 1; i <= k; ++i) {
+              buys[i] = max(buys[i], sells[i - 1] - p); //max profit after buy action at i
+              sells[i] = max(sells[i], buys[i] + p);  //max profit after sell action at i
+            }
+        }
+            
+        return sells[k];
+    }
+};
+```
