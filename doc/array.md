@@ -11,6 +11,7 @@
     - [Maximum Size Subarray Sum Equals k](#maximum-size-subarray-sum-equals-k)
       - [Follow Up: Maximum Size Subarray Sum Equals k If subarray contains all positive](#follow-up-maximum-size-subarray-sum-equals-k-if-subarray-contains-all-positive)
       - [Follow up: subarray sum to multiple of k](#follow-up-subarray-sum-to-multiple-of-k)
+      - [Follow up: Binary Subarrays With Sum](#follow-up-binary-subarrays-with-sum)
     - [Max subarray sum](#max-subarray-sum)
       - [Follow up: max sub matrix size](#follow-up-max-sub-matrix-size)
     - [Maximum Product Subarray](#maximum-product-subarray)
@@ -313,6 +314,42 @@ bool checkSubarraySum(vector<int>& nums, int k) {
 }
 
 ```
+
+#### Follow up: Binary Subarrays With Sum
+
+https://leetcode.com/problems/binary-subarrays-with-sum/
+
+In an array A of 0s and 1s, how many non-empty subarrays have sum S?
+
+```
+Example 1:
+
+Input: A = [1,0,1,0,1], S = 2
+Output: 4
+Explanation: 
+The 4 subarrays are bolded below:
+[1,0,1,0,1]
+[1,0,1,0,1]
+[1,0,1,0,1]
+[1,0,1,0,1]
+```
+
+```CPP
+int numSubarraysWithSum(vector<int>& A, int S) {
+    //sum: count as map
+    unordered_map<int,int> m;
+    m[0] = 1; //so if subarray from start, we can still count
+    int ret =0;
+    int sum=0;
+    for(int i=0;i<A.size();i++){
+        sum+=A[i];
+        ret+=m[sum-S];
+        m[sum]++;
+    }
+    return ret;
+}
+```
+
 
 ### Max subarray sum
 https://leetcode.com/problems/maximum-subarray/

@@ -22,8 +22,11 @@
   - [Stack To minic function call](#stack-to-minic-function-call)
   - [Other Stack Problem](#other-stack-problem)
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
+    - [Example: Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit](#example-longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit)
   - [Monotonic stack](#monotonic-stack)
     - [Monotonic stack applications:](#monotonic-stack-applications)
+      - [Next Greater element](#next-greater-element)
+      - [Max Rectangle](#max-rectangle)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1093,6 +1096,73 @@ int AllLessNumSubArray(vector<int> array, int num){
 }
 ```
 
+### Example: Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit
+
+https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/
+
+Given an array of integers nums and an integer limit, return the size of the longest non-empty subarray such that the absolute difference between any two elements of this subarray is less than or equal to limit.
+
+ 
+```
+Example 1:
+
+Input: nums = [8,2,4,7], limit = 4
+Output: 2 
+Explanation: All subarrays are: 
+[8] with maximum absolute diff |8-8| = 0 <= 4.
+[8,2] with maximum absolute diff |8-2| = 6 > 4. 
+[8,2,4] with maximum absolute diff |8-2| = 6 > 4.
+[8,2,4,7] with maximum absolute diff |8-2| = 6 > 4.
+[2] with maximum absolute diff |2-2| = 0 <= 4.
+[2,4] with maximum absolute diff |2-4| = 2 <= 4.
+[2,4,7] with maximum absolute diff |2-7| = 5 > 4.
+[4] with maximum absolute diff |4-4| = 0 <= 4.
+[4,7] with maximum absolute diff |4-7| = 3 <= 4.
+[7] with maximum absolute diff |7-7| = 0 <= 4. 
+Therefore, the size of the longest subarray is 2.
+Example 2:
+
+Input: nums = [10,1,2,4,7,2], limit = 5
+Output: 4 
+Explanation: The subarray [2,4,7,2] is the longest since the maximum absolute diff is |2-7| = 5 <= 5.
+```
+
+
+```CPP
+int longestSubarray(vector<int>& nums, int limit) {
+        //record high and low in each subarray
+      deque<int> maxq;
+      deque<int> minq;
+      int i=0, j;
+      int ret =1;
+      for (j=0;j<nums.size();j++){
+          //maxq monotonically decrease from front
+          while(!maxq.empty() && nums[j]>maxq.back())
+              maxq.pop_back();
+          //minq monotonically increase from front
+          while(!minq.empty() && nums[j]<minq.back())
+              minq.pop_back();
+          
+          maxq.push_back(nums[j]);
+          minq.push_back(nums[j]);
+          
+          //reduce the window size
+          while(maxq.front()-minq.front()>limit){
+              
+              if(maxq.front()==nums[i])
+                  maxq.pop_front();
+              if(minq.front()==nums[i])
+                  minq.pop_front();
+              
+              i++;
+          }
+          ret = max(ret, j - i + 1);
+          
+      }
+      return ret;
+}
+```
+
 ## Monotonic stack
 
 > for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
@@ -1187,6 +1257,102 @@ TreeNode * getMaxtree_method2(vector<int> array){
 ```
 
 ### Monotonic stack applications:
+
+#### Next Greater element
+
+https://leetcode.com/problems/next-greater-element-i/
+
+You are given two arrays (without duplicates) nums1 and nums2 where nums1’s elements are subset of nums2. Find all the next greater numbers for nums1's elements in the corresponding places of nums2.
+
+The Next Greater Number of a number x in nums1 is the first greater number to its right in nums2. If it does not exist, output -1 for this number.
+
+```
+
+Example 1:
+Input: nums1 = [4,1,2], nums2 = [1,3,4,2].
+Output: [-1,3,-1]
+Explanation:
+    For number 4 in the first array, you cannot find the next greater number for it in the second array, so output -1.
+    For number 1 in the first array, the next greater number for it in the second array is 3.
+    For number 2 in the first array, there is no next greater number for it in the second array, so output -1.
+Example 2:
+Input: nums1 = [2,4], nums2 = [1,2,3,4].
+Output: [3,-1]
+Explanation:
+    For number 2 in the first array, the next greater number for it in the second array is 3.
+    For number 4 in the first array, there is no next greater number for it in the second array, so output -1.
+
+```
+
+```CPP
+vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        //We use a stack to keep a decreasing whenever we see a number x greater than stack.top() we pop all elements less than x and for all the popped ones, their next greater element is x
+        
+        int len = nums1.size();
+        
+        stack<int> s;
+        //use a map to record num->next greater
+        unordered_map<int,int> m;
+        vector<int> ret(len,-1);
+        
+        for(int i=0;i<nums2.size();i++){
+            while(!s.empty() && nums2[i]>s.top()){
+                m[s.top()]=nums2[i];
+                s.pop();
+            }
+            s.push(nums2[i]);
+        }
+        
+        for(int i=0;i<nums1.size();i++){
+            if(m.find(nums1[i])==m.end()){
+                ret[i] = -1;
+            }else{
+                ret[i] = m[nums1[i]];
+            }
+        }
+        
+        return ret;
+    }
+```
+
+https://leetcode.com/problems/next-greater-element-ii/
+
+Given a circular array (the next element of the last element is the first element of the array), print the Next Greater Number for every element. The Next Greater Number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, output -1 for this number.
+
+```
+Example 1:
+Input: [1,2,1]
+Output: [2,-1,2]
+Explanation: The first 1's next greater number is 2; 
+The number 2 can't find next greater number; 
+The second 1's next greater number needs to search circularly, which is also 2.
+```
+
+Similar idea as before, but we can just store index here
+
+```CPP
+vector<int> nextGreaterElements(vector<int>& nums) {
+    //stack is decreaseing
+    int len = nums.size();
+    vector<int> ret(len,-1);
+    //store index here
+    stack<int> s;
+    
+    //loop 2Xlen as it is circular
+    for(int i=0;i<2*len;i++){
+        while(!s.empty() && nums[s.top()]<nums[i%len]){
+            ret[s.top()]=nums[i%len];
+            s.pop();
+        }
+        if(i<len)
+            s.push(i);
+    }
+    
+    return ret;
+}
+```
+
+#### Max Rectangle
 
 * [Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
 
