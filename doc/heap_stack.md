@@ -28,9 +28,9 @@
   - [Monotonic stack](#monotonic-stack)
     - [Previous Larger and Next Larger](#previous-larger-and-next-larger)
     - [Previous less or Next Less](#previous-less-or-next-less)
-    - [Max tree](#max-tree)
     - [Monotonic stack applications: (min/Max in sub array problem)](#monotonic-stack-applications-minmax-in-sub-array-problem)
       - [Next Greater element](#next-greater-element)
+    - [Max tree](#max-tree)
       - [Max Rectangle](#max-rectangle)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -1266,69 +1266,6 @@ for(int i = 0; i < A.size(); i++){
 ```
 
 
-### Max tree 
-
-
-We can use this monotonic stack way to create the max-tree:
-
-1. For any value, check left and right cloest larger/smaller value.
-2. compare these two, put itself as child of smaller between left and right.
-
-It will be a binary tree, not necessary full balanced binary tree
-```CPP
-struct TreeNode{
-  int val;
-  TreeNode* left;
-  TreeNode* right;
-};
-
-TreeNode * getMaxtree_method2(vector<int> array){
-  stack<TreeNode> s; //monotonic stack for TreeNode value
-  map<TreeNode,TreeNode> Parents; //key is node, val is its parents
-  std::vector<TreeNode*> node;
-  //init TreeNode array
-  for(int i=0;i<array.size();i++){
-    node[i] = new TreeNode(array[i]);
-  }
-  //for each node in array, find its left cloest larger and right cloest larger, put into map
-  for(int i=0;i<array.size();i++){
-    int input = array[i];
-    int left,right;
-    while(!s.empty() && s.top()->val<input){
-      TreeNode cur = s.top();
-      s.pop();
-      left = stack.empty()? NULL: s.top();
-      right = new TreeNode(input);
-      parents[cur] = left==NULL || left->val<right->val?left:right;
-    }
-    s.push(node[i]);
-  }
-  //go through all array, and stack still have value
-  while(!s.empty()){
-    //Right is always null since we are to the end of the array
-    TreeNode cur = s.top();
-    s.pop();
-    left = stack.empty()?NULL:s.top();
-    parents[cur] = left;
-  }
-  //Build up the tree
-  TreeNode* head;
-  TreeNode* Parent;
-  for(int i=0;i<array.size();i++){
-    parent = parents[node[i]];
-    if(parent==NULL){
-      head = node[i]; //found tree root
-    }else if(parent->left == NULL){
-      parent->left = node[i];
-    }else{
-      parent->right = node[i];
-    }
-  }
-
-  return head;
-}
-```
-
 ### Monotonic stack applications: (min/Max in sub array problem)
 
 #### Next Greater element
@@ -1424,6 +1361,70 @@ vector<int> nextGreaterElements(vector<int>& nums) {
     return ret;
 }
 ```
+
+### Max tree 
+
+
+https://leetcode.com/problems/maximum-binary-tree/
+
+Given an integer array with no duplicates. A maximum tree building on this array is defined as follow:
+
+The root is the maximum number in the array.
+The left subtree is the maximum tree constructed from left part subarray divided by the maximum number.
+The right subtree is the maximum tree constructed from right part subarray divided by the maximum number.
+Construct the maximum tree by the given array and output the root node of this tree.
+
+```
+
+Example 1:
+Input: [3,2,1,6,0,5]
+Output: return the tree root node representing the following tree:
+
+      6
+    /   \
+   3     5
+    \    / 
+     2  0   
+       \
+        1
+```
+
+We can use this monotonic stack way to create the max-tree:
+
+1. For any value, check left and right cloest larger/smaller value.
+2. compare these two, put itself as child of smaller between left and right.
+
+It will be a binary tree, not necessary full balanced binary tree
+
+```CPP
+TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+        //decreasing stack,  
+
+        //For each number, we keep pop the stack until empty or a bigger number; 
+        stack<TreeNode*> s;
+        for(int i=0;i<nums.size();i++){
+            TreeNode* node = new TreeNode(nums[i]);
+            while(!s.empty() && s.top()->val<nums[i]){
+                node->left = s.top();
+                s.pop();
+            }
+            //only largest number in s, build right
+            if (!s.empty()){
+                s.top()->right = node;
+            }
+            s.push(node);
+            
+        }
+        //Get bottom of stack, which is root
+        TreeNode* ret;
+        while(!s.empty()){
+            ret = s.top();
+            s.pop();
+        }
+        return ret;
+    }
+```
+
 
 #### Max Rectangle
 
