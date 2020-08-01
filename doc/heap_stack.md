@@ -26,6 +26,7 @@
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
     - [Example: Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit](#example-longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit)
   - [Monotonic stack](#monotonic-stack)
+    - [Previous Larger and Next Larger](#previous-larger-and-next-larger)
     - [Previous less or Next Less](#previous-less-or-next-less)
     - [Max tree](#max-tree)
     - [Monotonic stack applications: (min/Max in sub array problem)](#monotonic-stack-applications-minmax-in-sub-array-problem)
@@ -1172,9 +1173,12 @@ int longestSubarray(vector<int>& nums, int limit) {
 
 ## Monotonic stack 
 
-> for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
+### Previous Larger and Next Larger
+
 
 > For a input size N array, return size N pairs of values (left, right), in which left is the cloest larger value from left side of current item, and right is the cloest larger value from right side of current item
+
+* monotonic stack, values are increasing from top to bottom
 
 Algorithm:
 ```CPP
@@ -1204,6 +1208,8 @@ return ret;
 ```
 
 ### Previous less or Next Less
+
+* Key idea is to maintain a monotonic decreasing stack, values are decreasing from top to bottom
 
 > find the previous less element of each element in a vector with O(n) time:
 
