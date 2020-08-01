@@ -21,10 +21,14 @@
   - [Min Stack](#min-stack)
   - [Stack To minic function call](#stack-to-minic-function-call)
   - [Other Stack Problem](#other-stack-problem)
+    - [132 pattern](#132-pattern)
+- [Max/Min in Sub array: Monotonic stack or Deque](#maxmin-in-sub-array-monotonic-stack-or-deque)
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
     - [Example: Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit](#example-longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit)
   - [Monotonic stack](#monotonic-stack)
-    - [Monotonic stack applications:](#monotonic-stack-applications)
+    - [Previous less or Next Less](#previous-less-or-next-less)
+    - [Max tree](#max-tree)
+    - [Monotonic stack applications: (min/Max in sub array problem)](#monotonic-stack-applications-minmax-in-sub-array-problem)
       - [Next Greater element](#next-greater-element)
       - [Max Rectangle](#max-rectangle)
 
@@ -345,7 +349,7 @@ https://leetcode.com/problems/find-median-from-data-stream/
 
  You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
 
-  ```CPP
+```CPP
   struct cost_compare{
       bool operator()(pair<int,int> a, pair<int,int> b){
           return a.first>b.first;
@@ -387,7 +391,7 @@ https://leetcode.com/problems/find-median-from-data-stream/
      }
      return W;    
   }
- ```
+```
 
 ## Interval sort
 
@@ -967,8 +971,9 @@ int getAndRemoveLastElement(stack<int> &s){
 
 ```
 
-* 132 pattern
-//https://leetcode.com/problems/132-pattern/
+### 132 pattern
+
+https://leetcode.com/problems/132-pattern/
 
 Given a sequence of n integers a1, a2, ..., an, a 132 pattern is a subsequence ai, aj, ak such that i < j < k and ai < ak < aj. Design an algorithm that takes a list of n numbers as input and checks whether there is a 132 pattern in the list.
 
@@ -1015,6 +1020,8 @@ bool find132pattern(vector<int>& nums) {
 }
 
 ```
+
+# Max/Min in Sub array: Monotonic stack or Deque
 
 
 ## Dequeue: Update Largest/Smallest value in sliding window
@@ -1163,7 +1170,7 @@ int longestSubarray(vector<int>& nums, int limit) {
 }
 ```
 
-## Monotonic stack
+## Monotonic stack 
 
 > for a given item in array, find its values from its left and right which are larger than it and are cloest to current item.
 
@@ -1196,9 +1203,69 @@ while(!s.empty()){
 return ret;
 ```
 
+### Previous less or Next Less
+
+> find the previous less element of each element in a vector with O(n) time:
+
+
+What is the previous less element of an element?
+
+```
+For example:
+[3, 7, 8, 4]
+The previous less element of 7 is 3.
+The previous less element of 8 is 7.
+The previous less element of 4 is 3.
+There is no previous less element for 3.
+```
+
+```CPP
+// previous_less[i] = j means A[j] is the previous less element of A[i].
+// previous_less[i] = -1 means there is no previous less element of A[i].
+vector<int> previous_less(A.size(), -1);
+for(int i = 0; i < A.size(); i++){
+  while(!s.empty() && A[s.top()] > A[i]){
+    s.pop();
+  }
+  previous_less[i] = s.empty()? -1: s.top();
+  s.push(i);
+}
+```
+
+> find the next less element of each element in a vector with O(n) time:
+
+
+What is the next less element of an element?
+
+```
+For example:
+[3, 7, 8, 4]
+The next less element of 8 is 4.
+The next less element of 7 is 4.
+There is no next less element for 3 and 4.
+```
+
+```CPP
+// next_less[i] = j means A[j] is the next less element of A[i].
+// next_less[i] = -1 means there is no next less element of A[i].
+vector<int> next_less(A.size(), -1);
+for(int i = 0; i < A.size(); i++){
+  while(!s.empty() && A[s.top()] > A[i]){
+    auto x = s.top(); 
+    s.pop();
+    next_less[x] = i;
+  }
+  s.push(i);
+}
+```
+
+
+### Max tree 
+
+
 We can use this monotonic stack way to create the max-tree:
 
-1. For any value, check left and right cloest larger value.
+1. For any value, check left and right cloest larger/smaller value.
 2. compare these two, put itself as child of smaller between left and right.
 
 It will be a binary tree, not necessary full balanced binary tree
@@ -1256,7 +1323,7 @@ TreeNode * getMaxtree_method2(vector<int> array){
 }
 ```
 
-### Monotonic stack applications:
+### Monotonic stack applications: (min/Max in sub array problem)
 
 #### Next Greater element
 
