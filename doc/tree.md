@@ -857,6 +857,47 @@ TreeNode insertIntoBST(TreeNode* root, int val) {
 }
 ```
 
+#### Insert Max Tree
+
+https://leetcode.com/problems/maximum-binary-tree-ii/
+
+We are given the root node of a maximum tree: a tree where every node has a value greater than any other value in its subtree.
+
+```
+Example 1:
+Input: root = [4,1,3,null,null,2], val = 5
+Output: [5,4,null,1,3,null,null,2]
+Explanation: A = [1,4,2,3], B = [1,4,2,3,5]
+
+
+Example 2:
+Input: root = [5,2,4,null,1], val = 3
+Output: [5,2,4,null,1,null,3]
+Explanation: A = [2,1,5,4], B = [2,1,5,4,3]
+
+
+
+Example 3:
+Input: root = [5,2,3,null,1], val = 4
+Output: [5,2,4,null,1,3]
+Explanation: A = [2,1,5,3], B = [2,1,5,3,4]
+```
+
+
+```CPP
+TreeNode* insertIntoMaxTree(TreeNode* root, int val) {
+    if (root && root->val > val){
+        root->right = insertIntoMaxTree(root->right, val);
+        return root;
+    }
+    TreeNode* node = new TreeNode(val);
+    node->left = root;
+    
+    return node;
+    
+}
+```
+
 ### Delete
 
 https://leetcode.com/problems/delete-node-in-a-bst/
