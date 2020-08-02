@@ -30,6 +30,9 @@
     - [Previous less or Next Less](#previous-less-or-next-less)
     - [Monotonic stack applications: (min/Max in sub array problem)](#monotonic-stack-applications-minmax-in-sub-array-problem)
       - [Next Greater element](#next-greater-element)
+      - [Next Greater with length calculation](#next-greater-with-length-calculation)
+        - [Stock Span](#stock-span)
+        - [Daily Temperature](#daily-temperature)
     - [Max tree](#max-tree)
       - [Max Rectangle](#max-rectangle)
 
@@ -1361,6 +1364,103 @@ vector<int> nextGreaterElements(vector<int>& nums) {
     return ret;
 }
 ```
+
+#### Next Greater with length calculation
+
+> Same as most array problem, we can use other count to record like up to  count or index
+
+##### Stock Span 
+
+
+https://leetcode.com/problems/online-stock-span/
+
+Write a class StockSpanner which collects daily price quotes for some stock, and returns the span of that stock's price for the current day.
+
+The span of the stock's price today is defined as the maximum number of consecutive days (starting from today and going backwards) for which the price of the stock was less than or equal to today's price.
+
+For example, if the price of a stock over the next 7 days were [100, 80, 60, 70, 60, 75, 85], then the stock spans would be [1, 1, 1, 2, 1, 4, 6].
+
+ 
+```
+Example 1:
+
+Input: ["StockSpanner","next","next","next","next","next","next","next"], [[],[100],[80],[60],[70],[60],[75],[85]]
+Output: [null,1,1,1,2,1,4,6]
+Explanation: 
+First, S = StockSpanner() is initialized.  Then:
+S.next(100) is called and returns 1,
+S.next(80) is called and returns 1,
+S.next(60) is called and returns 1,
+S.next(70) is called and returns 2,
+S.next(60) is called and returns 1,
+S.next(75) is called and returns 4,
+S.next(85) is called and returns 6.
+
+Note that (for example) S.next(75) returned 4, because the last 4 prices
+(including today's price of 75) were less than or equal to today's price.
+```
+
+```CPP
+//Push every pair of <price, cnt> to a stack.
+//cnt counts how many items in stack is smaller than current price
+//monotonic decreasing stack
+stack<pair<int,int>> s;
+StockSpanner() {
+    
+}
+
+int next(int price) {
+    
+    int cnt = 1;
+    //default cnt is 1 including current itself
+    
+    while(!s.empty() && s.top().first<=price){
+        cnt += s.top().second;
+        s.pop();
+    }
+    s.push(make_pair(price, cnt));
+    
+    return cnt;
+    
+}
+```
+
+##### Daily Temperature
+
+https://leetcode.com/problems/daily-temperatures/
+
+Given a list of daily temperatures T, return a list such that, for each day in the input, tells you how many days you would have to wait until a warmer temperature. If there is no future day for which this is possible, put 0 instead.
+```
+For example, given the list of temperatures T = [73, 74, 75, 71, 69, 72, 76, 73], your output should be [1, 1, 4, 2, 1, 1, 0, 0].
+```
+
+
+```CPP
+vector<int> dailyTemperatures(vector<int>& T) {
+
+        //stack, <temp, index>, 
+        //whne pop up, calculate current index to top index distance, which is how many days
+        stack<pair<int,int>> s;
+        int len = T.size();
+        vector<int> ret(len,0);
+        int cnt = 0;
+        for (int i=0; i<len;i++){
+            
+            while(!s.empty() && s.top().first<T[i]){
+                ret[s.top().second] = i-s.top().second;
+                s.pop();
+            }
+            s.push(make_pair(T[i],i));
+            
+        }
+        ret[len-1] =0; //always 0 for last
+        
+        return ret;
+    }
+```
+
+    
+
 
 ### Max tree 
 

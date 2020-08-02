@@ -32,6 +32,7 @@
   - [Insert/Find/Delete Node](#insertfinddelete-node)
     - [Find](#find)
     - [Insert](#insert)
+      - [Insert Max Tree](#insert-max-tree)
     - [Delete](#delete)
   - [Tree is Balanced Binary tree?](#tree-is-balanced-binary-tree)
   - [Valid BST](#valid-bst)
@@ -894,6 +895,30 @@ TreeNode* insertIntoMaxTree(TreeNode* root, int val) {
     node->left = root;
     
     return node;
+    
+}
+```
+
+we can also solve it iteratively
+
+```CPP
+TreeNode* insertIntoMaxTree(TreeNode* root, int val) {
+    TreeNode* node = new TreeNode(val);
+    TreeNode* cur = root;
+    
+    if(cur->val < val){
+        node->left = cur;
+        return node;
+    }
+    
+    while(cur->right && cur->right->val > val){
+        cur = cur->right;
+    }
+    
+    node->left = cur->right;
+    cur->right = node;
+    
+    return root;
     
 }
 ```
