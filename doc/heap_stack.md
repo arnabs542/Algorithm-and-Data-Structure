@@ -16,7 +16,8 @@
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
     - [Task schedule](#task-schedule)
   - [Auto completion system](#auto-completion-system)
-  - [Max Tree](#max-tree)
+  - [Other Heap Problem](#other-heap-problem)
+    - [Minimum Cost to Connect Sticks](#minimum-cost-to-connect-sticks)
 - [Stack/Queue](#stackqueue)
   - [Min Stack](#min-stack)
   - [Stack To minic function call](#stack-to-minic-function-call)
@@ -33,6 +34,7 @@
       - [Next Greater with length calculation](#next-greater-with-length-calculation)
         - [Stock Span](#stock-span)
         - [Daily Temperature](#daily-temperature)
+      - [Minimum Cost Tree From Leaf Values](#minimum-cost-tree-from-leaf-values)
     - [Max tree](#max-tree)
       - [Max Rectangle](#max-rectangle)
 
@@ -743,51 +745,46 @@ vector<string> input(char c) {
 }
 ```
 
-## Max Tree
+## Other Heap Problem
 
-We can use max heap and heap insert.
+### Minimum Cost to Connect Sticks
+https://leetcode.com/problems/minimum-cost-to-connect-sticks/
+
+You have some sticks with positive integer lengths.
+
+You can connect any two sticks of lengths X and Y into one stick by paying a cost of X + Y.  You perform this action until there is one stick remaining.
+
+Return the minimum cost of connecting all the given sticks into one stick in this way.
+
+```
+
+Example 1:
+
+Input: sticks = [2,4,3]
+Output: 14
+Example 2:
+
+Input: sticks = [1,8,3,5]
+Output: 30
+```
 
 ```CPP
-struct TreeNode{
-  int val;
-  TreeNode* left;
-  TreeNode* right;
-};
-
-TreeNode * getMaxtree_method1(vector<int> array){
-  int len = array.size();
-  std::vector<TreeNode> node;
-  //init heap tree
-  for(int i=0;i<array.size();i++){
-    node[i] = new TreeNode(array[i]);
-  }
-  //heap sort array
-  for(int i=0;i<len;i++){
-    heapSort(array,i);
-  }
-  //Build up the max tree
-  for(int i=0;i<array.size();i++){
-    int left_child = 2*i+1;
-    int right_child = 2*i+2;
-    if(left_child<array.size())
-      node[i]->left = node[left_child];
-    if(right_child<array.size())
-      node[i]->right = node[right_child]
-  }
-  return node[0];
-}
-
-void heapSort(vector<int> &array, int index){
-  while(index!=0){
-    int parent = (index-1)/2;
-    if(array[parent]<array[index]){
-      swap(array[parent],array[index]);
-      index = parent;
-    }else{
-      break;
+    int connectSticks(vector<int>& sticks) {
+        //min pq, so each time just add up top 2
+        
+        priority_queue<int, vector<int>, greater<int>> pq(sticks.begin(), sticks.end());
+        int ret = 0;
+        while (pq.size() > 1) {
+            int a = pq.top(); 
+            pq.pop();
+            int b = pq.top(); 
+            pq.pop();
+            ret += a + b;
+            //combine to 1 stick
+            pq.push(a + b);
+        }
+        return ret;
     }
-  }
-}
 ```
 
 # Stack/Queue
@@ -1459,8 +1456,58 @@ vector<int> dailyTemperatures(vector<int>& T) {
     }
 ```
 
-    
+#### Minimum Cost Tree From Leaf Values
 
+https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/
+
+Given an array arr of positive integers, consider all binary trees such that:
+
+Each node has either 0 or 2 children;
+The values of arr correspond to the values of each leaf in an in-order traversal of the tree.  (Recall that a node is a leaf if and only if it has 0 children.)
+The value of each non-leaf node is equal to the product of the largest leaf value in its left and right subtree respectively.
+Among all possible binary trees considered, return the smallest possible sum of the values of each non-leaf node.  It is guaranteed this sum fits into a 32-bit integer.
+
+ 
+```
+Example 1:
+
+Input: arr = [6,2,4]
+Output: 32
+Explanation:
+There are two possible trees.  The first has non-leaf node sum 36, and the second has non-leaf node sum 32.
+
+    24            24
+   /  \          /  \
+  12   4        6    8
+ /  \               / \
+6    2             2   4
+```
+
+```CPP
+int mctFromLeafValues(vector<int>& arr) {
+        //need to put larger node as close to root as possible, so they won't be used many times
+        //search from smallest and next greater to construct, then we can remove them
+        
+        int res = 0;
+        stack<int> s;
+        s.push(INT_MAX); //since need to compare top and next top in stack, insert MAX to ensure stack has value
+        for (int a : arr) {
+            while (s.top() <= a) {
+                int mid = s.top();
+                s.pop();
+                res += mid * min(s.top(), a);
+            }
+            s.push(a);
+        }
+        while(s.size()>2) {
+            int tmp = s.top();
+            s.pop();
+            res += tmp*s.top();
+        }
+        return res;
+        
+    }
+```
 
 ### Max tree 
 
