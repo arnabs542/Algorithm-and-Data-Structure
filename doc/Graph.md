@@ -12,10 +12,12 @@
   - [DFS](#dfs)
     - [Code example](#code-example)
   - [BFS](#bfs)
+    - [Shortest path](#shortest-path)
     - [Code examples](#code-examples)
 - [Union Find](#union-find)
   - [Basic idea](#basic-idea)
-  - [example](#example)
+    - [Number of connected component](#number-of-connected-component)
+    - [Graph Valid Tree](#graph-valid-tree)
 - [Topological Sort](#topological-sort)
   - [DFS](#dfs-1)
   - [BFS](#bfs-1)
@@ -270,7 +272,7 @@ public:
 
 ## BFS
 
-'''CPP
+```CPP
 void Graph::BFS(int s)
 {
     // Mark all the vertices as not visited
@@ -308,7 +310,60 @@ void Graph::BFS(int s)
         }
     }
 }
-'''
+```
+
+### Shortest path
+
+https://leetcode.com/problems/shortest-path-in-binary-matrix/
+
+In an N by N square grid, each cell is either empty (0) or blocked (1).
+
+A clear path from top-left to bottom-right has length k if and only if it is composed of cells C_1, C_2, ..., C_k such that:
+
+```
+
+Adjacent cells C_i and C_{i+1} are connected 8-directionally (ie., they are different and share an edge or corner)
+C_1 is at location (0, 0) (ie. has value grid[0][0])
+C_k is at location (N-1, N-1) (ie. has value grid[N-1][N-1])
+If C_i is located at (r, c), then grid[r][c] is empty (ie. grid[r][c] == 0).
+Return the length of the shortest such clear path from top-left to bottom-right.  If such a path does not exist, return -1.
+```
+
+```CPP
+int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+    int row = grid.size();
+    int col = grid[0].size();
+    if (grid[0][0]==1 || grid[row-1][col-1]==1)
+        return -1;
+    //possible to visit all 8 directions
+    vector<vector<int>> directions = {{1,1}, {0,1},{1,0},{0,-1},{-1,0},{-1, -1},{1, -1},{-1, 1}};
+    queue<pair<int,int>> q;
+    //start count
+    grid[0][0] =1;
+    q.push(make_pair(0,0));
+    
+    while(!q.empty()){
+        auto cur = q.front();
+        int x = cur.first, y = cur.second;
+        if( x == row -1 && y == col -1) 
+            return grid[x][y];
+
+        for(auto direction : directions){
+            int nx = x + direction[0];
+            int ny = y + direction[1];
+            if(nx >= 0 && nx < row && ny >= 0 && ny < col && grid[nx][ny] == 0){
+                q.push(make_pair(nx,ny));
+                grid[nx][ny] = grid[x][y] + 1;
+            }
+        }
+        q.pop();
+    }
+    
+    return -1;
+    
+}
+```
+
 
 ### Code examples
 ```CPP
@@ -374,7 +429,7 @@ public:
 ## Basic idea
 Basic idea is to find root/parents of certain node, and union if same parents
 
-## example
+### Number of connected component
 
 ```CPP
 //https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
@@ -437,7 +492,7 @@ public:
 ```
 
 
-Another example
+### Graph Valid Tree
 
 ```CPP
 //https://leetcode.com/problems/graph-valid-tree/

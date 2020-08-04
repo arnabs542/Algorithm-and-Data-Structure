@@ -17,6 +17,7 @@
     - [Task schedule](#task-schedule)
   - [Auto completion system](#auto-completion-system)
   - [Other Heap Problem](#other-heap-problem)
+    - [Define own compare func:Top K Frequent Words](#define-own-compare-functop-k-frequent-words)
     - [Minimum Cost to Connect Sticks](#minimum-cost-to-connect-sticks)
 - [Stack/Queue](#stackqueue)
   - [Min Stack](#min-stack)
@@ -747,6 +748,62 @@ vector<string> input(char c) {
 
 ## Other Heap Problem
 
+### Define own compare func:Top K Frequent Words
+
+https://leetcode.com/problems/top-k-frequent-words/
+
+Given a non-empty list of words, return the k most frequent elements.
+
+Your answer should be sorted by frequency from highest to lowest. If two words have the same frequency, then the word with the lower alphabetical order comes first.
+
+```
+Example 1:
+Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+Output: ["i", "love"]
+Explanation: "i" and "love" are the two most frequent words.
+    Note that "i" comes before "love" due to a lower alphabetical order.
+Example 2:
+Input: ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], k = 4
+Output: ["the", "is", "sunny", "day"]
+Explanation: "the", "is", "sunny" and "day" are the four most frequent words,
+    with the number of occurrence being 4, 3, 2 and 1 respectively.
+
+```
+
+```CPP
+struct Comp {
+    bool operator()(const pair<string, int>& l, const pair<string, int>& r) const {
+        return l.second>r.second || ( l.second==r.second && l.first<r.first);
+    }
+};
+
+vector<string> topKFrequent(vector<string>& words, int k) {
+    //
+    
+    unordered_map<string, int> m;
+    for(auto w : words){
+        m[w]++;
+    }
+    //min heap to store K max, if count is same, pop lower alphabetical orde
+    priority_queue<pair<string,int>, vector<pair<string,int>>, Comp> pq;
+    
+    for (auto it : m){
+        pq.push(make_pair(it.first, it.second));
+        if(pq.size()>k) 
+            pq.pop();
+    }
+        
+    
+    vector<string> res;
+    while (!pq.empty()) {
+        res.insert(res.begin(),pq.top().first);
+        pq.pop();
+    }
+    
+    return res;
+}
+```
+
 ### Minimum Cost to Connect Sticks
 https://leetcode.com/problems/minimum-cost-to-connect-sticks/
 
@@ -771,7 +828,6 @@ Output: 30
 ```CPP
     int connectSticks(vector<int>& sticks) {
         //min pq, so each time just add up top 2
-        
         priority_queue<int, vector<int>, greater<int>> pq(sticks.begin(), sticks.end());
         int ret = 0;
         while (pq.size() > 1) {
