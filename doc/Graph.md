@@ -10,7 +10,10 @@
 - [Traversal](#traversal)
   - [Build Graph: from edge list to adjacent List](#build-graph-from-edge-list-to-adjacent-list)
   - [DFS](#dfs)
-    - [Code example](#code-example)
+    - [Check Graph Connection](#check-graph-connection)
+    - [evaluate-division](#evaluate-division)
+    - [reconstruct-itinerary](#reconstruct-itinerary)
+    - [Check Valid Path](#check-valid-path)
   - [BFS](#bfs)
     - [Shortest path](#shortest-path)
     - [Code examples](#code-examples)
@@ -139,7 +142,33 @@ void Graph::DFS(int v)
 }
 ```
 
-### Code example
+### Check Graph Connection
+
+https://leetcode.com/problems/critical-connections-in-a-network/
+
+There are n servers numbered from 0 to n-1 connected by undirected server-to-server connections forming a network where connections[i] = [a, b] represents a connection between servers a and b. Any server can reach any other server directly or indirectly through the network.
+
+A critical connection is a connection that, if removed, will make some server unable to reach some other server.
+
+Return all critical connections in the network in any order.
+
+```
+
+Example 1:
+
+Input: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
+Output: [[1,3]]
+Explanation: [[3,1]] is also accepted.
+```
+
+```CPP
+//Key idea is to find cycle, if node is in cycle then it is not in critical path
+
+
+```
+
+
+### evaluate-division
 ```CPP
 //https://leetcode.com/problems/evaluate-division/
 /*
@@ -221,6 +250,8 @@ public:
 
 ```
 
+### reconstruct-itinerary
+
 
 ```CPP
 //https://leetcode.com/problems/reconstruct-itinerary/
@@ -269,6 +300,10 @@ public:
 	}
 };
 ```
+
+### Check Valid Path
+
+
 
 ## BFS
 

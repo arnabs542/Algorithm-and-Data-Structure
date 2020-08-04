@@ -36,6 +36,8 @@
     - [Delete](#delete)
   - [Tree is Balanced Binary tree?](#tree-is-balanced-binary-tree)
   - [Valid BST](#valid-bst)
+  - [Level Tranversal](#level-tranversal)
+    - [Deepest leaves sum](#deepest-leaves-sum)
   - [Recover BST](#recover-bst)
   - [Find largest BST sub tree in a binary tree](#find-largest-bst-sub-tree-in-a-binary-tree)
   - [Get the max distance between two nodes in Binary Tree](#get-the-max-distance-between-two-nodes-in-binary-tree)
@@ -794,6 +796,7 @@ void printLevelOrder(BinaryTree *root) {
 ```
 
 
+
 ## Morris Traversal
 
 * why we use recursive in tree traveral(pre,in,post): idea is to trversal to current node, node's left and return to current node, node'right and return to current node;
@@ -1037,6 +1040,46 @@ bool isBSThelper(TreeNode *root, long min, long max){
     }else{
         return false;
     }
+}
+```
+
+## Level Tranversal
+
+### Deepest leaves sum
+
+
+https://leetcode.com/problems/deepest-leaves-sum/
+
+Given a binary tree, return the sum of values of its deepest leaves.
+ 
+```
+Example 1:
+
+Input: root = [1,2,3,4,5,null,6,7,null,null,null,null,8]
+Output: 15
+```
+
+```CPP
+//calculate sum of each level
+//last sum is deepest level
+
+int deepestLeavesSum(TreeNode* root) {
+    int res = 0, i;
+    queue<TreeNode*> q;
+    q.push(root);
+    while (q.size()) {
+        res = 0;//start new level
+        for (i = q.size() - 1; i >= 0; --i) {
+            TreeNode* node = q.front(); 
+            q.pop();
+            res += node->val;
+            if (node->right) 
+                q.push(node->right);
+            if (node->left)  
+                q.push(node->left);
+        }
+    }
+    return res;
 }
 ```
 
