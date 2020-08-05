@@ -38,6 +38,7 @@
   - [Valid BST](#valid-bst)
   - [Level Tranversal](#level-tranversal)
     - [Deepest leaves sum](#deepest-leaves-sum)
+    - [Lowest common Ancestor](#lowest-common-ancestor)
   - [Recover BST](#recover-bst)
   - [Find largest BST sub tree in a binary tree](#find-largest-bst-sub-tree-in-a-binary-tree)
   - [Get the max distance between two nodes in Binary Tree](#get-the-max-distance-between-two-nodes-in-binary-tree)
@@ -1082,6 +1083,51 @@ int deepestLeavesSum(TreeNode* root) {
     return res;
 }
 ```
+
+### Lowest common Ancestor
+
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+
+Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+
+Given the following binary tree:  root = [3,5,1,6,2,0,8,null,null,7,4]
+
+```
+Example 1:
+
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+Output: 3
+Explanation: The LCA of nodes 5 and 1 is 3.
+Example 2:
+
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+Output: 5
+Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.
+```
+
+```CPP
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    if(root==NULL)
+        return NULL;
+    
+    if(root ==p||root ==q)
+        return root;
+    TreeNode* Left = lowestCommonAncestor(root->left,p,q);
+    TreeNode* Right = lowestCommonAncestor(root->right,p,q);
+    //found the root that has p,q in each side
+    if((Left!=NULL) && (Right!=NULL))
+        return root;
+    //if not found, then there could be node only in left or right, return that node and recursive will search for up level
+    //bottom up approach
+    if(Left!=NULL)
+        return Left;
+    if(Right!=NULL)
+        return Right;
+}
+```
+
 
 ## Recover BST
 

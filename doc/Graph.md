@@ -17,9 +17,11 @@
   - [BFS](#bfs)
     - [Shortest path](#shortest-path)
     - [Code examples](#code-examples)
-- [Union Find](#union-find)
+- [Union Find/DFS/BFS](#union-finddfsbfs)
   - [Basic idea](#basic-idea)
     - [Number of connected component](#number-of-connected-component)
+    - [Number of island](#number-of-island)
+    - [Friends Circle](#friends-circle)
     - [Graph Valid Tree](#graph-valid-tree)
 - [Topological Sort](#topological-sort)
   - [DFS](#dfs-1)
@@ -459,15 +461,17 @@ public:
 
 ```
 
-# Union Find
+# Union Find/DFS/BFS
 
 ## Basic idea
 Basic idea is to find root/parents of certain node, and union if same parents
 
 ### Number of connected component
 
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+
 ```CPP
-//https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+
 /*
 Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each edge is a pair of nodes), write a function to find the number of connected components in an undirected graph.
 Example 1:
@@ -525,6 +529,224 @@ public:
 };
 
 ```
+
+> DFS soltution
+
+```CPP
+int countComponents(int n, vector<vector<int>>& edges) {
+
+    int ret =0;
+    vector<vector<int>> g(n);
+    //convert the edge into graph 
+    for(int i=0;i<edges.size();i++){
+        g[edges[i][0]].push_back(edges[i][1]);
+        g[edges[i][1]].push_back(edges[i][0]);
+    }
+    
+    vector<int> visited(n,0);
+    
+    for(int i=0;i<n;i++){
+        if(visited[i]==0){
+            visited[i] =1;
+            dfs(g,visited, i);
+            ret++;
+        }
+    }
+    
+    return ret;
+}
+
+void dfs(vector<vector<int>>& g, vector<int>& visited, int cur){
+    for(auto j: g[cur]){
+        if(visited[j]==0){
+            visited[j] =1;
+            dfs(g,visited, j);
+        }
+    }
+}
+```
+
+> BFS
+
+```CPP
+int countComponents(int n, vector<vector<int>>& edges) {
+    
+        int ret =0;
+        vector<vector<int>> g(n);
+        //convert the edge into graph 
+        for(int i=0;i<edges.size();i++){
+            g[edges[i][0]].push_back(edges[i][1]);
+            g[edges[i][1]].push_back(edges[i][0]);
+        }
+        
+        vector<int> visited(n,0);
+        queue<int> q;
+        
+        for (int i = 0; i < n; i++) {
+            if (visited[i]) continue;
+            visited[i] = 1;
+            q.push(i);
+
+            while (!q.empty()) {
+                int cur = q.front(); 
+                q.pop();
+                for (auto node : g[cur]) {
+                    if (visited[node] ==0) {
+                        visited[node] = 1;
+                        q.push(node);
+                    }
+                }
+            }
+            ret++;
+        }
+        
+        return ret;
+    }
+
+```
+
+### Number of island
+
+https://leetcode.com/problems/number-of-islands/
+
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+ 
+```
+Example 1:
+
+Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+Example 2:
+
+Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+```
+
+```CPP
+//DFS, key idea is to remove 1->0 if visited
+    int numIslands(vector<vector<char>>& grid) {
+        if(grid.size() == 0 || grid[0].size() == 0)
+            return 0;
+        int ret = 0;
+        for(int i = 0; i < grid.size(); ++ i)
+            for(int j = 0; j < grid[0].size(); ++ j)
+                if(grid[i][j] == '1'){
+                    ++ ret;
+                    DFS(grid, i, j);
+                }
+        return ret;
+    }
+    
+    void DFS(vector<vector<char>> &grid, int x, int y){
+        
+        grid[x][y] = '0';
+        if(x<grid.size()-1 && grid[x+1][y]=='1') DFS(grid, x+1,y);
+        if(x>0 && grid[x-1][y]=='1') DFS(grid, x-1,y);
+        if(y<grid[0].size()-1 && grid[x][y+1]=='1') DFS(grid, x,y+1);
+        if(y>0 && grid[x][y-1]=='1') DFS(grid, x,y-1);
+    }
+```
+
+### Friends Circle
+
+https://leetcode.com/problems/friend-circles/
+
+There are N students in a class. Some of them are friends, while some are not. Their friendship is transitive in nature. For example, if A is a direct friend of B, and B is a direct friend of C, then A is an indirect friend of C. And we defined a friend circle is a group of students who are direct or indirect friends.
+
+Given a N*N matrix M representing the friend relationship between students in the class. If M[i][j] = 1, then the ith and jth students are direct friends with each other, otherwise not. And you have to output the total number of friend circles among all the students.
+```
+Example 1:
+Input: 
+[[1,1,0],
+ [1,1,0],
+ [0,0,1]]
+Output: 2
+Explanation:The 0th and 1st students are direct friends, so they are in a friend circle. 
+The 2nd student himself is in a friend circle. So return 2.
+Example 2:
+Input: 
+[[1,1,0],
+ [1,1,1],
+ [0,1,1]]
+Output: 1
+Explanation:The 0th and 1st students are direct friends, the 1st and 2nd students are direct friends, 
+so the 0th and 2nd students are indirect friends. All of them are in the same friend circle, so return 1.
+```
+
+
+```CPP
+//DFS
+int findCircleNum(vector<vector<int>>& M) {
+    //visited[i] means i-th node is visited and undergoing DFS
+    vector<int> visited(len,0);
+    int ret=0;
+    
+    for(int i=0;i<len;i++){
+        //if visited[i] == 1. means it has been visited by last DFS
+        if(visited[i]==0){
+            dfs(M,visited,i,len);
+            ret++;
+        }
+    }
+    
+    return ret;
+}
+
+void dfs(vector<vector<int>>& M, vector<int> &visited, int i, int len){
+    //dfs for a particular node index i only
+    for(int j=0;j<len;j++){
+        if(M[i][j]==1 && visited[j]==0){
+            visited[j]=1;
+            dfs(M,visited,j,len);
+        }
+    }
+}
+```
+
+
+```CPP
+//BFS
+int findCircleNum(vector<vector<int>>& M) {
+        //visited[i] means i-th node is visited and undergoing DFS
+        int len = M.size();
+        vector<int> visited(len,0);
+        int ret=0;
+        queue<int> q;
+        for(int i=0;i<len;i++){
+            if(visited[i]==0){
+                q.push(i);
+                while(!q.empty()){
+                    int cur = q.front();
+                    visited[cur] = 1;
+                    q.pop();
+                    //only push those not visited, start from current index
+                    for(int j=0;j<len;j++){
+                        if(M[cur][j]==1 && visited[j] == 0){
+                            q.push(j);
+                        }
+                    }
+                }
+                ret++;
+            }
+        }
+        
+        
+        return ret;
+    }
+
+```
+
 
 
 ### Graph Valid Tree
