@@ -23,7 +23,9 @@
   - [lonely Node](#lonely-node)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
-  - [SubTree prune](#subtree-prune)
+  - [SubTree prune and trim](#subtree-prune-and-trim)
+  - [Split Tree into SubTree](#split-tree-into-subtree)
+    - [Maximum Product of Splitted Binary Tree](#maximum-product-of-splitted-binary-tree)
 - [Tree<->Array](#tree-array)
   - [Array to Tree](#array-to-tree)
   - [Reconstruct Tree](#reconstruct-tree)
@@ -34,6 +36,8 @@
   - [BFS](#bfs)
   - [DFS](#dfs)
   - [Morris Traversal](#morris-traversal)
+  - [Example](#example)
+    - [Vertical Order Traversal of a Binary Tree](#vertical-order-traversal-of-a-binary-tree)
 - [BST](#bst)
   - [Common Logic](#common-logic)
   - [Insert/Find/Delete Node](#insertfinddelete-node)
@@ -41,6 +45,8 @@
     - [Insert](#insert)
       - [Insert Max Tree](#insert-max-tree)
     - [Delete](#delete)
+      - [Delete Leaves With a Given Value](#delete-leaves-with-a-given-value)
+      - [Delete node in BST](#delete-node-in-bst)
   - [Tree is Balanced Binary tree?](#tree-is-balanced-binary-tree)
   - [Valid BST](#valid-bst)
   - [Level Tranversal](#level-tranversal)
@@ -785,6 +791,7 @@ void help(TreeNode* root, vector<int>& ret){
 ```
 
 
+
 # Sub-Tree problems
 
 > Key idea is to use recursive to process, with some help function, procee some logic inside help function
@@ -814,7 +821,7 @@ bool isSame(TreeNode * ns, TreeNode * nt){
 
 ```
 
-## SubTree prune
+## SubTree prune and trim
 https://leetcode.com/problems/binary-tree-pruning/
 
 We are given the head node root of a binary tree, where additionally every node's value is either a 0 or a 1.
@@ -836,6 +843,68 @@ Return the same tree where every subtree (of the given tree) not containing a 1 
   }
 ```
 
+https://leetcode.com/problems/trim-a-binary-search-tree/
+
+Given a binary search tree and the lowest and highest boundaries as L and R, trim the tree so that all its elements lies in [L, R](R>=L). You might need to change the root of the tree, so the result should return the new root of the trimmed binary search tree.
+
+```CPP
+TreeNode* trimBST(TreeNode* root, int L, int R) {
+    if(root==NULL)
+        return NULL;
+    
+    root->left = trimBST(root->left, L, R);
+    root->right = trimBST(root->right, L, R);
+    //remove entire left and root
+    if(root->val<L) {
+        return root->right;
+    }
+    //remove entire right and root
+    if(root->val>R){
+        return root->left;
+    }
+    
+    return root;
+}
+```
+
+
+## Split Tree into SubTree
+
+### Maximum Product of Splitted Binary Tree
+https://leetcode.com/problems/maximum-product-of-splitted-binary-tree/
+
+Given a binary tree root. Split the binary tree into two subtrees by removing 1 edge such that the product of the sums of the subtrees are maximized.
+
+```CPP
+class Solution {
+public:
+    long long total_sum=0;
+    
+    long long ret =0;
+    
+    int MOD=1e9+7;
+    
+    int maxProduct(TreeNode* root) {
+        if(root==NULL)
+            return 0;
+        //First pass, get the total sum.Now we have the right total sum of the whole tree.
+        //Second pass, find the biggest product.
+        total_sum=subtreeSum(root);
+        subtreeSum(root);
+        return ret%MOD;
+    }
+    
+    int subtreeSum(TreeNode* root){
+        if(root==NULL)
+            return 0;
+        long long sub_sum = root->val + subtreeSum(root->left) + subtreeSum(root->right);
+         //Get the max product after making current subtree as a separate tree
+        ret=max(ret,sub_sum*(total_sum-sub_sum));   
+        
+        return sub_sum;
+    }
+};
+```
 
 
 
@@ -1140,6 +1209,51 @@ void printLevelOrder(BinaryTree *root) {
 * Morris traveral try to minic recursive, visit node 3 times
 * use lots of empty pointer
 
+## Example
+
+### Vertical Order Traversal of a Binary Tree
+
+https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+
+Given a binary tree, return the vertical order traversal of its nodes values.
+
+For each node at position (X, Y), its left and right children respectively will be at positions (X-1, Y-1) and (X+1, Y-1).
+
+Running a vertical line from X = -infinity to X = +infinity, whenever the vertical line touches some nodes, we report the values of the nodes in order from top to bottom (decreasing Y coordinates).
+
+```CPP
+vector<vector<int>> verticalTraversal(TreeNode* root) {
+    //from left, -1, from right, +1
+    map<int, map<int, set<int>>> m;
+    //Node : coordinate
+    queue<pair<TreeNode*, pair<int, int>>> q;
+    q.push({root, {0, 0}});
+    while (!q.empty()) {
+        auto p = q.front();
+        q.pop();
+        TreeNode* node = p.first;
+        int x = p.second.first, y = p.second.second;
+        m[x][y].insert(node -> val);
+        if (node -> left) {
+            q.push({node -> left, {x - 1, y + 1}});
+        }
+        if (node -> right) {
+            q.push({node -> right, {x + 1, y + 1}});
+        }
+    }
+    vector<vector<int>> ret;
+    for (auto p : m) {
+        vector<int> one;
+        for (auto q : p.second) {
+            one.insert(one.end(), q.second.begin(), q.second.end());
+        }
+        ret.push_back(one);
+    }
+    return ret;
+}
+```
+
+
 
 # BST 
 
@@ -1264,27 +1378,40 @@ TreeNode* insertIntoMaxTree(TreeNode* root, int val) {
 
 ### Delete
 
+#### Delete Leaves With a Given Value
+
+Given a binary tree root and an integer target, delete all the leaf nodes with value target.
+
+Note that once you delete a leaf node with value target, if it's parent node becomes a leaf node and has the value target, it should also be deleted (you need to continue doing that until you can't).
+
+```CPP
+TreeNode* removeLeafNodes(TreeNode* root, int target) {
+    TreeNode* ret = root;
+    
+    if(root==NULL){
+        return NULL;
+    }
+    
+    //recursive to get branch, if ==target, will set NULL and remove 
+    root->left = removeLeafNodes(root->left, target);
+    root->right = removeLeafNodes(root->right, target);
+    
+    if(root->left==NULL && root->right==NULL && root->val==target){
+        root = NULL;
+        return NULL;
+    }
+    
+    return ret;
+}
+```
+
+#### Delete node in BST
+
 https://leetcode.com/problems/delete-node-in-a-bst/
 
 Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
 
-need to find the node first
-
-```CPP
-TreeNode* deleteNode(TreeNode* root, int key) {
-    if (root->val == key) {
-        // found the node, delete
-    } else if (root->val > key) {
-        root->left = deleteNode(root->left, key);
-    } else if (root->val < key) {
-        root->right = deleteNode(root->right, key);
-    }
-    return root;
-}
-```
-
-after found the node, we need to deal with delete, it could be one leaf, so just delete, or in middle, so need to link other branch node 
-
+need to find the node first. after found the node, we need to deal with delete, it could be one leaf, so just delete, or in middle, so need to link other branch node 
 
 ```CPP
 class Solution {
