@@ -14,6 +14,13 @@
     - [K-th Smallest](#k-th-smallest)
     - [Range problem](#range-problem)
     - [Closest value](#closest-value)
+- [Recursive along Path](#recursive-along-path)
+  - [Path Sum](#path-sum)
+    - [Max path Sum](#max-path-sum)
+  - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
+  - [Valid sequence in Tree](#valid-sequence-in-tree)
+  - [Pseudo-Palindromic Paths in a Binary Tree](#pseudo-palindromic-paths-in-a-binary-tree)
+  - [lonely Node](#lonely-node)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
   - [SubTree prune](#subtree-prune)
@@ -48,7 +55,6 @@
   - [Dose A tree has B tree in its subtree?](#dose-a-tree-has-b-tree-in-its-subtree)
   - [Calculate number of nodes in binary tree](#calculate-number-of-nodes-in-binary-tree)
   - [return all possible BST given N](#return-all-possible-bst-given-n)
-- [Trie/prefix Tree](#trieprefix-tree)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -447,6 +453,335 @@ public:
   }
 };
 
+```
+
+# Recursive along Path
+
+Recursive in tree to accomplish something, may need help to record some parameter
+
+## Path Sum
+https://leetcode.com/problems/path-sum-ii/
+
+Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+
+Note: A leaf is a node with no children.
+```
+Example:
+
+Given the below binary tree and sum = 22,
+
+      5
+     / \
+    4   8
+   /   / \
+  11  13  4
+ /  \    / \
+7    2  5   1
+Return:
+
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+```
+
+```CPP
+vector<vector<int>> pathSum(TreeNode* root, int sum) {
+    vector<vector<int>> ret;
+    vector<int> one;
+    if(!root)
+        return ret;
+    help(root,sum-root->val,ret,one);
+    return ret;
+}
+
+void help(TreeNode* root, int sum, vector<vector<int>>& ret, vector<int> &one){
+    one.push_back(root->val);
+    //reach the end
+    if(root->left==NULL && root->right==NULL){
+        if(sum==0)
+            ret.push_back(one);
+        one.pop_back();
+        return;
+    }
+    if(root->left){
+        help(root->left,sum-root->left->val,ret,one);
+    }
+    if(root->right){
+        help(root->right,sum-root->right->val,ret,one);
+    }
+    one.pop_back();
+        
+}
+```
+
+https://leetcode.com/problems/path-sum-iii/
+
+You are given a binary tree in which each node contains an integer value.
+
+Find the number of paths that sum to a given value.
+
+The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+
+The tree has no more than 1,000 nodes and the values are in the range -1,000,000 to 1,000,000.
+
+```
+Example:
+
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+      10
+     /  \
+    5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+
+Return 3. The paths that sum to 8 are:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+3. -3 -> 11
+```
+
+```CPP
+int pathSum(TreeNode* root, int sum) {
+    int ret = 0;
+    if(!root)
+        return ret;
+    //BFS traversal for tree
+    queue<TreeNode*> q;
+    q.push(root);
+    while(!q.empty()){
+        TreeNode* cur=q.front();
+        if(cur->left)
+            q.push(cur->left);
+        if(cur->right)
+            q.push(cur->right);
+        //for each node as root, calculate its path sum
+        help(cur,sum-(cur->val),ret);
+        q.pop();
+    }
+    
+    return ret;
+}
+
+void help(TreeNode* root, int sum, int &ret){
+    if(sum==0)
+        ret++;
+
+    if(root->left)
+        help(root->left,sum-(root->left->val),ret);
+    if(root->right)
+        help(root->right,sum-(root->right->val),ret);
+        
+}
+```
+
+we can have DFS way also
+
+```CPP
+int pathSum(TreeNode* root, int sum) {
+    int ret = 0;
+    if(root==NULL)
+        return 0;
+    return help(root, 0, sum) + pathSum(root->left, sum)+ pathSum(root->right, sum);
+}
+
+int help(TreeNode* root, int last, int& sum){
+    if(!root) 
+        return 0;
+    int cur = last + root->val;
+    
+    if (cur==sum)
+        return  1+ help(root->left, cur, sum) + help(root->right, cur, sum);
+    else
+        return  help(root->left, cur, sum) + help(root->right, cur, sum);
+}
+```
+
+### Max path Sum
+
+https://leetcode.com/problems/binary-tree-maximum-path-sum/
+
+Given a non-empty binary tree, find the maximum path sum.
+
+For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The path must contain at least one node and does not need to go through the root.
+
+```
+Example 1:
+
+Input: [1,2,3]
+
+       1
+      / \
+     2   3
+
+Output: 6
+Example 2:
+
+Input: [-10,9,20,null,null,15,7]
+
+   -10
+   / \
+  9  20
+    /  \
+   15   7
+
+Output: 42
+```
+
+```CPP
+int maxPathSum(TreeNode* root) {
+    int ret = INT_MIN;
+    help(root, ret);
+    return ret;
+}
+
+int help(TreeNode* root, int &maxPath){
+    if (!root) 
+        return 0;
+    int l = max(0, help(root->left, maxPath));
+    int r = max(0, help(root->right, maxPath));
+    maxPath = max(maxPath, l + r + root->val);
+    return root->val + max(l, r);
+}
+```
+
+
+## Larger/smaller item in Tree path
+
+https://leetcode.com/problems/count-good-nodes-in-binary-tree/
+
+Given a binary tree root, a node X in the tree is named good if in the path from root to X there are no nodes with a value greater than X.
+
+Return the number of good nodes in the binary tree.
+
+```CPP
+int goodNodes(TreeNode* root) {
+    return help(root, root->val);
+    
+}
+
+int help(TreeNode* root, int largest){
+    if(root==NULL){
+        return 0;
+    }
+    //largest is largest value along the path so far
+    largest = max(root->val, largest);
+    int ret = root->val >= largest ? 1 : 0;
+    //count both left and right, and possible current node
+    ret+= help(root->left, largest) + help(root->right, largest);
+    return ret;
+    
+}
+```
+
+
+## Valid sequence in Tree
+https://leetcode.com/problems/check-if-a-string-is-a-valid-sequence-from-root-to-leaves-path-in-a-binary-tree/
+
+Given a binary tree where each path going from the root to any leaf form a valid sequence, check if a given string is a valid sequence in such binary tree. 
+
+We get the given string from the concatenation of an array of integers arr and the concatenation of all values of the nodes along a path results in a sequence in the given binary tree.
+
+ 
+```
+Example 1:
+Input: root = [0,1,0,0,1,0,null,null,1,0,0], arr = [0,1,0,1]
+Output: true
+Explanation: 
+The path 0 -> 1 -> 0 -> 1 is a valid sequence (green color in the figure). 
+Other valid sequences are: 
+0 -> 1 -> 1 -> 0 
+0 -> 0 -> 0
+
+Example 2:
+Input: root = [0,1,0,0,1,0,null,null,1,0,0], arr = [0,0,1]
+Output: false 
+Explanation: The path 0 -> 0 -> 1 does not exist, therefore it is not even a sequence.
+
+
+Example 3:
+Input: root = [0,1,0,0,1,0,null,null,1,0,0], arr = [0,1,1]
+Output: false
+Explanation: The path 0 -> 1 -> 1 is a sequence, but it is not a valid sequence.
+```
+
+```CPP
+bool isValidSequence(TreeNode* root, vector<int>& arr) {
+    return help(root, arr, 0);
+
+}
+
+bool help(TreeNode* root, vector<int>& arr, int index){
+    //array too long or not match or to end
+    
+    
+    if(root==NULL || index>=arr.size() || root->val != arr[index]){
+       return false;
+    }
+
+        //to leaf
+    if (root->left==NULL && root->right==NULL)
+       if(index+1 == arr.size())
+            return true;
+
+    return help(root->left, arr, index+1) || help(root->right, arr, index+1);
+        
+}
+```
+
+## Pseudo-Palindromic Paths in a Binary Tree
+
+https://leetcode.com/problems/pseudo-palindromic-paths-in-a-binary-tree/
+
+Given a binary tree where node values are digits from 1 to 9. A path in the binary tree is said to be pseudo-palindromic if at least one permutation of the node values in the path is a palindrome.
+
+Return the number of pseudo-palindromic paths going from the root node to leaf nodes.
+
+```CPP
+int pseudoPalindromicPaths (TreeNode* root) {
+    //need to check whether there is only one item occur odd times
+    return help(root, 0);
+}
+
+int help(TreeNode* root, int cnt){
+    if (root==NULL) 
+        return 0;
+    //XOR to eliminate even number
+    cnt ^= 1 << (root->val - 1);
+    int ret = help(root->left, cnt) + help(root->right, cnt);
+    //reach leaf
+    if (root->left ==NULL && root->right==NULL)
+        if ((cnt & (cnt - 1)) == 0) 
+            ret++;
+    return ret; 
+}
+```
+
+## lonely Node
+
+https://leetcode.com/problems/find-all-the-lonely-nodes/
+
+```CPP
+vector<int> getLonelyNodes(TreeNode* root) {
+    vector<int> ret;
+    help(root, ret);
+    return ret;
+}
+
+void help(TreeNode* root, vector<int>& ret){
+    if(root==NULL)
+        return;
+    if (root->left && !root->right)
+        ret.push_back(root->left->val);
+    if (!root->left && root->right)
+        ret.push_back(root->right->val);
+    help(root->left, ret);
+    help(root->right, ret);
+}
 ```
 
 
@@ -1319,84 +1654,3 @@ bool isBST(int &ret, int &min, int &max, TreeNode* root){
 ## Calculate number of nodes in binary tree
 
 ## return all possible BST given N
-
-
-# Trie/prefix Tree
-
-In computer science, a trie, or prefix tree, is an ordered tree data structure that is used to store a dynamic set or associative array where the keys are usually strings. Unlike a binary search tree, no node in the tree stores the key associated with that node; instead, its position in the tree defines the key with which it is associated. All the descendants of a node have a common prefix of the string associated with that node, and the root is associated with the empty string. Values are normally not associated with every node, only with leaves and some inner nodes that correspond to keys of interest. For the space-optimized presentation of prefix tree, see compact prefix tree.
-
-* Root node dose not have character
-* The characters added up from root to certain node represents the string to that node.
-* Cons: memory occupation, 26^i for every level(i is the level), so we can implement using linked list or dynamic array
-
-
-```CPP
-class TrieNode {
-public:
-  // Initialize your data structure here.
-  TrieNode() {
-    end = false;
-    for (int i = 0; i<26; i++) {
-      child[i] = NULL;
-    }
-  }
-  bool end;
-  TrieNode *child[26];
-};
-
-class Trie {
-public:
-  Trie() {
-    root = new TrieNode();
-  }
-  // Inserts a word into the trie.
-  void insert(string word, TrieNode *root) {
-    TrieNode *p = root;
-    int len = word.size();
-    for (int i = 0; i<len; i++) {
-      int pos = word[i] - 'a';
-      if (p->child[pos] == NULL) {
-        p->child[pos] = new TrieNode();
-      }
-      p = p->child[pos];
-    }
-    p->end = true;
-  }
-  // Returns if the word is in the trie.
-  bool search(string word) {
-    TrieNode *p = root;
-    int len = word.size();
-    int pos;
-    for (int i = 0; i<len; i++) {
-      pos = word[i] - 'a';
-      if (p->child[pos] != NULL) {
-        p = p->child[pos];
-      }
-      else {
-        return false;
-      }
-    }
-    return p->end;
-  }
-  // Returns if there is any word in the trie
-  // that starts with the given prefix.
-  bool startsWith(string prefix) {
-    TrieNode *p = root;
-    int len = prefix.size();
-    int pos;
-    for (int i = 0; i<len; i++) {
-      pos = prefix[i] - 'a';
-      if (p->child[pos] != NULL) {
-        p = p->child[pos];
-      }
-      else {
-        return false;
-      }
-    }
-  }
-private:
-  TrieNode* root;
-};
-
-```
-
