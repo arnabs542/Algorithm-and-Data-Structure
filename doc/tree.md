@@ -4,8 +4,11 @@
 
 - [Traversal](#traversal)
   - [pre order](#pre-order)
+    - [Construct Tree from pre-order](#construct-tree-from-pre-order)
   - [In order](#in-order)
   - [Post order](#post-order)
+  - [Combine different order](#combine-different-order)
+    - [Boudary of BST](#boudary-of-bst)
   - [In order in BST and its variation](#in-order-in-bst-and-its-variation)
     - [Common Pattern](#common-pattern)
     - [In order traverse pattern](#in-order-traverse-pattern)
