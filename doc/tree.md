@@ -87,6 +87,62 @@ void preorder(TreeNode* root){
   }
 }
 ```
+
+### Construct Tree from pre-order
+
+https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
+
+```CPP
+TreeNode* bstFromPreorder(vector<int>& A) {
+    int i = 0;
+    return build(A, i, INT_MAX);
+}
+
+TreeNode* build(vector<int>& A, int& i, int bound) {
+    if (i == A.size() || A[i] > bound) 
+        return NULL;
+    TreeNode* root = new TreeNode(A[i++]);
+    //left branch is less than root
+    root->left = build(A, i, root->val);
+    root->right = build(A, i, bound);
+    return root;
+}
+```
+
+> Stack solution
+
+```CPP
+TreeNode* bstFromPreorder(vector<int>& preorder) {
+    TreeNode* root = new TreeNode(preorder[0]);
+    
+    stack<TreeNode*> s; 
+    s.push(root);
+    
+    for(int i = 1; i<preorder.size(); ++i){ 
+        
+        if( preorder[i] < s.top()->val ) { 
+            //next is left if smaller than current top
+            s.top()->left = new TreeNode(preorder[i]);
+            s.push(s.top()->left);
+        }
+        else { // right            
+            TreeNode* node;
+            
+            // when we reach a value greater than preoder[i], 
+            //previous popped value will be the parent
+            while( !s.empty() && s.top()->val < preorder[i] ) {
+                node = s.top(); 
+                s.pop();
+            }
+            node->right = new TreeNode(preorder[i]); 
+            s.push(node->right);   
+        }
+    }
+    
+    return root;
+}
+```
+
 ## In order
 * For any node, first push whole left edge of node
 * if there is no left branch then pop one, move to right node, and repeat step 1
@@ -167,6 +223,53 @@ void postOrder(TreeNode* root){
     }
   }
 }
+```
+
+## Combine different order 
+
+### Boudary of BST
+https://leetcode.com/problems/boundary-of-binary-tree/
+
+Given a binary tree, return the values of its boundary in anti-clockwise direction starting from root. Boundary includes left boundary, leaves, and right boundary in order without duplicate nodes.  (The values of the nodes may still be duplicates.)
+
+```CPP
+
+
+//node.right is right bound if node is right bound;
+//node.left could also be right bound if node is right bound && node has no right child;
+
+//if node is left bound, add it before 2 child - pre order;
+//if node is right bound, add it after 2 child - post order;
+//A leaf node that is neither left or right bound belongs to the bottom line;
+
+
+vector<int> boundaryOfBinaryTree(TreeNode* root) {
+    vector<int> bounds;
+    if (root) {
+        bounds.push_back(root->val);
+        getBounds(root->left, bounds, true, false);
+        getBounds(root->right, bounds, false, true);
+    }
+    return bounds;
+}
+
+void getBounds(TreeNode* node, vector<int>& res, bool lb, bool rb) {
+    if (!node)  
+        return;
+    //left bound first
+    if (lb) 
+        res.push_back(node->val);
+    //leaf
+    if (!lb && !rb && !node->left && !node->right)  
+        res.push_back(node->val);
+//node.left is left bound if node is left bound;
+//node.right could also be left bound if node is left bound && node has no left child;
+    getBounds(node->left, res, lb, rb && !node->right);
+    getBounds(node->right, res, lb && !node->left, rb);
+    if (rb) 
+        res.push_back(node->val);
+}
+
 ```
 
 ##  In order in BST and its variation 
