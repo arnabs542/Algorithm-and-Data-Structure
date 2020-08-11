@@ -33,6 +33,8 @@
   - [Suffle](#suffle)
   - [Revisor sampling](#revisor-sampling)
 - [LRU Cache](#lru-cache)
+  - [LRU Cache](#lru-cache-1)
+  - [First Unique Number](#first-unique-number)
 - [Greedy](#greedy)
 - [Interval](#interval)
   - [Interval overlap](#interval-overlap)
@@ -1402,6 +1404,181 @@ void set(int key, int value) {
     }
 }
 ```
+## LRU Cache
+
+https://leetcode.com/problems/lru-cache/
+
+Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and put.
+
+get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
+put(key, value) - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
+
+The cache is initialized with a positive capacity.
+
+Follow up:
+Could you do both operations in O(1) time complexity?
+
+```
+Example:
+
+LRUCache cache = new LRUCache( 2 /* capacity */ );
+
+cache.put(1, 1);
+cache.put(2, 2);
+cache.get(1);       // returns 1
+cache.put(3, 3);    // evicts key 2
+cache.get(2);       // returns -1 (not found)
+cache.put(4, 4);    // evicts key 1
+cache.get(1);       // returns -1 (not found)
+cache.get(3);       // returns 3
+cache.get(4);       // returns 4
+```
+
+```CPP
+class LRUCache {
+public:
+    int size;
+    list<int> lru;                              //  LRU: back is least visit
+    unordered_map<int, list<int>::iterator> m; // key -> iterator
+    unordered_map<int, int> cache;                 // key -> value
+    
+    LRUCache(int capacity) {
+        size = capacity;
+    }
+    
+    int get(int key) {
+        if (cache.find(key) != cache.end()) {
+            update(key);
+            return cache[key];
+        }
+        return -1;
+    }
+    
+    void put(int key, int value) {
+        cache[key] = value;
+        update(key);
+        
+    }
+    
+    //LRU update, remove back, push front
+    void update(int key){
+        if (m.find(key) != m.end()) {
+            lru.erase(m[key]);
+        } else if (lru.size() >= size) {
+            int old = lru.back();
+            lru.pop_back();
+            cache.erase(old);
+            m.erase(old);
+        }
+        lru.push_front(key);
+        m[key] = lru.begin();
+    }
+};
+```
+
+## First Unique Number
+
+https://leetcode.com/problems/first-unique-number/
+
+You have a queue of integers, you need to retrieve the first unique integer in the queue.
+
+Implement the FirstUnique class:
+
+FirstUnique(int[] nums) Initializes the object with the numbers in the queue.
+int showFirstUnique() returns the value of the first unique integer of the queue, and returns -1 if there is no such integer.
+void add(int value) insert value to the queue.
+ 
+```
+Example 1:
+
+Input: 
+["FirstUnique","showFirstUnique","add","showFirstUnique","add","showFirstUnique","add","showFirstUnique"]
+[[[2,3,5]],[],[5],[],[2],[],[3],[]]
+Output: 
+[null,2,null,2,null,3,null,-1]
+Explanation: 
+FirstUnique firstUnique = new FirstUnique([2,3,5]);
+firstUnique.showFirstUnique(); // return 2
+firstUnique.add(5);            // the queue is now [2,3,5,5]
+firstUnique.showFirstUnique(); // return 2
+firstUnique.add(2);            // the queue is now [2,3,5,5,2]
+firstUnique.showFirstUnique(); // return 3
+firstUnique.add(3);            // the queue is now [2,3,5,5,2,3]
+firstUnique.showFirstUnique(); // return -1
+```
+
+```CPP
+
+//Write O(1), read O(n)
+
+queue<int> q;                     // To keep the order of elements maintained
+unordered_map<int, int> m;      // To keep the frequency of each element
+
+FirstUnique(vector<int>& nums) {
+    for(int i=0;i<nums.size();i++){
+        m[nums[i]]++;
+        q.push(nums[i]);
+    }
+}
+
+//amortized time of O(1)O(1)
+
+int showFirstUnique() {
+    while(!q.empty() && m[q.front()] > 1){
+        q.pop();
+    }
+    if(q.empty())
+        return -1;
+    else
+        return q.front();
+}
+
+//O(1)
+
+void add(int value) {
+    m[value]++;
+    q.push(value);
+}
+```
+
+We can use LRU way to do so, remove when we add
+
+```CPP
+class FirstUnique {
+public:
+    
+    list<int> l;                     // l is to maintain list of none duplicate
+    unordered_map<int, list<int>::iterator> m;
+    
+    FirstUnique(vector<int>& nums) {
+        for(int i=0;i<nums.size();i++){
+            add(nums[i]);
+        }
+    }
+    
+    int showFirstUnique() {
+        return l.size()>0? l.front():-1;
+    }
+    
+    void add(int value) {
+        auto it = m.find(value);
+        if (it == m.end()) {
+            l.push_back(value);
+            m[value] = --l.end();
+        }
+        //remove none unique
+        else if (it->second != l.end()) {
+            l.erase(it->second);
+            m[value] = l.end();
+        }
+    }
+};
+```
+
+
+
+
+
 
 # Greedy
 

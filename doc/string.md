@@ -25,6 +25,8 @@
   - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
     - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
+- [Misc](#misc)
+  - [String to Time](#string-to-time)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -843,3 +845,59 @@ TreeNode* deserialize(string data) {
 the easy way is to append the s1+s1, and check whether s2 is substring of s1.
 
 How do we achieve O(N). s1+s1 exhaustive list all substring
+
+
+# Misc
+
+## String to Time
+
+https://leetcode.com/problems/next-closest-time/
+
+
+
+Given a time represented in the format "HH:MM", form the next closest time by reusing the current digits. There is no limit on how many times a digit can be reused.
+
+You may assume the given input string is always valid. For example, "01:34", "12:09" are all valid. "1:34", "12:9" are all invalid.
+
+```
+Example 1:
+
+Input: "19:34"
+Output: "19:39"
+Explanation: The next closest time choosing from digits 1, 9, 3, 4, is 19:39, which occurs 5 minutes later.  It is not 19:33, because this occurs 23 hours and 59 minutes later.
+Example 2:
+
+Input: "23:59"
+Output: "22:22"
+Explanation: The next closest time choosing from digits 2, 3, 5, 9, is 22:22. It may be assumed that the returned time is next day's time since it is smaller than the input time numerically.
+```
+
+```CPP
+string nextClosestTime(string time) {
+    //insert all digit in sorted order
+    set<char> sorted;
+    for(auto c:time){
+        if(c==':') 
+            continue;
+        sorted.insert(c);
+    }
+   
+    string res = time;
+    //from end, mm to hh
+    for(int i = time.size() -1; i>=0; i--){
+        if(time[i] == ':' ) 
+            continue;
+        auto it = sorted.find(time[i]);
+         if(*it != *sorted.rbegin()){// not the largest number
+            it++; // go to the next element
+            res[i] = *it;
+            //valid time mm<60 and hh<24 and at least 3 digits
+            if((i>=3 && stoi(res.substr(3,2))<60) ||(i<2&&stoi(res.substr(0,2))<24))       
+                return res;      
+         } 
+         res[i]=*sorted.begin(); // take the smallest number
+    }
+    return res; 
+    
+}
+```
