@@ -20,7 +20,7 @@
     - [Common technqiue](#common-technqiue)
     - [Move array elements](#move-array-elements)
     - [Reorder array(Detect Duplicate)](#reorder-arraydetect-duplicate)
-    - [Shortest substring length to make sure whole string is sorted](#shortest-substring-length-to-make-sure-whole-string-is-sorted)
+    - [Shortest sub-array length to make sure whole string is sorted](#shortest-sub-array-length-to-make-sure-whole-string-is-sorted)
   - [Subarray Pattern](#subarray-pattern)
     - [Contiguous subarray with equal number of 0 and 1](#contiguous-subarray-with-equal-number-of-0-and-1)
     - [Max Consecutive Ones(with flip most k zeros)](#max-consecutive-oneswith-flip-most-k-zeros)
@@ -586,7 +586,7 @@ vector<int> findErrorNums(vector<int>& nums) {
 }
 ```
 
-### Shortest substring length to make sure whole string is sorted
+### Shortest sub-array length to make sure whole string is sorted
 https://leetcode.com/problems/shortest-unsorted-continuous-subarray/#/description
 
 [1,2,3,6,4,5,7], need to sort[6,4,5] to ensure sorted
