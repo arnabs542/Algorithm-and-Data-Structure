@@ -39,7 +39,9 @@
 - [Interval](#interval)
   - [Interval overlap](#interval-overlap)
     - [Merge intervals](#merge-intervals)
+    - [Remove intervals so that no overlap happen](#remove-intervals-so-that-no-overlap-happen)
     - [Interval Overlap](#interval-overlap)
+    - [Meeting Scheduler](#meeting-scheduler)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1617,7 +1619,7 @@ vector<Interval> merge(vector<Interval>& intervals) {
 }
 ```
 
-* Remove intervals so that no overlap happen
+### Remove intervals so that no overlap happen
 
 https://leetcode.com/problems/non-overlapping-intervals/#/description
 Given a collection of intervals, find the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
@@ -1709,6 +1711,81 @@ int minMeetingRooms(vector<Interval>& intervals) {
 }
 
 ```
+
+### Meeting Scheduler
+
+https://leetcode.com/problems/meeting-scheduler/
+
+Given the availability time slots arrays slots1 and slots2 of two people and a meeting duration duration, return the earliest time slot that works for both of them and is of duration duration.If there is no common time slot that satisfies the requirements, return an empty array.
+
+The format of a time slot is an array of two elements [start, end] representing an inclusive time range from start to end.  It is guaranteed that no two availability slots of the same person intersect with each other. That is, for any two time slots [start1, end1] and [start2, end2] of the same person, either start1 > end2 or start2 > end1.
+
+ 
+```
+Example 1:
+
+Input: slots1 = [[10,50],[60,120],[140,210]], slots2 = [[0,15],[60,70]], duration = 8
+Output: [60,68]
+Example 2:
+
+Input: slots1 = [[10,50],[60,120],[140,210]], slots2 = [[0,15],[60,70]], duration = 12
+Output: []
+```
+
+* Solution 1: 2 pointers
+
+```CPP
+ vector<int> minAvailableDuration(vector<vector<int>>& slots1, vector<vector<int>>& slots2, int duration) {
+        sort(slots1.begin(), slots1.end()); // sort  by start time 
+        sort(slots2.begin(), slots2.end()); //
+        
+        int i = 0, j = 0;
+        int n1 = slots1.size(), n2 = slots2.size();
+        while(i<n1 && j<n2){
+            
+            int start = max(slots1[i][0],slots2[j][0]);
+            int end = min(slots1[i][1],slots2[j][1]);
+            
+            if(start+duration<=end){
+                return {start, start + duration};
+            }else if(slots1[i][1]<slots2[j][1]){
+                i++;
+            }else{
+                j++;
+            }
+            
+        }
+        
+        return {};
+    }
+```
+
+* Solution 2: Priority Queue
+
+```CPP
+vector<int> minAvailableDuration(vector<vector<int>>& slots1, vector<vector<int>>& slots2, int duration) {
+    //min queue by start time
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+    for (auto s : slots1) {
+        if (s[1] - s[0] >= duration) q.push({ s[0], s[1] });
+    }
+    for (auto s : slots2) {
+        if (s[1] - s[0] >= duration) q.push({ s[0], s[1] });
+    }
+    
+    while (q.size()>1) {
+        
+        int end1 = q.top().second;
+        q.pop();
+        //since min queue by start time, so start1 is always < start2
+        int start2 = q.top().first;
+        if (end1 >= start2 + duration)
+            return { start2, start2 + duration };
+    }
+    return {};
+}
+```
+
 
 https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/#/description
 There are a number of spherical balloons spread in two-dimensional space. For each balloon, provided input is the start and end coordinates of the horizontal diameter. Since it's horizontal, y-coordinates don't matter and hence the x-coordinates of start and end of the diameter suffice. Start is always smaller than end. There will be at most 104 balloons.
