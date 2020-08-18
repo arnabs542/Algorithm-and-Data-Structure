@@ -29,6 +29,7 @@
   - [SubTree prune and trim](#subtree-prune-and-trim)
   - [Split Tree into SubTree](#split-tree-into-subtree)
     - [Maximum Product of Splitted Binary Tree](#maximum-product-of-splitted-binary-tree)
+    - [Delete Nodes And Return Forest](#delete-nodes-and-return-forest)
 - [Tree<->Array](#tree-array)
   - [Array to Tree](#array-to-tree)
   - [Reconstruct Tree](#reconstruct-tree)
@@ -1012,6 +1013,49 @@ public:
 };
 ```
 
+### Delete Nodes And Return Forest
+Given the root of a binary tree, each node in the tree has a distinct value.After deleting all nodes with a value in to_delete, we are left with a forest (a disjoint union of trees).Return the roots of the trees in the remaining forest.  You may return the result in any order.
+```
+Example 1:
+Input: root = [1,2,3,4,5,6,7], to_delete = [3,5]
+Output: [[1,2,null,4],[6],[7]]
+```
+
+```CPP
+class Solution {
+public:
+    set<int> remove;
+    
+    vector<TreeNode*> delNodes(TreeNode* root, vector<int>& to_delete) {
+        
+        vector<TreeNode*> ret;
+        for(int i=0;i<to_delete.size();i++){
+            remove.insert(to_delete[i]);
+        }
+        help(root, ret, true);
+        return ret;
+
+    }
+    
+    TreeNode* help(TreeNode* root, vector<TreeNode*>& ret, bool isRoot){
+        
+        if (root == NULL) 
+            return NULL;
+        bool deleted = remove.find(root->val) != remove.end();
+        
+        if(isRoot && !deleted){
+            //root, won't be delete
+            ret.push_back(root);
+        }
+        //if current node delete, branch will be root
+        root->left = help(root->left, ret, deleted);
+        root->right = help(root->right, ret, deleted);
+            
+        return deleted ? NULL : root;
+        
+    }
+};
+```
 
 
 # Tree<->Array
