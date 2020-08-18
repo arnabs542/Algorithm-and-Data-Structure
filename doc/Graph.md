@@ -16,6 +16,7 @@
     - [Check Valid Path](#check-valid-path)
   - [BFS](#bfs)
     - [Shortest path](#shortest-path)
+      - [Path with Obstable](#path-with-obstable)
     - [Minimum Height Tree](#minimum-height-tree)
 - [Connected components via Union Find/DFS/BFS](#connected-components-via-union-finddfsbfs)
   - [Basic idea](#basic-idea)
@@ -404,6 +405,93 @@ int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
 }
 ```
 
+#### Path with Obstable
+
+https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/
+
+Given a m * n grid, where each cell is either 0 (empty) or 1 (obstacle). In one step, you can move up, down, left or right from and to an empty cell.
+
+Return the minimum number of steps to walk from the upper left corner (0, 0) to the lower right corner (m-1, n-1) given that you can eliminate at most k obstacles. If it is not possible to find such walk return -1.
+
+ 
+```
+Example 1:
+
+Input: 
+grid = 
+[[0,0,0],
+ [1,1,0],
+ [0,0,0],
+ [0,1,1],
+ [0,0,0]], 
+k = 1
+Output: 6
+Explanation: 
+The shortest path without eliminating any obstacle is 10. 
+The shortest path with one obstacle elimination at position (3,2) is 6. Such path is (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) -> (3,2) -> (4,2).
+ 
+
+Example 2:
+
+Input: 
+grid = 
+[[0,1,1],
+ [1,1,1],
+ [1,0,0]], 
+k = 1
+Output: -1
+Explanation: 
+We need to eliminate at least two obstacles to find such a walk.
+```
+
+```CPP
+int shortestPath(vector<vector<int>>& grid, int k) {
+        //set to keep track of already visited paths
+        int ret =0;
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> dirs= {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        // min obstacles elimination from (0,0) to (x, y)
+        vector<vector<int>> obs(m, vector<int>(n,INT_MAX));
+
+        //x,y, and how many obstable moved
+        queue<vector<int>> q;
+        q.push({0,0,0});
+        obs[0][0]=0;
+        
+        while(!q.empty()){
+            int size = q.size();
+            //level by level
+            while(size-->0){
+                vector<int> cur = q.front();
+                q.pop();
+                //to end
+                if(cur[0]==m-1 && cur[1]==n-1){
+                    return ret;
+                }
+                for(auto dir: dirs){
+                    int x = dir[0] + cur[0];
+                    int y = dir[1] + cur[1];
+                    if (x < 0 || x >= m || y < 0 || y >= n) {
+                        continue;
+                    }
+                    //either +1 for obstable or same as previous
+                    int o = grid[x][y] + cur[2];
+                    //
+                    if (o >= obs[x][y] || o > k) {
+                        continue;
+                    }
+                    obs[x][y] = o;
+                    q.push({x,y,o});
+                }
+            }
+            //for all this level in queue, only +1 for step
+            ++ret;
+        }
+        
+        return -1;
+    }
+```
 
 ### Minimum Height Tree
 ```CPP

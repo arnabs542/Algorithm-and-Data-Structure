@@ -13,6 +13,8 @@
         - [Key Points](#key-points)
       - [All three together](#all-three-together)
     - [Example: first bad version](#example-first-bad-version)
+  - [Search Range/Cloest problem](#search-rangecloest-problem)
+    - [Find K Closest Elements](#find-k-closest-elements)
   - [Local Minimum](#local-minimum)
     - [Example](#example)
   - [Numerical(Square) Calculation](#numericalsquare-calculation)
@@ -299,6 +301,71 @@ int firstBadVersion(int n) {
     }
     return ret;
 }
+```
+
+## Search Range/Cloest problem
+
+### Find K Closest Elements
+
+Given a sorted array arr, two integers k and x, find the k closest elements to x in the array. The result should also be sorted in ascending order. If there is a tie, the smaller elements are always preferred.
+
+ 
+```
+Example 1:
+
+Input: arr = [1,2,3,4,5], k = 4, x = 3
+Output: [1,2,3,4]
+Example 2:
+
+Input: arr = [1,2,3,4,5], k = 4, x = -1
+Output: [1,2,3,4]
+```
+
+```CPP
+class Solution {
+public:
+    vector<int> findClosestElements(vector<int>& arr, int k, int x) {
+        //linear search is OK, but more efficiently we should run Binary Search
+        //Assume we are taking A[i] ~ A[i + k -1].
+        //We can binary research i
+        //We compare the distance between x - A[mid] and A[mid + k] - x
+        
+        /*
+        case 1: x - A[mid] < A[mid + k] - x, need to move window go left
+-------x----A[mid]-----------------A[mid + k]----------
+
+case 2: x - A[mid] < A[mid + k] - x, need to move window go left again
+-------A[mid]----x-----------------A[mid + k]----------
+
+case 3: x - A[mid] > A[mid + k] - x, need to move window go right
+-------A[mid]------------------x---A[mid + k]----------
+
+case 4: x - A[mid] > A[mid + k] - x, need to move window go right
+-------A[mid]---------------------A[mid + k]----x------
+
+If x - A[mid] > A[mid + k] - x,
+it means A[mid + 1] ~ A[mid + k] is better than A[mid] ~ A[mid + k - 1],
+and we have mid smaller than the right i.
+So assign left = mid + 1.
+        
+        */
+        
+        int l =0;
+        int r = arr.size()-k;
+        
+        while(l<r){
+            int mid = (l + r) / 2;
+            if (x - arr[mid] > arr[mid + k] - x)
+                l = mid + 1;
+            else
+                r = mid;
+        }
+        
+        
+        return vector<int>(arr.begin() + l, arr.begin() + l + k);
+        
+    }
+};
 ```
 
 

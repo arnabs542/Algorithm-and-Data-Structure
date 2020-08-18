@@ -14,6 +14,7 @@
   - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
     - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [Find substring in String](#find-substring-in-string)
+    - [String Partition (Partition Labels)](#string-partition-partition-labels)
     - [KMP](#kmp)
       - [KMP application](#kmp-application)
 - [Subsequence Problem](#subsequence-problem)
@@ -407,6 +408,49 @@ const char * strstr ( const char * str1, const char * str2 ){
 }
 
 ```
+
+### String Partition (Partition Labels)
+
+A string S of lowercase English letters is given. We want to partition this string into as many parts as possible so that each letter appears in at most one part, and return a list of integers representing the size of these parts.
+
+https://leetcode.com/problems/partition-labels/
+ 
+```
+Example 1:
+
+Input: S = "ababcbacadefegdehijhklij"
+Output: [9,7,8]
+Explanation:
+The partition is "ababcbaca", "defegde", "hijhklij".
+This is a partition so that each letter appears in at most one part.
+A partition like "ababcbacadefegde", "hijhklij" is incorrect, because it splits S into less parts.
+```
+
+```CPP
+vector<int> partitionLabels(string S) {
+    unordered_map<char, int> m;
+    vector<int> res;
+    for(int i = 0; i < S.size(); i++){
+        m[S[i]] = i; //record right most index for each char.
+    }
+    int i = 0;
+    int l = 0;
+    // record the end index of the current sub string
+    while(i < S.size()){
+        int r = m[S[i]];
+        //check for current index level, all index smaller will not have char beyond right most fast
+        while(i < r){
+            r = max(r, m[S[i]]);
+            i++;
+        }
+        res.push_back(r-l+1);
+        l = r+1;
+        i++;
+    }
+    return res;
+}
+```
+
 
 
 ### KMP
