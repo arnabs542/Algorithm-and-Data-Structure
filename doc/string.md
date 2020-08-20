@@ -18,11 +18,12 @@
     - [KMP](#kmp)
       - [KMP application](#kmp-application)
 - [Subsequence Problem](#subsequence-problem)
-- [String Stream representation Problem](#string-stream-representation-problem)
+- [String BFS/Recursive](#string-bfsrecursive)
   - [Combination](#combination)
   - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
     - [String as calculator](#string-as-calculator)
     - [Expression operators](#expression-operators)
+    - [Word Ladder](#word-ladder)
   - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
     - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
   - [Check if one string is Rotation of another string](#check-if-one-string-is-rotation-of-another-string)
@@ -584,11 +585,12 @@ bool isSubsequence(string s, string t) {
 }
 ```
 
-# String Stream representation Problem
+# String BFS/Recursive
 
 Typically this problem will have incoming string stream, with each char represent certain meaning(could be char, number, or encoding way), and need to process this stream to get some results.
 
 * Common solution: Use some index to pass over and recursively modify, index better to be reference type
+* BFS to visit all char in string and do sth
 
 ## Combination
 
@@ -771,6 +773,82 @@ void help(string num, int i, string one, long val, long save, vector<string> &re
     }
 }
 
+```
+
+### Word Ladder
+
+https://leetcode.com/problems/word-ladder/
+
+Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
+
+Only one letter can be changed at a time.
+Each transformed word must exist in the word list.
+Note:
+
+Return 0 if there is no such transformation sequence.
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+You may assume no duplicates in the word list.
+You may assume beginWord and endWord are non-empty and are not the same.
+
+```
+Example 1:
+
+Input:
+beginWord = "hit",
+endWord = "cog",
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+Output: 5
+
+Explanation: As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+return its length 5.
+Example 2:
+
+Input:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log"]
+
+Output: 0
+
+Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
+```
+
+```CPP
+int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+    unordered_set<string> s(wordList.begin(), wordList.end());
+    queue<string> q;
+    q.push(beginWord);
+    int step = 1;
+    while (!q.empty()) {
+        //one iteration to replace all possible char for a word
+        int n = q.size();
+        for (int i = 0; i < n; i++) {
+            string word = q.front();
+            q.pop();
+            if (word == endWord) {
+                return step;
+            }
+            //visited, remove
+            s.erase(word);
+            for (int j = 0; j < word.size(); j++) {
+                //replace a char
+                char c = word[j];
+                for (int k = 0; k < 26; k++) {
+                    word[j] = 'a' + k;
+                    if (s.find(word) != s.end()) {
+                        q.push(word);
+                    }
+                 }
+                 //restore original
+                word[j] = c;
+            }
+        }
+        step++;
+    }
+    return 0;
+}
 ```
 
 ## Data structure to string or vice verse
