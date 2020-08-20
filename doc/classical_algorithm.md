@@ -22,7 +22,6 @@
   - [Application](#application)
     - [Letter Combinations of a Phone Number](#letter-combinations-of-a-phone-number)
     - [Generate parentheses](#generate-parentheses)
-    - [Word Ladder](#word-ladder)
 - [Others](#others)
   - [BFPRT](#bfprt)
   - [Half Majority](#half-majority)
@@ -36,6 +35,7 @@
 - [LRU Cache](#lru-cache)
   - [LRU Cache](#lru-cache-1)
   - [First Unique Number](#first-unique-number)
+  - [Insert Delete GetRandom O(1)](#insert-delete-getrandom-o1)
 - [Greedy](#greedy)
 - [Interval](#interval)
   - [Interval overlap](#interval-overlap)
@@ -1104,81 +1104,7 @@ public:
 };
 ```
 
-### Word Ladder
 
-https://leetcode.com/problems/word-ladder/
-
-Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
-
-Only one letter can be changed at a time.
-Each transformed word must exist in the word list.
-Note:
-
-Return 0 if there is no such transformation sequence.
-All words have the same length.
-All words contain only lowercase alphabetic characters.
-You may assume no duplicates in the word list.
-You may assume beginWord and endWord are non-empty and are not the same.
-
-```
-Example 1:
-
-Input:
-beginWord = "hit",
-endWord = "cog",
-wordList = ["hot","dot","dog","lot","log","cog"]
-
-Output: 5
-
-Explanation: As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
-return its length 5.
-Example 2:
-
-Input:
-beginWord = "hit"
-endWord = "cog"
-wordList = ["hot","dot","dog","lot","log"]
-
-Output: 0
-
-Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
-```
-
-```CPP
-int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-    unordered_set<string> s(wordList.begin(), wordList.end());
-    queue<string> q;
-    q.push(beginWord);
-    int step = 1;
-    while (!q.empty()) {
-        //one iteration to replace all possible char for a word
-        int n = q.size();
-        for (int i = 0; i < n; i++) {
-            string word = q.front();
-            q.pop();
-            if (word == endWord) {
-                return step;
-            }
-            //visited, remove
-            s.erase(word);
-            for (int j = 0; j < word.size(); j++) {
-                //replace a char
-                char c = word[j];
-                for (int k = 0; k < 26; k++) {
-                    word[j] = 'a' + k;
-                    if (s.find(word) != s.end()) {
-                        q.push(word);
-                    }
-                 }
-                 //restore original
-                word[j] = c;
-            }
-        }
-        step++;
-    }
-    return 0;
-}
-```
 
 
 # Others
@@ -1654,7 +1580,63 @@ public:
 };
 ```
 
+## Insert Delete GetRandom O(1)
 
+https://leetcode.com/problems/insert-delete-getrandom-o1/
+
+Design a data structure that supports all following operations in average O(1) time.
+
+insert(val): Inserts an item val to the set if not already present.
+remove(val): Removes an item val from the set if present.
+getRandom: Returns a random element from current set of elements (it's guaranteed that at least one element exists when this method is called). Each element must have the same probability of being returned.
+
+```CPP
+class RandomizedSet {
+public:
+    /** Initialize your data structure here. */
+    
+    vector<int> v;
+
+    unordered_map<int, int> m; //val, index
+    RandomizedSet() {
+        
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    bool insert(int val) {
+        if(m.find(val)==m.end()){
+            v.push_back(val);
+            m[val] = v.size()-1;
+            
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    bool remove(int val) {
+        if(m.find(val)==m.end()){
+            return false;
+        }else {
+            int index = m[val];
+            int last = v.back();
+            //swap to end
+            v[index] = last;
+            m[last] = m[val];
+            v.pop_back();
+            m.erase(val);
+            return true;
+        }
+    }
+    
+    /** Get a random element from the set. */
+    int getRandom() {
+        int rand = random()%v.size();
+        return v[rand];
+    }
+};
+```
 
 
 
