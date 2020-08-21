@@ -22,7 +22,7 @@
   - [Combination](#combination)
   - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
     - [String as calculator](#string-as-calculator)
-    - [Expression operators](#expression-operators)
+    - [Expression operators (Via DFS)](#expression-operators-via-dfs)
     - [Word Ladder](#word-ladder)
   - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
     - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
@@ -636,6 +636,61 @@ Key of all these problem are caching the sign, and caching intermidtate(* ,/ or 
 
 ### String as calculator
 
+https://leetcode.com/problems/basic-calculator/
+
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces .
+
+```
+Example 1:
+
+Input: "1 + 1"
+Output: 2
+Example 2:
+
+Input: " 2-1 + 2 "
+Output: 3
+Example 3:
+
+Input: "(1+(4+5+2)-3)+(6+8)"
+Output: 23
+```
+
+```CPP
+    int calculate(string s) {
+      int len = s.size();
+      int sign = 1;
+      int ret = 0;
+      int num = 0;
+      stack<int> nums,ops;
+      for(int i=0;i<len;i++){
+          if(isdigit(s[i])){
+            num = num*10+(s[i]-'0');
+          }else{
+            //not number anymore, so we would need to get the current calculation num and accumulated ret
+            ret+=sign*num;
+            num = 0;
+            if(s[i]=='+') sign = 1;
+            if(s[i]=='-') sign = -1;
+            if(s[i]=='('){
+                nums.push(ret);
+                ops.push(sign);
+                ret = 0;
+                sign = 1;
+            }
+            if (s[i] == ')' && ops.size()) {
+                ret = ops.top() * ret + nums.top();
+                ops.pop(); 
+                nums.pop();
+            }
+        }
+    }
+    ret += sign * num;
+    return ret;
+    }
+```
+
 https://leetcode.com/problems/basic-calculator-ii/#/description
 Implement a basic calculator to evaluate a simple expression string.
 The expression string contains only non-negative integers, '+, -, * ,/' operators and empty spaces . The integer division should truncate toward zero.
@@ -660,7 +715,8 @@ int calculate(string s) {
         if(!isdigit(s[i]) && !isspace(s[i]) || i == s.size()-1){
             if(sign=='+') saved.push(cur);
             if(sign=='-') saved.push(-cur);
-            if(sign=='* '){
+            //this is last recorded sign, so we always evaludate when we have current is sign, but evaludate last 
+            if(sign=='*'){
                 int tmp = saved.top();
                 saved.pop();
                 saved.push(tmp*cur);
@@ -684,48 +740,65 @@ int calculate(string s) {
 }
 ```
 
-The problem can be extended to case string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces .
+https://leetcode.com/problems/basic-calculator-iii/
+
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces .
+
+The expression string contains only non-negative integers, +, -, *, / operators , open ( and closing parentheses ) and empty spaces . The integer division should truncate toward zero.
+
+You may assume that the given expression is always valid. All intermediate results will be in the range of [-2147483648, 2147483647].
+
+Some examples:
+
 "1 + 1" = 2
-" 2-1 + 2 " = 3
-"(1+(4+5+2)-3)+(6+8)" = 23
+" 6-4 / 2 " = 4
+"2*(5+5*2)/3+(6/2+8)" = 21
+"(2+6* 3+5- (3*14/7+2)*5)+3"=-12
 
 ```CPP
-int calculate(string s) {
-  int len = s.size();
-  int sign = 1;
-  int ret = 0;
-  int num = 0;
-  stack<int> nums,ops;
-  for(int i=0;i<len;i++){
-      if(isdigit(s[i])){
-        num = num*10+(s[i]-'0');
-      }else{
-        //not number anymore, so we would need to get the current calculation num and accumulated ret
-        ret+=sign*num;
-        num = 0;
-        if(s[i]=='+') sign = 1;
-        if(s[i]=='-') sign = -1;
-        if(s[i]=='('){
-            nums.push(ret);  //cache the results before bracket
-            ops.push(sign);  //cache the sign before bracket
-            ret = 0;
-            sign = 1;
-        }
-        if (s[i] == ')' && ops.size()) {
-            ret = ops.top() * ret + nums.top(); //finish the calculation of current bracket, so get cached
-            ops.pop();
-            nums.pop();
-        }
+    int calculate(string s) {
+        int i = 0;
+        return expr(s, i);
     }
-}
-ret += sign * num;
-return ret;
-}
-
+    
+    int expr(string& s, int& i) {
+        vector<int> nums;
+        char op = '+';
+        for (; i < s.length() && op != ')'; i++) {
+            if (s[i] == ' ') 
+                continue;
+            int n;
+            if(s[i] == '('){
+                n = expr(s, ++i);
+            }else{
+                n = num(s, i); 
+            } 
+            switch(op) {
+                case '+' : nums.push_back(n); break;
+                case '-' : nums.push_back(-n); break;
+                case '*' : nums.back() *= n; break;
+                case '/' : nums.back() /= n; break;
+            }            
+            op = s[i];
+        }
+        int res = 0;
+        for (int n : nums) 
+            res += n;
+        return res;
+    }
+    
+    int num(string& s, int& i) {
+        int n = 0;
+        while(i < s.length() && isdigit(s[i]))
+            n = s[i++] - '0' + 10 * n;
+        return n;
+    }
 ```
 
 
-### Expression operators
+### Expression operators (Via DFS)
 
 https://leetcode.com/problems/expression-add-operators/#/description
 Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators (not unary) +, -, or * between the digits so they evaluate to the target value.
