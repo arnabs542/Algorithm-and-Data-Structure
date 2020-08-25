@@ -2,6 +2,17 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
+- [Basic Array Operation](#basic-array-operation)
+  - [Two pointer/Procee from End](#two-pointerprocee-from-end)
+    - [In Place Operation](#in-place-operation)
+      - [Remove element(Delete in place)](#remove-elementdelete-in-place)
+      - [Move zeros(Swap inplace)](#move-zerosswap-inplace)
+      - [Remove Duplicate in sorted array](#remove-duplicate-in-sorted-array)
+      - [Sort Array By Parity](#sort-array-by-parity)
+      - [Squares of a Sorted Array](#squares-of-a-sorted-array)
+    - [Merge array](#merge-array)
+    - [Replace Elements with Greatest Element on Right Side](#replace-elements-with-greatest-element-on-right-side)
+    - [Max consecutive Ones](#max-consecutive-ones)
 - [Sub Array](#sub-array)
   - [Common Tchnqiues](#common-tchnqiues)
   - [Sub Array Sum](#sub-array-sum)
@@ -39,7 +50,304 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+# Basic Array Operation
 
+## Two pointer/Procee from End
+
+### In Place Operation
+
+#### Remove element(Delete in place)
+
+https://leetcode.com/problems/remove-element/
+
+Given an array nums and a value val, remove all instances of that value in-place and return the new length.
+
+Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+
+The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+
+```
+Example 1:
+
+Given nums = [3,2,2,3], val = 3,
+Your function should return length = 2, with the first two elements of nums being 2.
+It doesn't matter what you leave beyond the returned length.
+
+Example 2:
+
+Given nums = [0,1,2,2,3,0,4,2], val = 2,
+Your function should return length = 5, with the first five elements of nums containing 0, 1, 3, 0, and 4.
+Note that the order of those five elements can be arbitrary.
+It doesn't matter what values are set beyond the returned length.
+```
+
+> Solution 1: two pointers
+
+```CPP
+int removeElement(vector<int>& nums, int val) {
+    int i =0;
+    for(int j=0;j<nums.size();j++){
+        if(nums[j]!=val){
+            nums[i] = nums[j];
+            i++;
+        }
+    }
+    return i;
+}
+```
+
+> Solution 2: swap with end item
+
+```CPP
+int removeElement(vector<int>& nums, int val) {
+    int i =0;
+    int n = nums.size();
+    while(i<n){
+        if(nums[i]==val){
+            nums[i] = nums[n-1];
+            n--;
+        }else{
+            i++;
+        }
+    }
+    
+    return n;
+}
+```
+
+#### Move zeros(Swap inplace)
+
+https://leetcode.com/problems/move-zeroes/
+
+Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+```
+Example:
+
+Input: [0,1,0,3,12]
+Output: [1,3,12,0,0]
+```
+
+```CPP
+    void moveZeroes(vector<int>& nums) {
+        int i =0;
+        
+        for(int j=0; j< nums.size();j++){
+            if(nums[j]!=0){
+                nums[i] = nums[j];
+                i++;
+            }
+            
+        }
+        //fill 0
+        while(i<nums.size()) {
+            nums[i] = 0;
+            i++;
+        }
+        
+    }
+```
+
+#### Remove Duplicate in sorted array
+
+https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+
+Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+
+```CPP
+int removeDuplicates(vector<int>& nums) {
+    int n = nums.size();
+    int len = n;
+    int j = 0;
+    for(int i=1;i<n;i++){
+        if(nums[j]==nums[i]){
+            len--;
+        }else{
+            j++;
+            nums[j] = nums[i];
+        }
+    }
+    
+    return len;
+}
+```
+
+#### Sort Array By Parity
+
+https://leetcode.com/problems/sort-array-by-parity/
+
+Given an array A of non-negative integers, return an array consisting of all the even elements of A, followed by all the odd elements of A.
+
+You may return any answer array that satisfies this condition.
+
+ 
+```
+Example 1:
+
+Input: [3,1,2,4]
+Output: [2,4,3,1]
+The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.
+```
+
+```CPP
+vector<int> sortArrayByParity(vector<int>& A) {
+    int i = 0;
+    for (int j = 0; j < A.size(); j++)
+        if (A[j] % 2 == 0) 
+            swap(A[i++], A[j]);
+    return A;
+}
+```
+
+#### Squares of a Sorted Array
+
+https://leetcode.com/problems/squares-of-a-sorted-array/
+
+Given an array of integers A sorted in non-decreasing order, return an array of the squares of each number, also in sorted non-decreasing order.
+
+ 
+```
+Example 1:
+
+Input: [-4,-1,0,3,10]
+Output: [0,1,9,16,100]
+Example 2:
+
+Input: [-7,-3,2,3,11]
+Output: [4,9,9,49,121]
+```
+
+```CPP
+vector<int> sortedSquares(vector<int>& A) {
+    int i =0;
+    int j=A.size()-1;
+    vector<int> ret(A.size(),0);
+    for(int k=A.size()-1;k>=0;k--){
+        if(abs(A[i])>abs(A[j])){
+            ret[k]=A[i]*A[i];
+            i++;
+        }else{
+            ret[k]=A[j]*A[j];
+            j--;
+        }
+    }
+    return ret;
+}
+```
+
+### Merge array
+
+https://leetcode.com/problems/merge-sorted-array/
+
+Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
+
+The number of elements initialized in nums1 and nums2 are m and n respectively.
+You may assume that nums1 has enough space (size that is equal to m + n) to hold additional elements from nums2.
+
+```
+Example:
+
+Input:
+nums1 = [1,2,3,0,0,0], m = 3
+nums2 = [2,5,6],       n = 3
+
+Output: [1,2,2,3,5,6]
+```
+
+> Process from end is common
+
+```CPP
+void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+    int i=m-1;
+    int j=n-1;
+    int p = m+n-1;
+    while(i>=0 && j>=0){
+        if(nums1[i]>=nums2[j]){
+            nums1[p]=nums1[i];
+            i--;
+        }else{
+            nums1[p]=nums2[j];
+            j--;
+        }
+        p--;
+    }
+    
+    //process if there is remaining
+    if(i<0){
+       while(j>=0){
+            nums1[j] = nums2[j];
+            j--;
+        } 
+    }
+}
+```
+
+### Replace Elements with Greatest Element on Right Side
+
+https://leetcode.com/problems/replace-elements-with-greatest-element-on-right-side/
+
+Given an array arr, replace every element in that array with the greatest element among the elements to its right, and replace the last element with -1.
+
+After doing so, return the array.
+
+ 
+```
+Example 1:
+
+Input: arr = [17,18,5,4,6,1]
+Output: [18,6,6,6,1,-1]
+```
+
+```CPP
+vector<int> replaceElements(vector<int>& arr) {
+    //process from end
+    int m=-1;
+    for(int i=arr.size()-1;i>=0;i--) {
+        int cur=arr[i];
+        arr[i]=m;
+        m=max(m, cur);
+    }
+    return arr;
+}
+```
+
+### Max consecutive Ones
+
+https://leetcode.com/problems/max-consecutive-ones-ii/
+
+Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most one 0.
+
+
+```
+Example 1:
+Input: [1,0,1,1,0]
+Output: 4
+Explanation: Flip the first zero will get the the maximum number of consecutive 1s.
+    After flipping, the maximum number of consecutive 1s is 4.
+
+```
+
+```CPP
+int findMaxConsecutiveOnes(vector<int>& nums) {
+    queue<int> q;
+    int i=0;
+    int ret =0;
+    //keep a qeue with [i,j] that contains only 1 0(can be extended to k)
+    for(int j=0;j<nums.size();j++){
+        if(nums[j]==0){
+            q.push(j);
+        }
+        if(q.size()>1){
+            //last 0 position +1 will remove 0
+            i = q.front()+1;
+            q.pop();
+        }
+        ret = max(ret,j-i+1);
+    }
+    
+    return ret;
+}
+```
 
 
 # Sub Array

@@ -774,13 +774,15 @@ Some examples:
                 n = expr(s, ++i);
             }else{
                 n = num(s, i); 
-            } 
+            }
+            //check last operator 
             switch(op) {
                 case '+' : nums.push_back(n); break;
                 case '-' : nums.push_back(-n); break;
                 case '*' : nums.back() *= n; break;
                 case '/' : nums.back() /= n; break;
-            }            
+            } 
+
             op = s[i];
         }
         int res = 0;
