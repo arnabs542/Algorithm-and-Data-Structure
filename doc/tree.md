@@ -7,6 +7,7 @@
     - [Construct Tree from pre-order](#construct-tree-from-pre-order)
   - [In order](#in-order)
   - [Post order](#post-order)
+  - [Level Traversal](#level-traversal)
   - [Combine different order](#combine-different-order)
     - [Boudary of BST](#boudary-of-bst)
   - [In order in BST and its variation](#in-order-in-bst-and-its-variation)
@@ -17,7 +18,12 @@
     - [K-th Smallest](#k-th-smallest)
     - [Range problem](#range-problem)
     - [Closest value](#closest-value)
-- [Recursive along Path](#recursive-along-path)
+- [Recursive(Most important for Tree problem)](#recursivemost-important-for-tree-problem)
+  - [Common Recursive way](#common-recursive-way)
+    - [Top Down](#top-down)
+    - [Bottom Up](#bottom-up)
+  - [Symmetric](#symmetric)
+  - [Count Univalue Subtrees](#count-univalue-subtrees)
   - [Path Sum](#path-sum)
     - [Max path Sum](#max-path-sum)
   - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
@@ -75,20 +81,25 @@
 * pop the stack and print right away, repeat step 1 for popped value
 
 ```CPP
-void preorder(TreeNode* root){
-  stack<int> s;
-  s.push(root);
-  while(!s.empty()){
-    TreeNode* cur = s.top();
-    s.pop();
-    printf("node is %d",cur->val);
-    if(cur->right){
-      s.push(root->right);
+vector<int> preorderTraversal(TreeNode* root) {
+    vector<int> answer;
+    stack<TreeNode*> s;
+    if (root) {
+        s.push(root);
     }
-    if(cur->left){
-      s.push(root->left);
+    TreeNode* cur;
+    while (!s.empty()) {
+        cur = s.top();
+        s.pop();
+        answer.push_back(cur->val);     // visit the root
+        if (cur->right) {
+            s.push(cur->right);         // push right child to stack if it is not null
+        }
+        if (cur->left) {
+            s.push(cur->left);          // push left child to stack if it is not null
+        }
     }
-  }
+    return answer;
 }
 ```
 
@@ -228,6 +239,61 @@ void postOrder(TreeNode* root){
   }
 }
 ```
+
+## Level Traversal 
+
+https://leetcode.com/problems/binary-tree-level-order-traversal/
+
+```CPP
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        queue<TreeNode*> q;
+        vector<vector<int>> ret;
+        if(!root)
+            return ret;
+        
+        q.push(root);
+        
+        while(!q.empty()){
+            int size = q.size();
+            vector<int> one;
+            for(int i=0;i<size;i++){
+                TreeNode* cur = q.front();
+                q.pop();
+                one.push_back(cur->val);
+                if(cur->left)
+                    q.push(cur->left);
+                if(cur->right)
+                    q.push(cur->right);
+            }
+            ret.push_back(one);
+        }
+        
+        return ret;
+    }
+```
+
+```CPP
+//we can have DFS way also
+
+vector<vector<int>> ret;
+
+void buildVector(TreeNode *root, int depth)
+{
+    if(root == NULL) return;
+    if(ret.size() == depth)
+        ret.push_back(vector<int>());
+    
+    ret[depth].push_back(root->val);
+    buildVector(root->left, depth + 1);
+    buildVector(root->right, depth + 1);
+}
+
+vector<vector<int> > levelOrder(TreeNode *root) {
+    buildVector(root, 0);
+    return ret;
+}
+```
+
 
 ## Combine different order 
 
@@ -469,8 +535,6 @@ void printbstkeys(Tnode *root, int k1, int k2)
 
 ```
 
-* 
-
 
 ### Closest value
 
@@ -568,11 +632,128 @@ public:
 
 ```
 
-# Recursive along Path
+# Recursive(Most important for Tree problem)
+
+## Common Recursive way
+
+### Top Down
+
+"Top-down" means that in each recursive call, we will visit the node first to come up with some values, and pass these values to its children when calling the function recursively. So the "top-down" solution can be considered as a kind of preorder traversal. To be specific, the recursive function top_down(root, params) works like this:
 
 Recursive in tree to accomplish something, may need help to record some parameter
 
+```
+1. return specific value for null node
+2. update the answer if needed                      // answer <-- params
+3. left_ans = top_down(root.left, left_params)      // left_params <-- root.val, params
+4. right_ans = top_down(root.right, right_params)   // right_params <-- root.val, params 
+5. return the answer if needed                      // answer <-- left_ans, right_ans
+```
+
+### Bottom Up 
+
+"Bottom-up" is another recursive solution. In each recursive call, we will firstly call the function recursively for all the children nodes and then come up with the answer according to the returned values and the value of the current node itself. This process can be regarded as a kind of postorder traversal. Typically, a "bottom-up" recursive function bottom_up(root) will be something like this:
+
+```
+1. return specific value for null node
+2. left_ans = bottom_up(root.left)          // call function recursively for left child
+3. right_ans = bottom_up(root.right)        // call function recursively for right child
+4. return answers    
+```
+
+## Symmetric
+
+https://leetcode.com/problems/symmetric-tree/
+
+```CPP
+bool isSymmetric(TreeNode* root) {
+    
+    if(root==NULL)
+        return true;
+    
+    return help(root->left, root->right);
+    
+}
+
+bool help(TreeNode* l, TreeNode* r){
+    if(l==NULL){
+        return r==NULL;
+    }
+    if(r==NULL){
+        return l==NULL;
+    }
+    
+    if(l->val!=r->val){
+        return false;
+    }else{
+        return help(l->left, r->right) && help(l->right, r->left);
+    }
+    
+    
+}
+```
+
+##  Count Univalue Subtrees
+https://leetcode.com/problems/count-univalue-subtrees/
+
+Given the root of a binary tree, return the number of uni-value subtrees.
+
+A uni-value subtree means all nodes of the subtree have the same value.
+
+```CPP
+int countUnivalSubtrees(TreeNode* root) {
+    int ret = 0;
+    isUnivalTree(root, ret);
+    
+    return ret;
+}
+
+bool isUnivalTree(TreeNode* root, int &cnt){
+    if(root==NULL)
+        return true;
+    //bottom up
+    bool leftUnival = isUnivalTree(root->left, cnt);
+    bool rightUnival = isUnivalTree(root->right, cnt);
+    //ensure both branch are unival, and then compare current node with branch
+    if(leftUnival && rightUnival && 
+       (root->left==NULL || root->left->val == root->val)
+      && (root->right==NULL || root->right->val == root->val)){
+        
+        cnt++;
+        return true;
+        
+    }else {
+        return false;
+    }
+}
+```
+
+
 ## Path Sum
+
+https://leetcode.com/problems/path-sum/
+
+```CPP
+    bool hasPathSum(TreeNode* root, int sum) {
+        
+        if(root==NULL)
+            return false;
+
+        
+        if(root->left==NULL && root->right==NULL){
+            if(root->val == sum)
+                return true;
+            else
+                return false;
+        }
+        
+        return hasPathSum(root->left, sum-root->val) || hasPathSum(root->right, sum-root->val);
+
+
+    }
+```
+
+
 https://leetcode.com/problems/path-sum-ii/
 
 Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
