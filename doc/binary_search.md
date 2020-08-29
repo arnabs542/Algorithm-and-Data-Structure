@@ -3,19 +3,20 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Binary search](#binary-search)
-  - [Binary Search Framework](#binary-search-framework)
-    - [Binary search for Target](#binary-search-for-target)
+  - [Binary search for Framework](#binary-search-for-framework)
+    - [Framework 1: Binary Search for target](#framework-1-binary-search-for-target)
       - [Key points](#key-points)
-    - [Boundary in Binary Search](#boundary-in-binary-search)
+      - [Distinguishing Syntax:](#distinguishing-syntax)
+    - [Framework 2: Boundary in Binary Search](#framework-2-boundary-in-binary-search)
+      - [Key Attributes:](#key-attributes)
+      - [Distinguishing Syntax:](#distinguishing-syntax-1)
       - [Find Left Boundary](#find-left-boundary)
-        - [Key points](#key-points-1)
       - [Find Right Boundary](#find-right-boundary)
-        - [Key Points](#key-points)
-      - [All three together](#all-three-together)
     - [Example: first bad version](#example-first-bad-version)
   - [Search Range/Cloest problem](#search-rangecloest-problem)
     - [Find K Closest Elements](#find-k-closest-elements)
-  - [Local Minimum](#local-minimum)
+    - [Find First and Last Position of Element in Sorted Array](#find-first-and-last-position-of-element-in-sorted-array)
+    - [Local Minimum](#local-minimum)
     - [Example](#example)
   - [Numerical(Square) Calculation](#numericalsquare-calculation)
 
@@ -25,27 +26,10 @@
 
 Anything that can split the Search space can use Binary search
 
-## Binary Search Framework 
 
-```CPP
-int binarySearch(int[] nums, int target) {
-    int left = 0, right = nums.size() - 1;
+## Binary search for Framework
 
-    while(left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] == target) {
-            ...
-        } else if (nums[mid] < target) {
-            left = ...
-        } else if (nums[mid] > target) {
-            right = ...
-        }
-    }
-    return ...;
-}
-```
-
-### Binary search for Target
+### Framework 1: Binary Search for target
 
 ```CPP
 int binarySearch(int[] nums, int target) {
@@ -67,25 +51,60 @@ int binarySearch(int[] nums, int target) {
 
 #### Key points
 
-1. why use ```<=``` or not ```<```:
 
-The end condition for ```while(left <= right)``` is ```left = right + 1```, so the ```[left, right]``` will becomes ```[right+1, right]```, which is not possible, so it is correct ending condition, since we have searched into impossible state.
+* Most basic and elementary form of Binary Search
+* Search Condition can be determined without comparing to the element's neighbors (or use specific elements around it)
+* No post-processing required because at each step, you are checking to see if the element has been found. If you reach the end, then you know the element is not found
 
+#### Distinguishing Syntax:
 
-but for end condition for ```while(left < right)``` is ```left = right```, so the ```[left, right]``` will becomes ```[right, right]```, which is possible, and we will not visit ```right``` value.
+```
+Initial Condition: left = 0, right = length-1
+Termination: left > right
+Searching Left: right = mid-1
+Searching Right: left = mid+1
+```
 
+### Framework 2: Boundary in Binary Search
 
-2. why use ```left=mid-1 / right = mid+1``` , not ```left =mid/ right = mid```
+```
+int binarySearch(vector<int>& nums, int target){
+  if(nums.size() == 0)
+    return -1;
 
-Also we need to consider whether we need to move mid index. since our search range is ```[left, right]```, so if mid is not target, then we should search ```[left, mid-1]```, or ```[mid+1, right]```
+  int left = 0, right = nums.size();
+  while(left < right){
+    // Prevent (left + right) overflow
+    int mid = left + (right - left) / 2;
+    if(nums[mid] == target){ return mid; }
+    else if(nums[mid] < target) { left = mid + 1; }
+    else { right = mid; }
+  }
 
-3. Limitation of former algorithm: Hard to return the boundary
+  // Post-processing:
+  // End Condition: left == right
+  if(left != nums.size() && nums[left] == target) return left;
+  return -1;
+}
+```
 
+#### Key Attributes:
 
+* An advanced way to implement Binary Search.
+* Search Condition needs to access element's immediate right neighbor
+* Use element's right neighbor to determine if condition is met and decide whether to go left or right
+Gurantees Search Space is at least 2 in size at each step
+*Post-processing required. Loop/Recursion ends when you have 1 element left. Need to assess if the remaining element meets the condition.
+ 
 
-### Boundary in Binary Search
+#### Distinguishing Syntax:
 
-> Q: find mid value left and right boudary of ```nums = [1,2,2,2,3]``` 
+```
+Initial Condition: left = 0, right = length
+Termination: left == right
+Searching Left: right = mid
+Searching Right: left = mid+1
+```
 
 #### Find Left Boundary
 
@@ -109,53 +128,7 @@ int left_bound(int[] nums, int target) {
 }
 ```
 
-##### Key points
 
-1. why use ```<```, not ```<=```
-
-search range here is ```[left, right)```, which dose not include right, since we just need to find left boundary. so for ```while (left < right)```, the ending condition is ```left==right```, and our search range ```[left, right)``` will be exmpty in this case, so condition is good.
-
-2. How to process if number dose not exist
-
-since the boudary here means "how many items are less(for left) or more(for right) than target value". 
-
-for ```nums = [2,3,5,7], target = 1``` will return 0. means 0 item is less than 1. for ```nums = [2,3,5,7], target = 8```, will return 4, means 4 items are smaller than 8.
-
-so our func return will be in range of ```[0, size+1]```.
-
-3. why use ```left=mid+1```, not ```left=mid``` as before
-
-since our search range is ```[left, right)```, so after ```num[mid]``` has been checked, our next search should be dividied into ```[left, mid)``` and ```[mid+1, right)```
-
-4. why we return ```left```, not ```mid``` or ```right```
-
-actually it is same since our ending condition is ```left == right```
-
-* we can also use former approach to do
-
-```CPP
-int left_bound(int[] nums, int target) {
-    int left = 0, right = nums.length - 1;
-    // search range is [left, right]
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] < target) {
-            // range becomes [mid+1, right]
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            // range becomes [left, mid-1]
-            right = mid - 1;
-        } else if (nums[mid] == target) {
-            right = mid - 1;
-        }
-    }
-    // since our ending condition is left == right + 1, so if target > all items
-    // we end up left be more than max item. so need to check
-    if (left >= nums.length || nums[left] != target)
-        return -1;
-    return left;
-}
-```
 #### Find Right Boundary
 
 ```CPP
@@ -177,87 +150,8 @@ int right_bound(int[] nums, int target) {
 }
 ```
 
-##### Key Points
-
-1. boundary search
-
-Key point is continue explore the boudary even if we find equal
-
-```CPP
-if (nums[mid] == target) {
-    left = mid + 1; 
-```
-
-2. why return ```left-1```, not ```right```, do we search right boundary?
-
-because its ending condition is ```left==right```, so return left is same as return right. but since we have 
-```CPP
-if (nums[mid] == target) {
-    left = mid + 1; 
-```
-
-so ending time, ```num[left]``` will not be equal to ```target```.
 
 
-#### All three together
-
-```CPP
-int binary_search(int[] nums, int target) {
-    int left = 0, right = nums.length - 1; 
-    while(left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid - 1; 
-        } else if(nums[mid] == target) {
-            // 
-            return mid;
-        }
-    }
-    // 
-    return -1;
-}
-
-int left_bound(int[] nums, int target) {
-    int left = 0, right = nums.length - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid - 1;
-        } else if (nums[mid] == target) {
-            // continue search and lock left 
-            right = mid - 1;
-        }
-    }
-    // check over boundary
-    if (left >= nums.length || nums[left] != target)
-        return -1;
-    return left;
-}
-
-
-int right_bound(int[] nums, int target) {
-    int left = 0, right = nums.length - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid - 1;
-        } else if (nums[mid] == target) {
-            // continue search and lock right 
-            left = mid + 1;
-        }
-    }
-    // check over boundary
-    if (right < 0 || nums[right] != target)
-        return -1;
-    return right;
-}
-```
 
 ### Example: first bad version
 
@@ -368,8 +262,50 @@ So assign left = mid + 1.
 };
 ```
 
+### Find First and Last Position of Element in Sorted Array
 
-## Local Minimum
+https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.Your algorithm's runtime complexity must be in the order of O(log n).If the target is not found in the array, return [-1, -1].
+
+```
+Example 1:
+
+Input: nums = [5,7,7,8,8,10], target = 8
+Output: [3,4]
+Example 2:
+
+Input: nums = [5,7,7,8,8,10], target = 6
+Output: [-1,-1]
+```
+
+```CPP
+vector<int> searchRange(vector<int>& nums, int target) {
+    int start = 0, end = nums.size(), mid, left, right;
+    while (start < end) {
+        mid = (start + end) / 2;
+        if (nums[mid] >= target)
+            end = mid;
+        else
+            start = mid + 1;
+    }
+    //found the left in range
+    left = start;
+    start = left, end = nums.size();
+    while (start < end) {
+        mid = (start + end) / 2;
+        if (nums[mid] > target)
+            end = mid;
+        else
+            start = mid + 1;
+    }
+    right = start;
+    return left == right ? vector<int> {-1,-1} : vector<int> {left,right-1};
+}
+```
+
+
+### Local Minimum
 
 Local minimum
 Find array if there is local min(left and right is larger) and return index

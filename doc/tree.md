@@ -22,14 +22,16 @@
   - [Common Recursive way](#common-recursive-way)
     - [Top Down](#top-down)
     - [Bottom Up](#bottom-up)
-  - [Symmetric](#symmetric)
-  - [Count Univalue Subtrees](#count-univalue-subtrees)
-  - [Path Sum](#path-sum)
-    - [Max path Sum](#max-path-sum)
-  - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
-  - [Valid sequence in Tree](#valid-sequence-in-tree)
-  - [Pseudo-Palindromic Paths in a Binary Tree](#pseudo-palindromic-paths-in-a-binary-tree)
-  - [lonely Node](#lonely-node)
+  - [Common Example](#common-example)
+    - [Symmetric](#symmetric)
+    - [Count Univalue Subtrees](#count-univalue-subtrees)
+    - [Lowest Common Ancestor of a Binary Tree](#lowest-common-ancestor-of-a-binary-tree)
+    - [Path Sum](#path-sum)
+      - [Max path Sum](#max-path-sum)
+    - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
+    - [Valid sequence in Tree](#valid-sequence-in-tree)
+    - [Pseudo-Palindromic Paths in a Binary Tree](#pseudo-palindromic-paths-in-a-binary-tree)
+    - [lonely Node](#lonely-node)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
   - [SubTree prune and trim](#subtree-prune-and-trim)
@@ -101,6 +103,23 @@ vector<int> preorderTraversal(TreeNode* root) {
     }
     return answer;
 }
+```
+
+```CPP
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> ret;
+        help(root, ret);
+        return ret;
+        
+    }
+    
+    void help(TreeNode* root, vector<int>& v){
+        if(!root) 
+            return;
+        v.push_back(root->val);
+        help(root->left, v);
+        help(root->right, v);
+    }
 ```
 
 ### Construct Tree from pre-order
@@ -203,6 +222,24 @@ void postOrder(TreeNode* root){
     s2.pop();
   }
 }
+```
+
+```CPP
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> ret;
+        help(root, ret);
+        return ret;
+    }
+
+    
+    void help(TreeNode* root, vector<int>& v){
+        if(!root) 
+            return;
+        
+        help(root->left, v);
+        help(root->right, v);
+        v.push_back(root->val);
+    }
 ```
 
 * Method 2: Only to use one stack. The advantage of using stack is you can always returns to last visited node
@@ -661,7 +698,9 @@ Recursive in tree to accomplish something, may need help to record some paramete
 4. return answers    
 ```
 
-## Symmetric
+## Common Example
+
+### Symmetric
 
 https://leetcode.com/problems/symmetric-tree/
 
@@ -693,7 +732,7 @@ bool help(TreeNode* l, TreeNode* r){
 }
 ```
 
-##  Count Univalue Subtrees
+### Count Univalue Subtrees
 https://leetcode.com/problems/count-univalue-subtrees/
 
 Given the root of a binary tree, return the number of uni-value subtrees.
@@ -728,8 +767,48 @@ bool isUnivalTree(TreeNode* root, int &cnt){
 }
 ```
 
+### Lowest Common Ancestor of a Binary Tree
 
-## Path Sum
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+
+```CPP
+//this solution works even if node may not exist in tree
+
+TreeNode* ret=NULL;
+
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    help(root, p, q);
+    return ret;
+    
+}
+
+bool help(TreeNode* root, TreeNode* p, TreeNode* q){
+    
+    if(root==NULL)
+        return false;
+    //found p,q in left or right branch
+    int l = help(root->left, p, q)?1:0;
+    int r = help(root->right, p, q)?1:0;
+    //found p,q in current node
+    int mid = (p==root || q==root)? 1:0;
+    
+    //if we found both p,q in 2 out of 3
+    if ((mid+l+r)>=2)
+        ret=root;
+    
+    return mid+l+r>0;
+    
+}
+```
+
+if we know node may exist in tree
+
+```CPP
+
+```
+
+
+### Path Sum
 
 https://leetcode.com/problems/path-sum/
 
@@ -895,7 +974,7 @@ int help(TreeNode* root, int last, int& sum){
 }
 ```
 
-### Max path Sum
+#### Max path Sum
 
 https://leetcode.com/problems/binary-tree-maximum-path-sum/
 
@@ -944,7 +1023,7 @@ int help(TreeNode* root, int &maxPath){
 ```
 
 
-## Larger/smaller item in Tree path
+### Larger/smaller item in Tree path
 
 https://leetcode.com/problems/count-good-nodes-in-binary-tree/
 
@@ -973,7 +1052,7 @@ int help(TreeNode* root, int largest){
 ```
 
 
-## Valid sequence in Tree
+### Valid sequence in Tree
 https://leetcode.com/problems/check-if-a-string-is-a-valid-sequence-from-root-to-leaves-path-in-a-binary-tree/
 
 Given a binary tree where each path going from the root to any leaf form a valid sequence, check if a given string is a valid sequence in such binary tree. 
@@ -1027,7 +1106,7 @@ bool help(TreeNode* root, vector<int>& arr, int index){
 }
 ```
 
-## Pseudo-Palindromic Paths in a Binary Tree
+### Pseudo-Palindromic Paths in a Binary Tree
 
 https://leetcode.com/problems/pseudo-palindromic-paths-in-a-binary-tree/
 
@@ -1055,7 +1134,7 @@ int help(TreeNode* root, int cnt){
 }
 ```
 
-## lonely Node
+### lonely Node
 
 https://leetcode.com/problems/find-all-the-lonely-nodes/
 
@@ -1339,34 +1418,33 @@ Recursively doing this on subarrays, we can build a tree out of it :)
 class Solution {
 public:
     
-    map<int,int> index;
+    map<int,int> inorder_index;
     
     TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-
+        
+        //build in-order map
         for (int i = 0; i < inorder.size(); i++){
-            index[inorder[i]] = i;
+            inorder_index[inorder[i]] = i;
 
         }
-        return help(preorder, 0, inorder.size()-1, inorder,0,inorder.size()-1);
+        //start pivot is root
+        int pivot = 0;
+        return help(preorder, inorder, 0, inorder.size()-1, pivot);
     }
     
-    TreeNode* help(vector<int>& preorder, int preStart, int preEnd, 
-                   vector<int>& inorder, int inStart, int inEnd)
+    TreeNode* help(vector<int>& preorder, vector<int>& inorder, int start, int end, int &pivot)
     {
-        if(preStart > preEnd || inStart > inEnd) 
+        if(start>end) 
             return NULL;
         
-        if (inStart == inEnd)
-            return new TreeNode(inorder[inStart]);
+        //current recursive root from pre order, 
+        int val = preorder[pivot];
+        TreeNode *root = new TreeNode(val); 
+        pivot++;
         
-        TreeNode *root = new TreeNode(preorder[preStart]); //current recursive root
         
-        int inRoot = index[preorder[preStart]]; //get the index of current root in inorder
-        int left = inRoot - inStart;
-        int right = inEnd - inRoot;
-        
-        root->left = help(preorder, preStart+1, preStart+left, inorder, inStart, inRoot-1);
-        root->right = help(preorder, preStart+left+1, preEnd, inorder, inRoot+1, inEnd);
+        root->left = help(preorder, inorder, start, inorder_index[val]-1, pivot);
+        root->right = help(preorder, inorder, inorder_index[val]+1, end, pivot);
         
         return root;
     }
@@ -1407,7 +1485,7 @@ public:
         int value = postorder[pivot];
         TreeNode *newnode = new TreeNode(value);
         pivot--;
-        
+        //always pick up last in post-order as root
         newnode->right = traverse(inorder, postorder, inorder_map[value]+1, end, pivot);
         newnode->left = traverse(inorder, postorder, start, inorder_map[value]-1, pivot);
         return newnode;
@@ -1415,13 +1493,14 @@ public:
     
     TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
         
-        //reverse(postorder.begin(), postorder.end());
+        //build inorder map from post order, check for each tree/sub-tree root as pivot
         
-        for(int i = 0; i < postorder.size(); i++){
+        for(int i = 0; i < inorder.size(); i++){
             inorder_map[inorder[i]] = i;
         }
-        
+        //post order , root is last, start as pivot
         int pivot = inorder.size()-1;
+        //takes as the arguments the left and right boundaries for the current subtree in the inorder traversal.
         return traverse(inorder, postorder, 0, postorder.size()-1, pivot);
         
     }
