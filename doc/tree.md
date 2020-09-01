@@ -23,6 +23,7 @@
     - [Top Down](#top-down)
     - [Bottom Up](#bottom-up)
   - [Common Example](#common-example)
+    - [Sorted Array to BST](#sorted-array-to-bst)
     - [Symmetric](#symmetric)
     - [Count Univalue Subtrees](#count-univalue-subtrees)
     - [Lowest Common Ancestor of a Binary Tree](#lowest-common-ancestor-of-a-binary-tree)
@@ -32,6 +33,7 @@
     - [Valid sequence in Tree](#valid-sequence-in-tree)
     - [Pseudo-Palindromic Paths in a Binary Tree](#pseudo-palindromic-paths-in-a-binary-tree)
     - [lonely Node](#lonely-node)
+    - [Unique Binary Search Trees](#unique-binary-search-trees)
 - [Sub-Tree problems](#sub-tree-problems)
   - [SubTree of another](#subtree-of-another)
   - [SubTree prune and trim](#subtree-prune-and-trim)
@@ -44,6 +46,7 @@
     - [Re construct Tree from in-order and pre-order](#re-construct-tree-from-in-order-and-pre-order)
     - [Re construct Tree from in-order and post-order](#re-construct-tree-from-in-order-and-post-order)
   - [Serialize and Deserialize Binary Tree](#serialize-and-deserialize-binary-tree)
+    - [Find Duplicate Subtrees](#find-duplicate-subtrees)
 - [Traversal](#traversal-1)
   - [BFS](#bfs)
   - [DFS](#dfs)
@@ -700,6 +703,30 @@ Recursive in tree to accomplish something, may need help to record some paramete
 
 ## Common Example
 
+### Sorted Array to BST
+
+```CPP
+TreeNode* sortedArrayToBST(vector<int>& nums) {
+    if(nums.size()==0)
+        return NULL;
+    
+    return help(nums,0,nums.size()-1);;
+}
+
+TreeNode* help( vector<int>& nums,int start, int end){
+    if(start>end)
+        return NULL;
+    
+    int mid = start+(end-start)/2;
+    TreeNode* root =  new TreeNode(nums[mid]);
+    root->left = help(nums,start,mid-1);
+    root->right = help(nums,mid+1,end);
+    
+    return root;
+    
+}
+```
+
 ### Symmetric
 
 https://leetcode.com/problems/symmetric-tree/
@@ -1157,6 +1184,47 @@ void help(TreeNode* root, vector<int>& ret){
 }
 ```
 
+### Unique Binary Search Trees
+
+https://leetcode.com/problems/unique-binary-search-trees-ii/
+
+Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1 ... n.
+
+```CPP
+/*
+for root at i, the unique BST has left child as all unique BST between 1 to i-1, has right child as all unique BST between i+1 to n. And the overall results have root traverse from 1 to n. So this intuitively lead to a recursive solution.
+*/
+vector<TreeNode*> generateTrees(int n) {
+        vector<TreeNode*> ret;
+        if(n<1) 
+            return ret;
+        
+        return help(1,n);
+    }
+    
+    vector<TreeNode*> help(int start, int end){
+        vector<TreeNode*> ret;
+        if(start>end){
+            ret.push_back(NULL);
+            return ret;
+        }
+        for(int i=start;i<=end;i++){
+            
+            vector<TreeNode*> right = help(i+1,end);
+            vector<TreeNode*> left = help(start,i-1);
+            for(int r=0;r<right.size();r++){
+                for(int l=0;l<left.size();l++){
+                    TreeNode* root = new TreeNode(i);
+                    root->left = left[l];
+                    root->right = right[r];
+                    ret.push_back(root);
+                }
+            }
+        }
+        return ret;
+    }
+```
+
 
 
 # Sub-Tree problems
@@ -1561,6 +1629,41 @@ TreeNode* deserialize(string data) {
 }
 ```
 
+### Find Duplicate Subtrees 
+
+https://leetcode.com/problems/find-duplicate-subtrees/
+
+Given the root of a binary tree, return all duplicate subtrees.For each kind of duplicate subtrees, you only need to return the root node of any one of them.Two trees are duplicate if they have the same structure with the same node values.
+
+```CPP
+
+/*
+A unique sub-tree can be uniquely identified by its serialized string;
+using post order traversal we can gradualy collect all unique tree-serializations with their associated nodes, with 1 traversal;
+then you can see if there is any serialization is associated with more than 1 sub-tree nodes, then you know there is duplicated sub-tree nodes;
+*/
+
+
+unordered_map<string, vector<TreeNode*>> m;
+
+vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+    vector<TreeNode*> dups;
+    serialize(root);
+    for (auto it: m)
+        if (it.second.size() > 1) 
+            dups.push_back(it.second[0]);
+    return dups;
+}
+
+string serialize(TreeNode* node) {
+    if (!node) return "";
+    string s = "(" + serialize(node->left) + to_string(node->val) + serialize(node->right) + ")";
+    m[s].push_back(node);
+    return s;
+}
+```
+
+
 # Traversal
 
 ## BFS
@@ -1824,6 +1927,15 @@ Given a root node reference of a BST and a key, delete the node with the given k
 need to find the node first. after found the node, we need to deal with delete, it could be one leaf, so just delete, or in middle, so need to link other branch node 
 
 ```CPP
+
+/*
+
+1. If the target node has no child, we can simply remove the node.
+2. If the target node has one child, we can use its child to replace itself.
+3. If the target node has two children, replace the node with its in-order successor or predecessor node and delete that node.
+*/
+
+
 class Solution {
 public:
     TreeNode* deleteNode(TreeNode* root, int key) {

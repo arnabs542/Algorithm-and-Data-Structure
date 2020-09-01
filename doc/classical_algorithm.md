@@ -22,6 +22,7 @@
   - [Application](#application)
     - [Letter Combinations of a Phone Number](#letter-combinations-of-a-phone-number)
     - [Generate parentheses](#generate-parentheses)
+    - [Robot Room Cleaner](#robot-room-cleaner)
 - [Others](#others)
   - [BFPRT](#bfprt)
   - [Half Majority](#half-majority)
@@ -42,7 +43,8 @@
     - [Merge intervals](#merge-intervals)
     - [Remove intervals so that no overlap happen](#remove-intervals-so-that-no-overlap-happen)
     - [Interval Overlap](#interval-overlap)
-    - [Meeting Scheduler](#meeting-scheduler)
+      - [Meeting room](#meeting-room)
+      - [Meeting Scheduler](#meeting-scheduler)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1104,7 +1106,67 @@ public:
 };
 ```
 
+### Robot Room Cleaner
 
+https://leetcode.com/problems/robot-room-cleaner/
+
+Given a robot cleaner in a room modeled as a grid.Each cell in the grid can be empty or blocked.The robot cleaner with 4 given APIs can move forward, turn left or turn right. Each turn it made is 90 degrees.When it tries to move into a blocked cell, its bumper sensor detects the obstacle and it stays on the current cell.Design an algorithm to clean the entire room using only the 4 given APIs shown below.
+
+```
+interface Robot {
+  // returns true if next cell is open and robot moves into the cell.
+  // returns false if next cell is obstacle and robot stays on the current cell.
+  boolean move();
+
+  // Robot will stay on the same cell after calling turnLeft/turnRight.
+  // Each turn will be 90 degrees.
+  void turnLeft();
+  void turnRight();
+
+  // Clean the current cell.
+  void clean();
+}
+```
+
+```JAVA
+class Solution {
+// going clockwise : 0: 'up', 1: 'right', 2: 'down', 3: 'left'
+  int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+  Set<Pair<Integer, Integer>> visited = new HashSet();
+  Robot robot;
+
+  public void goBack() {
+    robot.turnRight();
+    robot.turnRight();
+    robot.move();
+    robot.turnRight();
+    robot.turnRight();
+  }
+
+  public void backtrack(int row, int col, int d) {
+    visited.add(new Pair(row, col));
+    robot.clean();
+    // going clockwise : 0: 'up', 1: 'right', 2: 'down', 3: 'left'
+    for (int i = 0; i < 4; ++i) {
+      int newD = (d + i) % 4;
+      int newRow = row + directions[newD][0];
+      int newCol = col + directions[newD][1];
+
+      if (!visited.contains(new Pair(newRow, newCol)) && robot.move()) {
+        backtrack(newRow, newCol, newD);
+        goBack();
+      }
+      // turn the robot following chosen direction : clockwise
+      robot.turnRight();
+    }
+  }
+
+  public void cleanRoom(Robot robot) {
+    this.robot = robot;
+    backtrack(0, 0, 0);
+  }
+}
+```
 
 
 # Others
@@ -1732,7 +1794,7 @@ int eraseOverlapIntervals(vector<Interval>& intervals) {
 
 * usually these questions looks like get some min/max for interval list considering intervals could overlap
 
-
+#### Meeting room
 
 https://leetcode.com/problems/meeting-rooms-ii/#/description
 Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
@@ -1771,7 +1833,7 @@ int minMeetingRooms(vector<Interval>& intervals) {
 
 ```
 
-### Meeting Scheduler
+#### Meeting Scheduler
 
 https://leetcode.com/problems/meeting-scheduler/
 
@@ -1844,6 +1906,7 @@ vector<int> minAvailableDuration(vector<vector<int>>& slots1, vector<vector<int>
     return {};
 }
 ```
+
 
 
 https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/#/description

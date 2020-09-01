@@ -5,6 +5,7 @@
 - [Array](#array)
 - [Heap and Stack](#heap-and-stack)
 - [String](#string)
+- [Hash Table](#hash-table)
 - [Link List](#link-list)
 - [Binary Search](#binary-search)
 - [Tree](#tree)
@@ -26,6 +27,9 @@
 # String
 [String](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/string.md)
 
+# Hash Table
+
+[Hash Table](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/hash.md)
 
 # Link List
 
@@ -41,7 +45,7 @@
 
 # Trie
 
-[Other Classical algorithms.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/Trie.md)
+[Trie](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/Trie.md)
 
 # DP
 

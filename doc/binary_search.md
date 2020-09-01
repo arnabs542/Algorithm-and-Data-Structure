@@ -13,12 +13,14 @@
       - [Find Left Boundary](#find-left-boundary)
       - [Find Right Boundary](#find-right-boundary)
     - [Example: first bad version](#example-first-bad-version)
-  - [Search Range/Cloest problem](#search-rangecloest-problem)
+  - [Other Binary Search Example](#other-binary-search-example)
     - [Find K Closest Elements](#find-k-closest-elements)
     - [Find First and Last Position of Element in Sorted Array](#find-first-and-last-position-of-element-in-sorted-array)
     - [Local Minimum](#local-minimum)
-    - [Example](#example)
-  - [Numerical(Square) Calculation](#numericalsquare-calculation)
+    - [Find Peak Element](#find-peak-element)
+  - [Square Calculation](#square-calculation)
+    - [Find K-th Smallest Pair Distance](#find-k-th-smallest-pair-distance)
+    - [Median of Two Sorted Arrays](#median-of-two-sorted-arrays)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -197,7 +199,7 @@ int firstBadVersion(int n) {
 }
 ```
 
-## Search Range/Cloest problem
+## Other Binary Search Example
 
 ### Find K Closest Elements
 
@@ -337,7 +339,7 @@ int localMin(vector<int> nums){
 }
 ```
 
-### Example
+### Find Peak Element
 
 https://leetcode.com/problems/find-peak-element/
 
@@ -384,7 +386,7 @@ int findPeakElement(vector<int>& nums) {
 ```
 
 
-## Numerical(Square) Calculation
+## Square Calculation
 https://leetcode.com/problems/sum-of-square-numbers/#/description
 
 Given a non-negative integer c, your task is to decide whether there're two integers a and b such that a2 + b2 = c.
@@ -416,3 +418,162 @@ bool judgeSquareSum(int c) {
     return false;
 }
 ```
+
+### Find K-th Smallest Pair Distance
+
+https://leetcode.com/problems/find-k-th-smallest-pair-distance/
+
+Given an integer array, return the k-th smallest distance among all the pairs. The distance of a pair (A, B) is defined as the absolute difference between A and B.
+
+```
+Example 1:
+Input:
+nums = [1,3,1]
+k = 1
+Output: 0 
+Explanation:
+Here are all the pairs:
+(1,3) -> 2
+(1,1) -> 0
+(3,1) -> 2
+Then the 1st smallest distance pair is (1,1), and its distance is 0.
+```
+
+```CPP
+int smallestDistancePair(vector<int>& nums, int k) {
+    sort(nums.begin(), nums.end());
+    //lowest distance
+    
+    int low = INT_MAX;
+    int len = nums.size();
+    for(int i=0;i<len-1;i++){
+        low = min(low, nums[i+1]-nums[i]);
+    }
+    //highest distance from end - start
+    int high = nums[len - 1] - nums[0];
+    
+    //calculate how many pairs
+    while(low<high){
+        int mid = low + (high - low) / 2;
+        if (countDistance(nums, mid, len) < k)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    
+    return low;
+   
+}
+
+//how many pairs with distance <= pivot
+int countDistance(vector<int>& nums, int pivot, int len){
+    int res = 0;
+    for (int i = 0; i < len; ++i) {
+        int j = i;
+        while (j < len && nums[j] - nums[i] <= pivot) 
+            j++;
+        res += j - i - 1;
+    }
+    return res;
+    
+}
+```
+
+quicker way
+
+```CPP
+int smallestDistancePair(vector<int>& nums, int k) {
+    sort(nums.begin(),nums.end());
+    
+    //For every possible right, we maintain the loop invariant: left is the smallest value such that nums[right] - nums[left] <= guess. Then, the number of pairs with right as it's right-most endpoint is right - left, and we add all of these up.
+
+    int lo = 0;
+    int hi = nums[nums.size() - 1] - nums[0];
+    while (lo < hi) {
+        int mid = lo + (hi-lo) / 2;
+        int count = 0, left = 0;
+        for (int right = 0; right < nums.size(); ++right) {
+            while (nums[right] - nums[left] > mid) 
+                left++;
+            count += right - left;
+        }
+        //count = number of pairs with distance <= mi
+        if (count >= k) 
+            hi = mid;
+        else 
+            lo = mid + 1;
+    }
+    return lo;
+   
+}
+```
+
+
+
+### Median of Two Sorted Arrays
+
+https://leetcode.com/problems/median-of-two-sorted-arrays/
+
+Given two sorted arrays nums1 and nums2 of size m and n respectively.
+Return the median of the two sorted arrays. Follow up: The overall run time complexity should be O(log (m+n)).
+
+ 
+```
+Example 1:
+
+Input: nums1 = [1,3], nums2 = [2]
+Output: 2.00000
+Explanation: merged array = [1,2,3] and median is 2.
+Example 2:
+
+Input: nums1 = [1,2], nums2 = [3,4]
+Output: 2.50000
+Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
+Example 3:
+
+Input: nums1 = [0,0], nums2 = [0,0]
+Output: 0.00000
+Example 4:
+
+Input: nums1 = [], nums2 = [1]
+Output: 1.00000
+Example 5:
+
+Input: nums1 = [2], nums2 = []
+Output: 2.00000
+```
+
+```CPP
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int m = nums1.size(), n = nums2.size();
+        int k = (m + n) / 2;
+        int num1 = findKth(nums1, 0, m, nums2, 0, n, k + 1);
+        if ((n + m) % 2 == 0)
+        {
+            int num2 = findKth(nums1, 0, m, nums2, 0, n, k);
+            return (num1 + num2) / 2.0;
+        }
+        else return num1;
+    }
+    int findKth(vector<int> & nums1, int nums1_left, int nums1_right, vector<int>& nums2, int nums2_left, int nums2_right, int k)
+    {
+        int m = nums1_right - nums1_left;
+        int n = nums2_right - nums2_left;
+        if (m > n) return findKth(nums2, nums2_left, nums2_right, nums1, nums1_left, nums1_right, k);
+        else if (m == 0)
+            return nums2[nums2_left + k - 1];
+        else if (k == 1)
+            return min(nums1[nums1_left], nums2[nums2_left]);
+        else {
+            int s1LeftCount = min (k / 2, m);
+            int s2LeftCount = k - s1LeftCount;
+            if (nums1[nums1_left + s1LeftCount - 1] == nums2[nums2_left + s2LeftCount - 1])
+                return nums1[nums1_left + s1LeftCount - 1];
+            else if (nums1[nums1_left + s1LeftCount - 1] < nums2[nums2_left + s2LeftCount - 1])
+                return findKth(nums1, nums1_left + s1LeftCount, nums1_right, nums2, nums2_left, nums2_right, k - s1LeftCount);
+            else
+            return findKth(nums1, nums1_left, nums1_right, nums2, nums2_left + s2LeftCount, nums2_right, k - s2LeftCount);
+        }
+    }
+```
+
