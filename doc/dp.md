@@ -17,14 +17,15 @@
   - [Longest common substring](#longest-common-substring)
 - [Sub Array/Sequence Pattern](#sub-arraysequence-pattern)
   - [Number of increasing Subarray/subsequence](#number-of-increasing-subarraysubsequence)
-  - [Split Array Largest Sum](#split-array-largest-sum)
   - [Target Sum](#target-sum-1)
 - [Lowest cost to convert one string to another](#lowest-cost-to-convert-one-string-to-another)
 - [Interleaving String](#interleaving-string)
 - [Back Pack(0/1 Knapsack) Problem](#back-pack01-knapsack-problem)
   - [Problem Statement](#problem-statement)
   - [backpack Problem](#backpack-problem)
-  - [Array Split problems](#array-split-problems)
+- [Array Split problems](#array-split-problems)
+  - [Split Array Largest Sum](#split-array-largest-sum)
+  - [Split array equal sum](#split-array-equal-sum)
   - [Coin Exchange](#coin-exchange)
 - [Poker Game/Cards in line](#poker-gamecards-in-line)
 - [digit number to letter str(decode-ways problem)](#digit-number-to-letter-strdecode-ways-problem)
@@ -48,6 +49,12 @@
 > * memorize the intermidate results in recursive way to reduce the run time calculation
 
 > * Translate to DP
+
+> * Problem suitable for DP
+
+non-aftereffect property. We can try to use dynamic programming to solve it.
+
+The non-aftereffect property means, once the state of a certain stage is determined, it is not affected by the state in the future. In this problem, if we get the largest subarray sum for splitting nums[0..i] into j parts, this value will not be affected by how we split the remaining part of nums.
 
 ## DFS to DP
 
@@ -344,6 +351,8 @@ int LCS(string s1, string s2){
     dp[0][j] = max(dp[0][j - 1], s1[0] == s2[j] ? 1 : 0);
   }
 
+  //dp[i][j] is longest common sub sequence until s1[0:i] and s2[0:j]
+
   for (int i = 1; i < len1; i++) {
     for (int j = 1; j < len2; j++) {
       dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
@@ -492,64 +501,7 @@ int numberOfArithmeticSlices(vector<int>& A) {
 }
 ```
 
-### Split Array Largest Sum
 
-https://leetcode.com/problems/split-array-largest-sum/
-
-
-Given an array nums which consists of non-negative integers and an integer m, you can split the array into m non-empty continuous subarrays.
-
-Write an algorithm to minimize the largest sum among these m subarrays.
-
- 
-```
-Example 1:
-
-Input: nums = [7,2,5,10,8], m = 2
-Output: 18
-Explanation:
-There are four ways to split nums into two subarrays.
-The best way is to split it into [7,2,5] and [10,8],
-where the largest sum among the two subarrays is only 18.
-Example 2:
-
-Input: nums = [1,2,3,4,5], m = 2
-Output: 9
-Example 3:
-
-Input: nums = [1,4,4], m = 3
-Output: 4
-```
-
-```CPP
-int splitArray(vector<int>& nums, int m) {
-    /***
-        The problem satisfies the non-aftereffect property. We can try to use dynamic programming to solve it.
-
-The non-aftereffect property means, once the state of a certain stage is determined, it is not affected by the state in the future. In this problem, if we get the largest subarray sum for splitting nums[0..i] into j parts, this value will not be affected by how we split the remaining part of nums.
-**/
-
-    
-    //f[i][j] to be the minimum largest subarray sum for splitting nums[0..i] into j parts.
-    
-    int n = nums.size();
-    vector<vector<int>> f(n + 1, vector<int>(m + 1, INT_MAX));
-    vector<int> sub(n + 1, 0);
-    for (int i = 0; i < n; i++) {
-        sub[i + 1] = sub[i] + nums[i];
-    }
-    f[0][0] = 0;
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            for (int k = 0; k < i; k++) {
-                f[i][j] = min(f[i][j], max(f[k][j - 1], sub[i] - sub[k]));
-            }
-        }
-    }
-    return f[n][m];
-    
-}
-```
 
 ### Target Sum 
 
@@ -772,7 +724,70 @@ http://www.lintcode.com/en/problem/backpack-ii/
 	}
 ```
 
-### Array Split problems
+## Array Split problems
+
+
+### Split Array Largest Sum
+
+https://leetcode.com/problems/split-array-largest-sum/
+
+
+Given an array nums which consists of non-negative integers and an integer m, you can split the array into m non-empty continuous subarrays.
+
+Write an algorithm to minimize the largest sum among these m subarrays.
+
+ 
+```
+Example 1:
+
+Input: nums = [7,2,5,10,8], m = 2
+Output: 18
+Explanation:
+There are four ways to split nums into two subarrays.
+The best way is to split it into [7,2,5] and [10,8],
+where the largest sum among the two subarrays is only 18.
+Example 2:
+
+Input: nums = [1,2,3,4,5], m = 2
+Output: 9
+Example 3:
+
+Input: nums = [1,4,4], m = 3
+Output: 4
+```
+
+```CPP
+int splitArray(vector<int>& nums, int m) {
+    /***
+        The problem satisfies the non-aftereffect property. We can try to use dynamic programming to solve it.
+
+The non-aftereffect property means, once the state of a certain stage is determined, it is not affected by the state in the future. In this problem, if we get the largest subarray sum for splitting nums[0..i] into j parts, this value will not be affected by how we split the remaining part of nums.
+**/
+
+    
+    //f[i][j] to be the minimum largest subarray sum for splitting nums[0..i] into j parts.
+    
+    int n = nums.size();
+    vector<vector<int>> f(n + 1, vector<int>(m + 1, INT_MAX));
+    vector<int> sub(n + 1, 0);
+    for (int i = 0; i < n; i++) {
+        sub[i + 1] = sub[i] + nums[i];
+    }
+    f[0][0] = 0;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            for (int k = 0; k < i; k++) {
+                f[i][j] = min(f[i][j], max(f[k][j - 1], sub[i] - sub[k]));
+            }
+        }
+    }
+    return f[n][m];
+    
+}
+```
+
+### Split array equal sum
+
 https://leetcode.com/problems/partition-equal-subset-sum/#/description
 Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
 
