@@ -14,6 +14,7 @@
 - [Big data](#big-data)
 - [Graph](#graph)
 - [Classical Algorithm](#classical-algorithm)
+- [Design](#design)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -59,4 +60,9 @@
 
 # Classical Algorithm
 
-[Other Classical algorithms.](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
+[Other Classical algorithms](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/classical_algorithm.md)
+
+
+# Design
+
+[Design](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/design.md)

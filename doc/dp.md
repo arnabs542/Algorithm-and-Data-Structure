@@ -1024,7 +1024,8 @@ int numDecodings(string s) {
 
 ## sum of logic calculation to certain target, express ways
 
-Given a array with 1 and 0 and logic symbol(&,|,^), calculate how many ways to get the desired value
+Given a array with 1 and 0 and logic symbol(&,|,^), calculate how many ways to get the desired value.
+
 
 ```CPP
 //Recursive

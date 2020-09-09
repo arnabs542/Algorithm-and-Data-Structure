@@ -7,6 +7,7 @@
   - [Example:](#example)
     - [Add and Search Word](#add-and-search-word)
     - [Search Suggestions System](#search-suggestions-system)
+    - [Map Sum Pairs](#map-sum-pairs)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -189,3 +190,76 @@ public:
 };
 ```
 
+### Map Sum Pairs
+
+https://leetcode.com/problems/map-sum-pairs/
+
+Implement a MapSum class with insert, and sum methods.
+
+For the method insert, you'll be given a pair of (string, integer). The string represents the key and the integer represents the value. If the key already existed, then the original key-value pair will be overridden to the new one.
+
+For the method sum, you'll be given a string representing the prefix, and you need to return the sum of all the pairs' value whose key starts with the prefix.
+
+```
+Example 1:
+Input: insert("apple", 3), Output: Null
+Input: sum("ap"), Output: 3
+Input: insert("app", 2), Output: Null
+Input: sum("ap"), Output: 5
+```
+
+```CPP
+class MapSum {
+private:
+    struct TrieNode{
+        int val = 0;
+        struct TrieNode * child[26];
+    };
+    
+public:
+    /** Initialize your data structure here. */
+    TrieNode* root;
+    
+    MapSum() {
+        root = new TrieNode();
+    }
+    
+    void insert(string key, int val) {
+        TrieNode* p = root;
+        for(int i=0;i<key.size();i++){
+            int pos = key[i]-'a';
+            if(p->child[pos]==NULL){
+                p->child[pos] = new TrieNode();
+            }
+            p=p->child[pos];
+        }
+        p->val = val;
+    }
+    
+    int sum(string prefix) {
+        int ret = 0;
+        
+        TrieNode* p = root;
+        for(int i=0;i<prefix.size();i++){
+            int pos = prefix[i]-'a';
+            if(p->child[pos]==NULL)
+                return ret;
+            p=p->child[pos];
+        }
+        //contine to all leaf
+        help(p, ret);
+        return ret;
+    }
+    
+    void help(TrieNode* cur, int& sum){
+
+        sum+=cur->val;
+        
+        for(int i=0;i<26;i++){
+            if(cur->child[i]!=NULL){
+                help(cur->child[i], sum);
+            }
+        }
+    }
+};
+```
