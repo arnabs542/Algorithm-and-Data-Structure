@@ -7,6 +7,7 @@
     - [In array](#in-array)
     - [In stream](#in-stream)
     - [In Matrix](#in-matrix)
+    - [Merge/Order List/Vector](#mergeorder-listvector)
   - [Search in sorted list of vectors](#search-in-sorted-list-of-vectors)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
@@ -253,6 +254,65 @@ public:
 };
 
 /* complexity will be K*log(Row) */
+```
+### Merge/Order List/Vector
+
+https://leetcode.com/problems/merge-k-sorted-lists/
+
+You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+
+Merge all the linked-lists into one sorted linked-list and return it.
+
+ 
+```
+Example 1:
+
+Input: lists = [[1,4,5],[1,3,4],[2,6]]
+Output: [1,1,2,3,4,4,5,6]
+Explanation: The linked-lists are:
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+merging them into one sorted list:
+1->1->2->3->4->4->5->6
+```
+
+```CPP
+class Solution {
+public:
+    struct mycompare{
+        bool operator()(ListNode* a, ListNode* b){
+            return a->val>b->val;
+        }
+    };
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode* ret = NULL;
+
+        //construct min heap
+        priority_queue<ListNode*, vector<ListNode*>, mycompare> pq; 
+        ListNode* dummy = new ListNode(0);
+        ListNode* head = dummy;
+        for(int i=0; i<lists.size(); i++){ 
+            if(lists[i]){ 
+                pq.push(lists[i]);
+            }
+        }
+
+        while(!pq.empty()){
+            head->next = pq.top();
+            head = head->next;
+            if(head->next)
+                pq.push(head->next);
+            pq.pop();
+        }
+        
+        return dummy->next;
+        
+    }
+};
 ```
 
 ## Search in sorted list of vectors

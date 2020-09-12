@@ -6,7 +6,7 @@
 - [Heap and Stack](#heap-and-stack)
 - [String](#string)
 - [Hash Table](#hash-table)
-- [Link List](#link-list)
+- [List](#list)
 - [Binary Search](#binary-search)
 - [Tree](#tree)
 - [Trie](#trie)
@@ -32,9 +32,9 @@
 
 [Hash Table](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/hash.md)
 
-# Link List
+# List
 
-[Linked List Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/list.md)
+[List Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/list.md)
 
 # Binary Search
 

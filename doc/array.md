@@ -13,6 +13,7 @@
     - [Merge array](#merge-array)
     - [Replace Elements with Greatest Element on Right Side](#replace-elements-with-greatest-element-on-right-side)
     - [Max consecutive Ones](#max-consecutive-ones)
+    - [Read buffer from Read4](#read-buffer-from-read4)
 - [Sub Array](#sub-array)
   - [Common Tchnqiues](#common-tchnqiues)
   - [Sub Array Sum](#sub-array-sum)
@@ -347,6 +348,61 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
     
     return ret;
 }
+```
+
+### Read buffer from Read4
+
+https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
+
+Given a file and assume that you can only read the file using a given method read4, implement a method read to read n characters. Your method read may be called multiple times.
+
+ 
+```
+Method read4:
+
+The API read4 reads 4 consecutive characters from the file, then writes those characters into the buffer array buf.
+
+The return value is the number of actual characters read.
+
+Note that read4() has its own file pointer, much like FILE *fp in C.
+
+Definition of read4:
+
+    Parameter:  char[] buf4
+    Returns:    int
+
+Note: buf4[] is destination not source, the results from read4 will be copied to buf4[]
+```
+
+```CPP
+class Solution {
+public:
+    /**
+     * @param buf Destination buffer
+     * @param n   Number of characters to read
+     * @return    The number of actual characters read
+     */
+    //read from read4 first, if it is all consumed, then start a new read4 again
+    char buf4[4];
+    int prevSize = 0, prevIndex = 0;
+    int read(char *buf, int n) {
+        int counter = 0;
+        
+        while (counter < n) {
+            if (prevIndex < prevSize) {
+                buf[counter++] = buf4[prevIndex++];
+            } else {
+                prevSize = read4(buf4);
+                prevIndex = 0;
+                if (prevSize == 0) {
+                    // no more data to consume from stream
+                    break;
+                }
+            }
+        }
+        return counter;
+    }
+};
 ```
 
 

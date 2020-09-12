@@ -315,82 +315,87 @@ Note that duplicates may exist in the Skiplist, your code needs to handle this s
 //The right pointer point to the node in the same level but bigger than this. And the down pointer point to the node in the next level with the same value.
 
 struct Node {
-    Node *right, *down;
+    Node *right;
+    Node *down;
     int val;
     Node(Node *right, Node *down, int val): right(right), down(down), val(val) {}
 };
 
 class Skiplist {
     Node* head;
+    //each node contains an array (representing the nodes above) with pointers to later nodes
+    vector<Node*> next;
     
 public:
     Skiplist() { 
-        head = new Node(NULL, NULL, 0); 
+        head = new Node(NULL,NULL, 0);
     }
-
-    vector<Node*> insertPoints;
 
     bool search(int num) {
         Node *p = head;
         while(p) {
-            //go right until over shot
-            while(p->right and p->right->val < num) {
-              p = p->right;
+            while(p->right && p->right->val < num) {
+               p = p->right; 
             }
-            //then go down
-            if(!p->right or p->right->val > num) {
-              p = p->down;
+            if(!p->right || p->right->val > num) {
+                p = p->down;
+            } else {
+               return true; 
             }
-            else {
-              return true;
-            }
+                
         }
         return false;
     }
 
     void add(int num) {
-        insertPoints.clear();
+        next.clear();
         Node *p = head;
         while(p) {
-            while(p->right and p->right->val < num) {
-              p = p->right;
-            }
-            insertPoints.push_back(p);
+            while(p->right && p->right->val < num) 
+                p = p->right;
+            next.push_back(p);
             p = p->down;
         }
 
         Node* downNode = NULL;
+        //not all higher levels need to insert, flip coin to decide
         bool insertUp = true;
-        while(insertUp and insertPoints.size()) {
-            Node *ins = insertPoints.back();
-            insertPoints.pop_back();
-
+        while(insertUp && next.size()) {
+            Node *ins = next.back();
+            next.pop_back();
+            //first insert will be current lowest level , so no down node
             ins->right = new Node(ins->right, downNode, num);
+            //mark down node to be current insert node
             downNode = ins->right;
 
             insertUp = (rand() & 1) == 0;
         }
+        //add a level
         if(insertUp) {
             head = new Node(new Node(NULL, downNode, num), head, 0);
         }
     }
-    
 
     bool erase(int num) {
         Node *p = head;
         bool seen = false;
         while(p) {
-            while(p->right and p->right->val < num) p = p->right;
-            if(!p->right or p->right->val > num) p = p->down;
+            while(p->right && p->right->val < num) 
+                p = p->right;
+            if(!p->right || p->right->val > num) 
+                p = p->down;
             else {
                 seen = true;
+                Node* toRemove = p->right;
                 p->right = p->right->right;
                 p = p->down;
+                delete toRemove;
             }
         }
         return seen;
     }
 };
+
 ```
 
 
