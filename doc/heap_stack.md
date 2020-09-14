@@ -41,7 +41,6 @@
       - [Max Rectangle](#max-rectangle)
   - [Largest Area](#largest-area)
     - [Trap Rain water](#trap-rain-water)
-    - [Trap Rain Water](#trap-rain-water)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1757,8 +1756,6 @@ int getRectanglesize(vector<int>& histogram){
 ## Largest Area
 
 ### Trap Rain water
-
-### Trap Rain Water
 
 https://leetcode.com/problems/trapping-rain-water/
 
