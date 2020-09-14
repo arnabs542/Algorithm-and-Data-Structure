@@ -1712,7 +1712,7 @@ int largestRectangleArea(vector<int>& heights) {
     heights.push_back(0); //no run time error.
     stack<int> index;
     for(int i=0;i<heights.size();i++){
-        //we are not in continous height increase anymore, need to cal back all area  
+        //we are not in continous height increase anymore, need to cal back all area until bar<current one 
         while(index.size()>0 && heights[index.top()] >= heights[i]){
             int h = heights[index.top()];
             index.pop();
