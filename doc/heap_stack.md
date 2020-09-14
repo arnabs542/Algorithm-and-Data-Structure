@@ -38,8 +38,9 @@
         - [Daily Temperature](#daily-temperature)
       - [Minimum Cost Tree From Leaf Values](#minimum-cost-tree-from-leaf-values)
     - [Max tree](#max-tree)
-      - [Max Rectangle](#max-rectangle)
   - [Largest Area](#largest-area)
+    - [Largest Rectangle in Histogram](#largest-rectangle-in-histogram)
+    - [Max Rectangle(histogram approach)](#max-rectanglehistogram-approach)
     - [Trap Rain water](#trap-rain-water)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -1691,7 +1692,41 @@ TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
 ```
 
 
-#### Max Rectangle
+
+
+## Largest Area
+
+### Largest Rectangle in Histogram
+
+https://leetcode.com/problems/largest-rectangle-in-histogram/
+
+Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.
+
+```CPP
+int largestRectangleArea(vector<int>& heights) {
+    //use a stack to track the index
+    // push index if height[index] > height[top],
+    //stack only has increasing height's index
+    
+    int ret = 0;
+    heights.push_back(0); //no run time error.
+    stack<int> index;
+    for(int i=0;i<heights.size();i++){
+        //we are not in continous height increase anymore, need to cal back all area  
+        while(index.size()>0 && heights[index.top()] >= heights[i]){
+            int h = heights[index.top()];
+            index.pop();
+            int left = index.size() > 0 ? index.top() : -1;
+            int area = (i-1-left)*h;
+            ret = ret>area?ret:area;
+        }
+        index.push(i);
+    }
+    return ret;
+}
+```
+
+### Max Rectangle(histogram approach)
 
 * [Max rectangle in matrix](https://leetcode.com/problems/maximal-rectangle)
 
@@ -1728,6 +1763,7 @@ int getRectanglesize(vector<int>& histogram){
     stack<int> s; //need to have monotonic decreasing stack, record index
     int max_size = 0;
     int left, right, height, cur_size;
+    //for each current bar in histogram, get all bars in stack> current bar
     for(int i=0;i<histogram.size();i++){
       while(!s.empty() && histogram[i]<= histogram[s.top()]){
         height = histogram[s.top()];
@@ -1752,8 +1788,6 @@ int getRectanglesize(vector<int>& histogram){
 }
 
 ```
-
-## Largest Area
 
 ### Trap Rain water
 
