@@ -25,7 +25,7 @@
   - [Stack To minic function call](#stack-to-minic-function-call)
   - [Other Stack Problem](#other-stack-problem)
     - [132 pattern](#132-pattern)
-- [Max/Min in Sub array: Monotonic stack or Deque](#maxmin-in-sub-array-monotonic-stack-or-deque)
+- [Monotonic stack/Deque](#monotonic-stackdeque)
   - [Dequeue: Update Largest/Smallest value in sliding window](#dequeue-update-largestsmallest-value-in-sliding-window)
     - [Example: Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit](#example-longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit)
   - [Monotonic stack](#monotonic-stack)
@@ -39,7 +39,9 @@
       - [Minimum Cost Tree From Leaf Values](#minimum-cost-tree-from-leaf-values)
     - [Max tree](#max-tree)
       - [Max Rectangle](#max-rectangle)
-  - [Circular Buffer](#circular-buffer)
+  - [Largest Area](#largest-area)
+    - [Trap Rain water](#trap-rain-water)
+    - [Trap Rain Water](#trap-rain-water)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1139,7 +1141,7 @@ bool find132pattern(vector<int>& nums) {
 
 ```
 
-# Max/Min in Sub array: Monotonic stack or Deque
+# Monotonic stack/Deque
 
 
 ## Dequeue: Update Largest/Smallest value in sliding window
@@ -1752,77 +1754,53 @@ int getRectanglesize(vector<int>& histogram){
 
 ```
 
-## Circular Buffer
+## Largest Area
 
-https://leetcode.com/problems/design-circular-queue/
+### Trap Rain water
+
+### Trap Rain Water
+
+https://leetcode.com/problems/trapping-rain-water/
+
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
 
 ```CPP
-class MyCircularQueue {
-private:
-    vector<int> data;
-    int head;
-    int tail;
-    int size;
-public:
-    /** Initialize your data structure here. Set the size of the queue to be k. */
-    MyCircularQueue(int k) {
-        data.resize(k);
-        head = -1;
-        tail = -1;
-        size = k;
+//two pointer approach
+int trap(vector<int>& height) {
+    int l = 0, r = height.size()-1, level = 0, water = 0;
+    while (l < r) {
+        int lower = height[height[l] < height[r] ? l++ : r--];
+        level = max(level, lower);
+        water += level - lower;
     }
-    
-    /** Insert an element into the circular queue. Return true if the operation is successful. */
-    bool enQueue(int value) {
-        if (isFull()) {
-            return false;
+    return water;
+}
+```
+
+Another solution is to use monotonic stack, We add the index of the bar to the stack if bar is smaller than or equal to the bar at top of stack, which means that the current bar is bounded by the previous bar in the stack(monotonic increasing stack). If we found a bar longer than that at the top, we are sure that the bar at the top of the stack is bounded by the current bar and a previous bar in the stack, hence, we can pop it and add resulting trapped water to \text{ans}ans.
+
+```CPP
+int trap(vector<int>& height) {
+        int ret = 0;
+
+        stack<int> s;   //record current highest bar index, highest bar in bottom
+        s.push(0);
+        
+        
+        for(int i=1;i<height.size();i++){
+            //current height is higher than stack top, so we get a potential container
+            while(!s.empty() && height[i]>height[s.top()]){
+                int top = s.top();
+                s.pop();
+                if(s.empty())
+                    break;
+                int dis = i-s.top()-1; //this top is higher than pop out top
+                int h = min(height[i],height[s.top()]) - height[top];
+                ret += dis*h;
+            }
+            s.push(i);
         }
-        if (isEmpty()) {
-            head = 0;
-        }
-        tail = (tail + 1) % size;
-        data[tail] = value;
-        return true;
+        
+        return ret;
     }
-    
-    /** Delete an element from the circular queue. Return true if the operation is successful. */
-    bool deQueue() {
-        if (isEmpty()) {
-            return false;
-        }
-        if (head == tail) {
-            head = -1;
-            tail = -1;
-            return true;
-        }
-        head = (head + 1) % size;
-        return true;
-    }
-    
-    /** Get the front item from the queue. */
-    int Front() {
-        if (isEmpty()) {
-            return -1;
-        }
-        return data[head];
-    }
-    
-    /** Get the last item from the queue. */
-    int Rear() {
-        if (isEmpty()) {
-            return -1;
-        }
-        return data[tail];
-    }
-    
-    /** Checks whether the circular queue is empty or not. */
-    bool isEmpty() {
-        return head == -1;
-    }
-    
-    /** Checks whether the circular queue is full or not. */
-    bool isFull() {
-        return ((tail + 1) % size) == head;
-    }
-};
 ```
