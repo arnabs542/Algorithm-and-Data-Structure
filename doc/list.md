@@ -9,6 +9,8 @@
     - [A naïve (but common) implementation](#a-na%C3%AFve-but-common-implementation)
     - [Improved Version](#improved-version)
   - [Applications](#applications)
+  - [Redis Sorted Set](#redis-sorted-set)
+    - [Source code](#source-code)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -397,5 +399,26 @@ public:
 };
 
 ```
+
+## Redis Sorted Set
+
+How is the Redis sorted set implemented?
+Redis provides a data structure called “sorted sets” which are,
+
+* similarly to Redis Sets, non repeating collections of Strings. The difference is that every member of a Sorted Set is associated with a score, that is used in order to take the sorted set ordered, from the smallest to the greatest score. While members are unique, scores may be repeated.
+
+I was curious what data structure Redis sorted sets used, since they allow efficient ordering of the set members on two different orderings: lexicographically, and by associated score.
+
+Looking at the source, we find that there is no fundamentally new data structure; only two old ones: a hash table and a skip list.
+
+* ZSETs are ordered sets using two data structures to hold the same elements in order to get O(log(N)) INSERT and REMOVE operations into a sorted data structure. The elements are added to a hash table mapping Redis objects to scores. At the same time the elements are added to a skip list mapping scores to Redis objects (so objects are sorted by scores in this “view”).
+
+** HashMap: Map redis Object to Score
+** Skip List: same item added into Skip List to maintain order
+
+
+### Source code
+
+https://github.com/redis/redis/blob/unstable/src/t_zset.c
 
 

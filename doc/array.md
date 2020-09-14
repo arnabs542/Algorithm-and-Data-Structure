@@ -46,6 +46,8 @@
   - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
 - [Histogram](#histogram)
   - [Water container problem](#water-container-problem)
+    - [container with most water](#container-with-most-water)
+    - [Trap Rain Water](#trap-rain-water)
   - [Array Change problem](#array-change-problem)
     - [Make nums inside array even](#make-nums-inside-array-even)
 
@@ -560,7 +562,7 @@ public:
                 l = min(l,i-m[sum-target]);
             }
             
-            //check  sub array from i+1 -> right
+            //if left subarray is found, check  sub array from i+1 -> right
             if(m.find(sum+target)!=m.end() && l<INT_MAX){
                 ret = min(ret, l+m[sum+target]-i);
             }
@@ -1484,6 +1486,84 @@ public:
 Histogram problem includes like water container, max rectangle. etc.
 
 ## Water container problem
+
+### container with most water
+
+https://leetcode.com/problems/container-with-most-water/
+
+Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+
+```CPP
+    int maxArea(vector<int>& height) {
+        int l = 0;
+        int r = height.size()-1;
+        int ret = 0;
+        
+        while(l<r){
+            int min_h = min(height[l],height[r]);
+            int area = min_h*(r-l);
+            ret = max(ret,area);
+
+            //check from both side, skip if lower than current bar
+            while(height[l]<=min_h && l<r)
+                l++;
+            while(height[r]<=min_h && l<r)
+                r--;
+            
+        }
+        
+        return ret;
+    }
+```
+
+### Trap Rain Water
+
+https://leetcode.com/problems/trapping-rain-water/
+
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
+
+```CPP
+//two pointer approach
+int trap(vector<int>& height) {
+    int l = 0, r = height.size()-1, level = 0, water = 0;
+    while (l < r) {
+        int lower = height[height[l] < height[r] ? l++ : r--];
+        level = max(level, lower);
+        water += level - lower;
+    }
+    return water;
+}
+```
+
+Another solution is to use monotonic stack, We add the index of the bar to the stack if bar is smaller than or equal to the bar at top of stack, which means that the current bar is bounded by the previous bar in the stack(monotonic increasing stack). If we found a bar longer than that at the top, we are sure that the bar at the top of the stack is bounded by the current bar and a previous bar in the stack, hence, we can pop it and add resulting trapped water to \text{ans}ans.
+
+```CPP
+int trap(vector<int>& height) {
+        int ret = 0;
+
+        stack<int> s;   //record current highest bar index, highest bar in bottom
+        s.push(0);
+        
+        
+        for(int i=1;i<height.size();i++){
+            //current height is higher than stack top, so we get a potential container
+            while(!s.empty() && height[i]>height[s.top()]){
+                int top = s.top();
+                s.pop();
+                if(s.empty())
+                    break;
+                int dis = i-s.top()-1; //this top is higher than pop out top
+                int h = min(height[i],height[s.top()]) - height[top];
+                ret += dis*h;
+            }
+            s.push(i);
+        }
+        
+        return ret;
+    }
+```
+
+
 
 ## Array Change problem
 
