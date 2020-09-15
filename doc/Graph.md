@@ -1057,8 +1057,8 @@ To better understand the above algorithm, we summarize a few points here:
 * Once we follow an edge, we then remove it from the graph.
 * With the removal of edges, there would more nodes appearing with indegree 0, in addition to the initial list in the first step.
 * The algorithm would terminate when we can no longer remove edges from the graph. There are two possible outcomes:
-** If there are still some edges left in the graph, then these edges must have formed certain cycles, which is similar to the deadlock situation. It is due to these cyclic dependencies that we cannot remove them during the above processes.
-** Otherwise, i.e. we have removed all the edges from the graph, and we got ourselves a topological order of the graph.
+-- If there are still some edges left in the graph, then these edges must have formed certain cycles, which is similar to the deadlock situation. It is due to these cyclic dependencies that we cannot remove them during the above processes.
+-- Otherwise, i.e. we have removed all the edges from the graph, and we got ourselves a topological order of the graph.
 
 
 ## DFS
