@@ -28,8 +28,12 @@
     - [Friends Circle](#friends-circle)
     - [Graph Valid Tree](#graph-valid-tree)
 - [Topological Sort](#topological-sort)
+    - [Detect Circle via Topo Sort](#detect-circle-via-topo-sort)
   - [DFS](#dfs-1)
   - [BFS](#bfs-1)
+  - [Example](#example)
+    - [Sequence Reconstruction](#sequence-reconstruction)
+    - [Course Schedule](#course-schedule)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1027,6 +1031,36 @@ Given an directed graph, a topological order of the graph nodes is defined as fo
 * The first node in the order can be any node in the graph with no nodes direct to it.
 Find any topological order for the given graph.
 
+### Detect Circle via Topo Sort
+
+```
+L = Empty list that will contain the sorted elements
+S = Set of all nodes with no incoming edge
+
+while S is non-empty do
+    remove a node n from S
+    add n to tail of L
+    for each node m with an edge e from n to m do
+        remove edge e from the graph
+        if m has no other incoming edges then
+            insert m into S
+
+if graph has edges then
+    return error   (graph has at least one cycle)
+else 
+    return L   (a topologically sorted order)
+```
+
+To better understand the above algorithm, we summarize a few points here:
+
+* In order to find a global order, we can start from those nodes  indegree of node is zero, we then incrementally add new nodes to the global order, following the dependencies (edges).
+* Once we follow an edge, we then remove it from the graph.
+* With the removal of edges, there would more nodes appearing with indegree 0, in addition to the initial list in the first step.
+* The algorithm would terminate when we can no longer remove edges from the graph. There are two possible outcomes:
+** If there are still some edges left in the graph, then these edges must have formed certain cycles, which is similar to the deadlock situation. It is due to these cyclic dependencies that we cannot remove them during the above processes.
+** Otherwise, i.e. we have removed all the edges from the graph, and we got ourselves a topological order of the graph.
+
+
 ## DFS
 https://www.youtube.com/watch?v=ddTC4Zovtbc
 
@@ -1076,46 +1110,7 @@ public:
 
 ```
 
-* Application: detect the loop
 
-There are a total of n courses you have to take, labeled from 0 to n - 1.
-Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
-Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
-For example:
-2, [[1,0]]
-There are a total of 2 courses to take. To take course 1 you should have finished course 0. So it is possible.
-2, [[1,0],[0,1]]
-There are a total of 2 courses to take. To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
-
-In DFS, the general idea, is to search each vertex in the graph recursively, if the current vertex has been visited in this search, then there must be a cycle. Be careful with the status of each vertex, here in my code, it has three states:  unvisited (=0), visited(=1), searching(=-1). The third states is to detect the existence of cycle, while the 2nd state indicate that the vertex is already checked and there is no cycle.
-
-```CPP
-bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
-		vector<vector<int>> matrix(numCourses);//convert to adjcent list based graph
-		for (int i = 0; i < prerequisites.size(); ++i)
-			matrix[prerequisites[i].second].push_back(prerequisites[i].first);
-
-		vector<int> flag(numCourses);
-		for (int i = 0; i < numCourses; ++i)
-			if (flag[i] != 1)
-				if (hasCycle(matrix, i, flag))
-					return false;
-		return true;
-	}
-
-	bool hasCycle(vector<vector<int>>& matrix, int i, vector<int>& flag) {
-		if (flag[i] == -1)
-			return true;
-		flag[i] = -1;  //mark temporary visit.
-		for (int j : matrix[i]) {
-			if (hasCycle(matrix, j, flag))
-				return true;
-		}
-		flag[i] = 1;  //explore current node and all its link, no cycle found
-		return false;
-	}
-
-```
 
 ## BFS
 The idea is come from wiki: https://en.wikipedia.org/wiki/Topological_sorting#Algorithms
@@ -1163,3 +1158,123 @@ vector<DirectedGraphNode*> topSort(vector<DirectedGraphNode*> graph) {
     }
 
 ```
+
+
+
+## Example
+
+### Sequence Reconstruction
+
+https://leetcode.com/problems/sequence-reconstruction/
+
+Check whether the original sequence org can be uniquely reconstructed from the sequences in seqs. The org sequence is a permutation of the integers from 1 to n, with 1 ≤ n ≤ 104. Reconstruction means building a shortest common supersequence of the sequences in seqs (i.e., a shortest sequence so that all sequences in seqs are subsequences of it). Determine whether there is only one sequence that can be reconstructed from seqs and it is the org sequence.
+
+ 
+```
+Example 1:
+
+Input: org = [1,2,3], seqs = [[1,2],[1,3]]
+Output: false
+Explanation: [1,2,3] is not the only one sequence that can be reconstructed, because [1,3,2] is also a valid sequence that can be reconstructed.
+Example 2:
+
+Input: org = [1,2,3], seqs = [[1,2]]
+Output: false
+Explanation: The reconstructed sequence can only be [1,2].
+Example 3:
+
+Input: org = [1,2,3], seqs = [[1,2],[1,3],[2,3]]
+Output: true
+Explanation: The sequences [1,2], [1,3], and [2,3] can uniquely reconstruct the original sequence [1,2,3].
+Example 4:
+
+Input: org = [4,1,5,2,6,3], seqs = [[5,2,6,3],[4,1,5,2]]
+Output: true
+```
+
+
+```CPP
+    bool sequenceReconstruction(vector<int>& org, vector<vector<int>>& seqs) {
+        if (seqs.size() == 0) return false;
+        int n = org.size(), count = 0;
+        unordered_map<int, unordered_set<int>> graph;   // record parents
+        vector<int> degree(n+1, 0); // record out degree
+        for (auto s : seqs) {   // build graph
+            for (int i = s.size()-1; i >= 0; --i) {
+                if (s[i] > n or s[i] < 0) 
+                    return false; // in case number in seqs is out of range 1-n
+                if (i > 0 and graph[s[i]].find(s[i-1])==graph[s[i]].end()) {
+                    graph[s[i]].insert(s[i-1]);
+                    if (degree[s[i-1]]++ == 0) count ++;
+                }
+            }
+        }
+        if (count != n-1) 
+            return false; // all nodes should have degree larger than 0 except the last one
+        for (int i = n-1; i >= 0; --i) {    // topological sort
+            if (degree[org[i]] > 0) return false;   // the last node should have 0 degree
+            for (auto p : graph[org[i]]) 
+                if (--degree[p] == 0 and p != org[i-1]) // found a node that is not supposed to have 0 degree
+                    return false;
+        }
+        return true;        
+    }
+```
+
+### Course Schedule
+
+https://leetcode.com/problems/course-schedule/
+
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses-1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+ 
+```
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: There are a total of 2 courses to take. 
+             To take course 1 you should have finished course 0. So it is possible.
+Example 2:
+
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: There are a total of 2 courses to take. 
+             To take course 1 you should have finished course 0, and to take course 0 you should
+             also have finished course 1. So it is impossible.
+```
+
+```CPP
+    bool sequenceReconstruction(vector<int>& org, vector<vector<int>>& seqs) {
+        if (seqs.size() == 0) return false;
+        int n = org.size(), count = 0;
+        unordered_map<int, unordered_set<int>> graph;   // record parents
+        vector<int> degree(n+1, 0); // record out degree
+        for (auto s : seqs) {   // build graph
+            for (int i = s.size()-1; i >= 0; --i) {
+                if (s[i] > n or s[i] < 0) 
+                    return false; // in case number in seqs is out of range 1-n
+                if (i > 0 and graph[s[i]].find(s[i-1])==graph[s[i]].end()) {
+                    graph[s[i]].insert(s[i-1]);
+                    if (degree[s[i-1]]++ == 0) count ++;
+                }
+            }
+        }
+        if (count != n-1) 
+            return false; // all nodes should have degree larger than 0 except the last one
+        for (int i = n-1; i >= 0; --i) {    // topological sort
+            if (degree[org[i]] > 0) return false;   // the last node should have 0 degree
+            for (auto p : graph[org[i]]) 
+                if (--degree[p] == 0 and p != org[i-1]) // found a node that is not supposed to have 0 degree
+                    return false;
+        }
+        return true;        
+    }
+```
+
+
+
