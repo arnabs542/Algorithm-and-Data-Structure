@@ -45,10 +45,14 @@ perform __both the operations in O(log n) time__ once given the array
 
 Representation of Segment trees
 
-1. Leaf Nodes are the elements of the input array.
-2. Each internal node represents some merging of the leaf nodes. The merging may be different for different problems. For this problem, merging is sum of leaves under a node.
+1. length n is power of 2. choose close value of power of 2.
+2. Leaf Nodes are the elements of the input array.
+3. Each internal node represents some merging of the leaf nodes. The merging may be different for different problems. For this problem, merging is sum of leaves under a node.
 
 ![segment-tree1](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree1.png)
+
+
+![segment-tree2](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree2.png)
 
 ### In Memory representation
 
@@ -74,12 +78,13 @@ using namespace std;
 const int N = 100000;  
 // Max size of tree 
 vector<int> tree(2*N, 0); 
-  
+//n is power of 2, 
+int n;
 // function to build the tree 
 void build( vector<int> arr)  
 {  
     // insert leaf nodes in tree 
-    int n = arr.size()
+
     for (int i=0; i<n; i++)     
         tree[n+i] = arr[i]; 
       
@@ -96,8 +101,13 @@ void update(int index, int value)
     index = index+n; 
       
     // move upward and update parents, noticing i could be odd or even, so it could be i+1 or i-1, XOR is best here
-    for (int i=index; i > 1; i >>= 1) 
-        tree[i>>1] = tree[i] + tree[i^1]; 
+    for (int i=index; i > 1; i >>= 1) {
+      if (i%2 == 0) //even case, i and i+1
+        tree[i/2] = tree[i] + tree[i+1]; 
+      else if(i%2 != 0)
+        tree[i/2] = tree[i-1] + tree[i]; 
+    }
+        
 } 
 
 // function to get sum on interval [l, r) 
