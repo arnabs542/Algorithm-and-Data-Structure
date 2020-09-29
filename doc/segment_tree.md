@@ -48,7 +48,7 @@ Representation of Segment trees
 1. Leaf Nodes are the elements of the input array.
 2. Each internal node represents some merging of the leaf nodes. The merging may be different for different problems. For this problem, merging is sum of leaves under a node.
 
-![segment-tree1](https://github.com/zhangruiskyline/DeepLearning/blob/master/img/segment-tree1.png)
+![segment-tree1](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree1.png)
 
 ### In Memory representation
 
