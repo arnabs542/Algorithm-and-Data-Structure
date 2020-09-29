@@ -9,6 +9,7 @@
 - [List](#list)
 - [Binary Search](#binary-search)
 - [Tree](#tree)
+- [Segment Tree](#segment-tree)
 - [Trie](#trie)
 - [DP](#dp)
 - [Big data](#big-data)
@@ -43,6 +44,10 @@
 # Tree
 
 [Tree Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/tree.md)
+
+# Segment Tree
+
+[Segment Tree Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/segment_tree.md)
 
 # Trie
 

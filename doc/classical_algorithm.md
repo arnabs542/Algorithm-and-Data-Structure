@@ -7,6 +7,7 @@
     - [Example](#example)
   - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
+    - [Maximal-square](#maximal-square)
 - [Sort](#sort)
   - [Quick Sort](#quick-sort)
   - [Select Sort Common](#select-sort-common)
@@ -527,7 +528,7 @@ bool hasALloneBorder(int size, vector<vector<int>> &right, vector<vector<int>> &
 
 ```
 
-* Maximal-square
+### Maximal-square
 https://leetcode.com/problems/maximal-square/#/description
 Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
 
