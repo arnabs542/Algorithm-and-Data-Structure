@@ -7,9 +7,9 @@
   - [Segment Tree Structure](#segment-tree-structure)
     - [Logical representation](#logical-representation)
     - [In Memory representation](#in-memory-representation)
-  - [Implementation](#implementation)
 - [Practical problem](#practical-problem)
   - [count of range query](#count-of-range-query)
+  - [Range Query mutable](#range-query-mutable)
   - [Range Sum Query 2D-immutable](#range-sum-query-2d-immutable)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -68,66 +68,7 @@ For an index i , its left child will be at (2 * i) and right child will be at (2
 The dummy values are never accessed and have no use. This is some wastage of space due to simple array representation. We may optimize this wastage using some clever implementations, but code for sum and update becomes more complex.
 
 
-## Implementation
 
-
-```CPP
-using namespace std; 
-  
-// limit for array size 
-const int N = 100000;  
-// Max size of tree 
-vector<int> tree(2*N, 0); 
-//n is power of 2, 
-int n;
-// function to build the tree 
-void build( vector<int> arr)  
-{  
-    // insert leaf nodes in tree 
-
-    for (int i=0; i<n; i++)     
-        tree[n+i] = arr[i]; 
-      
-    // build the tree by calculating parents 
-    for (int i = n - 1; i > 0; --i)      
-        tree[i] = tree[i*2] + tree[i*2+1];     
-} 
-
-//
-void update(int index, int value)  
-{  
-    // set value at position p 
-    tree[index+n] = value; 
-    index = index+n; 
-      
-    // move upward and update parents, noticing i could be odd or even, so it could be i+1 or i-1, XOR is best here
-    for (int i=index; i > 1; i >>= 1) {
-      if (i%2 == 0) //even case, i and i+1
-        tree[i/2] = tree[i] + tree[i+1]; 
-      else if(i%2 != 0)
-        tree[i/2] = tree[i-1] + tree[i]; 
-    }
-        
-} 
-
-// function to get sum on interval [l, r) 
-int rangequery(int l, int r)  
-{  
-    int res = 0; 
-      
-    // loop to find the sum in the range 
-    for (l += n, r += n; l < r; l >>= 1, r >>= 1) 
-    { 
-        if (l&1)  
-            res += tree[l++]; 
-      
-        if (r&1)  
-            res += tree[--r]; 
-    } 
-      
-    return res; 
-} 
-```
 
 # Practical problem
 
@@ -147,6 +88,149 @@ Output: 3
 Explanation: The three ranges are : [0,0], [2,2], [0,2] and their respective sums are: -2, -1, 2.
 ```
 
+
+## Range Query mutable
+
+
+https://leetcode.com/problems/range-sum-query-mutable/
+
+Given an integer array nums, find the sum of the elements between indices i and j (i ≤ j), inclusive.
+
+The update(i, val) function modifies nums by updating the element at index i to val.
+
+```
+Example:
+
+Given nums = [1, 3, 5]
+
+sumRange(0, 2) -> 9
+update(1, 2)
+sumRange(0, 2) -> 8
+```
+
+```CPP
+class NumArray {
+private:
+    vector<int> tree;
+    int len = 0;
+public:
+    NumArray(vector<int> &nums) {
+        len = nums.size();
+        tree.resize(2*len,0);
+        for(int i=len,j=0;i<2*len;i++,j++){
+            tree[i] = nums[j];
+        }
+        for(int i=len-1;i>=0;i--){
+            tree[i] = tree[2*i]+tree[2*i+1];
+        }
+    }
+
+    void update(int i, int val) {
+        int shift = tree[len+i] - val;
+        int index = len+i;
+        while(index>=1) {
+            tree[index] = tree[index] - shift;
+            index = index/2;
+        }
+    }
+
+    int sumRange(int i, int j) {
+        // get leaf with value 'i'
+        i += len;
+        // get leaf with value 'j'
+        j += len;
+        int sum = 0;
+
+    /*
+The idea behind the query function is that whether we should include an element in the sum or we should include its parent.  Consider that L is the left border of an interval and R is the right border of the interval. It is clear from the image that if L is odd then it means that it is the right child of it’s parent and our interval includes only L and not it’s parent. 
+
+So we will simply include this node to sum and move to the parent of it’s next node by doing L = (L+1)/2. Now, if L is even then it is the left child of it’s parent and interval includes it’s parent also unless the right borders interferes. 
+
+    */
+
+        while (i <= j) {
+          //left
+            if ((i % 2) == 1) {
+               sum += tree[i];
+               i++;
+            }
+            if ((j % 2) == 0) {
+               sum += tree[j];
+               j--;
+            }
+            i /= 2;
+            j /= 2;
+        }
+        return sum;
+    }
+};
+```
+
+Another solution is build the Segment Tree in recursive 
+
+
+```CPP
+struct SegmentTreeNode {
+    int start, end, sum;
+    SegmentTreeNode* left;
+    SegmentTreeNode* right;
+    SegmentTreeNode(int a, int b):start(a),end(b),sum(0),left(nullptr),right(nullptr){}
+};
+class NumArray {
+    SegmentTreeNode* root;
+public:
+    NumArray(vector<int> &nums) {
+        int n = nums.size();
+        root = buildTree(nums,0,n-1);
+    }
+   
+    void update(int i, int val) {
+        modifyTree(i,val,root);
+    }
+
+    int sumRange(int i, int j) {
+        return queryTree(i, j, root);
+    }
+    SegmentTreeNode* buildTree(vector<int> &nums, int start, int end) {
+        if(start > end) return nullptr;
+        SegmentTreeNode* root = new SegmentTreeNode(start,end);
+        if(start == end) {
+            root->sum = nums[start];
+            return root;
+        }
+        int mid = start + (end - start) / 2;
+        root->left = buildTree(nums,start,mid);
+        root->right = buildTree(nums,mid+1,end);
+        root->sum = root->left->sum + root->right->sum;
+        return root;
+    }
+    int modifyTree(int i, int val, SegmentTreeNode* root) {
+        if(root == nullptr) return 0;
+        int diff;
+        if(root->start == i && root->end == i) {
+            diff = val - root->sum;
+            root->sum = val;
+            return diff;
+        }
+        int mid = (root->start + root->end) / 2;
+        if(i > mid) {
+            diff = modifyTree(i,val,root->right);
+        } else {
+            diff = modifyTree(i,val,root->left);
+        }
+        root->sum = root->sum + diff;
+        return diff;
+    }
+    int queryTree(int i, int j, SegmentTreeNode* root) {
+        if(root == nullptr) return 0;
+        if(root->start == i && root->end == j) return root->sum;
+        int mid = (root->start + root->end) / 2;
+        if(i > mid) return queryTree(i,j,root->right);
+        if(j <= mid) return queryTree(i,j,root->left);
+        return queryTree(i,mid,root->left) + queryTree(mid+1,j,root->right);
+    }
+};
+```
 
 ## Range Sum Query 2D-immutable
 
