@@ -42,6 +42,7 @@
     - [Valid-triangle-number](#valid-triangle-number)
 - [Sliding Windows](#sliding-windows)
   - [Mini Sub string](#mini-sub-string)
+  - [Longest Substring with At Most Two Distinct Characters](#longest-substring-with-at-most-two-distinct-characters)
   - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
   - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
 - [Histogram](#histogram)
@@ -1352,6 +1353,46 @@ public:
 };
 
 
+```
+
+## Longest Substring with At Most Two Distinct Characters
+
+https://leetcode.com/explore/interview/card/google/59/array-and-strings/3054/
+
+Given a string s , find the length of the longest substring t  that contains at most 2 distinct characters.
+
+```
+Example 1:
+
+Input: "eceba"
+Output: 3
+Explanation: t is "ece" which its length is 3.
+Example 2:
+
+Input: "ccaabbb"
+Output: 5
+Explanation: t is "aabbb" which its length is 5.
+```
+
+```CPP
+    int lengthOfLongestSubstringTwoDistinct(string s) {
+          int start = 0;
+        unordered_map<char,int> m;
+        int ret = 0;
+        for(int i=0;i<s.size();i++){
+            m[s[i]]++;
+            if(m.size()<=2){
+                ret = max(ret,i-start+1);
+            }
+            while(m.size()>2){
+                if(--m[s[start]]==0){ //move this start char position will eliminate one char in map, so reduce size
+                    m.erase(s[start]);
+                }
+                start++;
+            }
+        }
+        return ret;           
+    }
 ```
 
 ## Find All Anagrams in a String
