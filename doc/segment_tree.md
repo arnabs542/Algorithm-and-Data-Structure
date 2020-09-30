@@ -11,6 +11,7 @@
   - [count of range query](#count-of-range-query)
   - [Range Query mutable](#range-query-mutable)
   - [Range Sum Query 2D-immutable](#range-sum-query-2d-immutable)
+  - [Range Sum Query 2D - Mutable](#range-sum-query-2d---mutable)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -142,7 +143,9 @@ public:
         int sum = 0;
 
     /*
-The idea behind the query function is that whether we should include an element in the sum or we should include its parent.  Consider that L is the left border of an interval and R is the right border of the interval. It is clear from the image that if L is odd then it means that it is the right child of it’s parent and our interval includes only L and not it’s parent. 
+The idea behind the query function is that whether we should include an element in the sum or we should include its parent.  
+
+Consider that L is the left border of an interval and R is the right border of the interval. if L is odd then it means that it is the right child of it’s parent and our interval includes only L and not it’s parent. 
 
 So we will simply include this node to sum and move to the parent of it’s next node by doing L = (L+1)/2. Now, if L is even then it is the left child of it’s parent and interval includes it’s parent also unless the right borders interferes. 
 
@@ -274,5 +277,80 @@ public:
 private:
     vector<vector<int>> sum;
 
+};
+```
+
+## Range Sum Query 2D - Mutable
+
+https://leetcode.com/problems/range-sum-query-2d-mutable/
+
+Given a 2D matrix matrix, find the sum of the elements inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+
+Range Sum Query 2D
+The above rectangle (with the red border) is defined by (row1, col1) = (2, 1) and (row2, col2) = (4, 3), which contains sum = 8.
+
+```
+Example:
+Given matrix = [
+  [3, 0, 1, 4, 2],
+  [5, 6, 3, 2, 1],
+  [1, 2, 0, 1, 5],
+  [4, 1, 0, 1, 7],
+  [1, 0, 3, 0, 5]
+]
+
+sumRegion(2, 1, 4, 3) -> 8
+update(3, 2, 2)
+sumRegion(2, 1, 4, 3) -> 10
+```
+
+```CPP
+class NumMatrix {
+private:
+    
+    vector<vector<int>> tree;
+    vector<vector<int>> num;
+    int _row;
+    int _col;
+    
+public:
+    NumMatrix(vector<vector<int>>& matrix) {
+        _row = matrix.size();
+        if (0 == _row) 
+            return;
+        _col = matrix[0].size();
+        num = vector<vector<int>>(matrix);
+        tree = vector<vector<int>>(_row + 1, vector<int>(_col + 1, 0));
+        for (int i = 0; i < _row; i++) 
+         for (int j = 0; j < _col; j++) {
+            updateTree(i, j, num[i][j]);
+        }
+        
+    }
+    
+    void update(int row, int col, int val) {
+            updateTree(row, col, val - num[row][col]);
+            num[row][col] = val;
+    }
+    
+    int sumRegion(int row1, int col1, int row2, int col2) {
+        return read(row2+1, col2+1) - read(row1, col2+1) - read(row2+1, col1) + read(row1, col1);
+    }
+    
+    void updateTree(int row, int col, int val) {
+    for (int i = row + 1; i <= _row; i += i & (-i)) 
+      for (int j = col + 1; j <= _col; j += j & (-j)) 
+            tree[i][j] += val;
+    
+    }
+
+    int read(int row, int col) {
+        int sum = 0;
+        for (int i = row; i > 0; i -= i & (-i))
+         for (int j = col; j > 0; j -= j & (-j)) {
+                sum += tree[i][j];
+        }
+        return sum;
+    }
 };
 ```
