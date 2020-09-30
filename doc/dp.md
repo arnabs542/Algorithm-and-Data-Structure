@@ -766,6 +766,8 @@ The non-aftereffect property means, once the state of a certain stage is determi
 
     
     //f[i][j] to be the minimum largest subarray sum for splitting nums[0..i] into j parts.
+
+  //Consider the jth subarray. We can split the array from a smaller index k to i to form it. Thus f[i][j] can be derived from max(f[k][j - 1], nums[k + 1] + ... + nums[i]). For all valid index k, f[i][j] should choose the minimum value of the above formula.
     
     int n = nums.size();
     vector<vector<int>> f(n + 1, vector<int>(m + 1, INT_MAX));
@@ -776,7 +778,7 @@ The non-aftereffect property means, once the state of a certain stage is determi
     f[0][0] = 0;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
-            for (int k = 0; k < i; k++) {
+            for (int k = j-1; k < i; k++) {
                 f[i][j] = min(f[i][j], max(f[k][j - 1], sub[i] - sub[k]));
             }
         }
@@ -785,6 +787,10 @@ The non-aftereffect property means, once the state of a certain stage is determi
     
 }
 ```
+
+This problem can also be solved via Binary search way
+
+
 
 ### Split array equal sum
 

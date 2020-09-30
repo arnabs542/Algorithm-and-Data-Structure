@@ -4,12 +4,12 @@
 
 - [Problem Statement (Range sum use case)](#problem-statement-range-sum-use-case)
 - [Segment Tree](#segment-tree)
-  - [Segment Tree Structure](#segment-tree-structure)
-    - [Logical representation](#logical-representation)
-    - [In Memory representation](#in-memory-representation)
+  - [Logical representation](#logical-representation)
+  - [In Memory representation](#in-memory-representation)
+  - [Operation](#operation)
 - [Binary Index Tree](#binary-index-tree)
   - [Basic Idea](#basic-idea)
-  - [Operation](#operation)
+  - [Operation](#operation-1)
   - [Implementation](#implementation)
 - [Practical problem](#practical-problem)
   - [count of range query](#count-of-range-query)
@@ -44,11 +44,13 @@ create another array and store sum from start to i at the ith index in this arra
 
 
 
-## Segment Tree Structure
 
-### Logical representation 
+## Logical representation 
 
 perform __both the operations in O(log n) time__ once given the array
+
+https://www.hackerearth.com/practice/data-structures/advanced-data-structures/segment-trees/tutorial/
+
 
 Representation of Segment trees
 
@@ -56,12 +58,12 @@ Representation of Segment trees
 2. Leaf Nodes are the elements of the input array.
 3. Each internal node represents some merging of the leaf nodes. The merging may be different for different problems. For this problem, merging is sum of leaves under a node.
 
-![segment-tree1](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree1.png)
+![segment-tree1](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree1.jpg)
 
 
-![segment-tree2](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree2.png)
+![segment-tree2](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/segment-tree2.jpg)
 
-### In Memory representation
+## In Memory representation
 
 ```
 we can easily construct a segment tree for this array using a 2*N sized array where N is number of elements in original array. The leaf nodes will start from index N in this array and will go upto index (2*N – 1)
@@ -73,6 +75,85 @@ For an index i , its left child will be at (2 * i) and right child will be at (2
 ```
 
 The dummy values are never accessed and have no use. This is some wastage of space due to simple array representation. We may optimize this wastage using some clever implementations, but code for sum and update becomes more complex.
+
+## Operation
+
+* Build the Tree
+
+```CPP
+void build(int node, int start, int end)
+{
+    if(start == end)
+    {
+        // Leaf node will have a single element
+        tree[node] = A[start];
+    }
+    else
+    {
+        int mid = (start + end) / 2;
+        // Recurse on the left child
+        build(2*node, start, mid);
+        // Recurse on the right child
+        build(2*node+1, mid+1, end);
+        // Internal node will have the sum of both of its children
+        tree[node] = tree[2*node] + tree[2*node+1];
+    }
+}
+```
+
+* Update
+
+```CPP
+void update(int node, int start, int end, int idx, int val)
+{
+    if(start == end)
+    {
+        // Leaf node
+        A[idx] += val;
+        tree[node] += val;
+    }
+    else
+    {
+        int mid = (start + end) / 2;
+        if(start <= idx and idx <= mid)
+        {
+            // If idx is in the left child, recurse on the left child
+            update(2*node, start, mid, idx, val);
+        }
+        else
+        {
+            // if idx is in the right child, recurse on the right child
+            update(2*node+1, mid+1, end, idx, val);
+        }
+        // Internal node will have the sum of both of its children
+        tree[node] = tree[2*node] + tree[2*node+1];
+    }
+}
+```
+
+* Range Query
+
+```CPP
+int query(int node, int start, int end, int l, int r)
+{
+    if(r < start or end < l)
+    {
+        // range represented by a node is completely outside the given range
+        return 0;
+    }
+    if(l <= start and end <= r)
+    {
+        // range represented by a node is completely inside the given range
+        return tree[node];
+    }
+    // range represented by a node is partially inside and partially outside the given range
+    //return sum of left and right
+    int mid = (start + end) / 2;
+    int p1 = query(2*node, start, mid, l, r);
+    int p2 = query(2*node+1, mid+1, end, l, r);
+    return (p1 + p2);
+}
+```
 
 # Binary Index Tree
 
