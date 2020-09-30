@@ -8,7 +8,8 @@
     - [Logical representation](#logical-representation)
     - [In Memory representation](#in-memory-representation)
 - [Binary Index Tree](#binary-index-tree)
-  - [Binary Index Tree Structure](#binary-index-tree-structure)
+  - [Basic Idea](#basic-idea)
+  - [Operation](#operation)
   - [Implementation](#implementation)
 - [Practical problem](#practical-problem)
   - [count of range query](#count-of-range-query)
@@ -75,9 +76,84 @@ The dummy values are never accessed and have no use. This is some wastage of spa
 
 # Binary Index Tree
 
-## Binary Index Tree Structure
+## Basic Idea
 
-Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each node of the Binary Indexed Tree stores the sum of some elements of the input array. The size of the Binary Indexed Tree is equal to the size of the input array, denoted as n. In the code below, we use a size of n+1 for ease of implementation.
+https://www.hackerearth.com/practice/data-structures/advanced-data-structures/fenwick-binary-indexed-trees/tutorial/
+
+We know the fact that each integer can be represented as the sum of powers of two. Similarly, for a given array of size , we can maintain an array  such that, at any index we can store the sum of some numbers of the given array. This can also be called a partial sum tree.
+
+Let’s use an example to understand how  stores partial sums.
+```
+//for ease, we make sure our given array is 1-based indexed
+int a[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+```
+
+![BIT](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/img/BIT.jpg)
+
+
+```
+               {           a[x],                  if x is odd
+BIT[x] =                    a[1] + ... + a[x],     if x is power of 2
+               }
+```
+
+To generalize this every index  in the  array stores the cumulative sum from the index  to  (both inclusive), where  represents the last set bit in the index .
+
+Sum of first 12 numbers in array ```BIT[12]+BIT[8]```
+
+Similarly, sum of first 6 elements ```BIT[6]+BIT[4]```
+
+Sum of first 8 elements ```BIT[8]```
+
+
+
+
+## Operation
+
+
+* Update
+
+1. cal 2's complement (-i)
+2. AND with original value i * -i
+3. ADD from original value i+= i* -i
+
+```
+void update(int x, int val)       //add "val" at index "x"
+{
+    for(; x <= n; x += x&-x)
+          BIT[x] += val;
+}
+```
+
+Suppose we call update(13, 2).
+
+Here we see from the above figure that indices 13, 14, 16 cover index 13 and thus we need to add 2 to them also.
+
+Initially  is 13,  then we need to update 14, which we get from 13(1101) last SET bit, and AND  13+1 =14, then we have 
+14 (1110), get last SET bit and add 14+2 = 16.
+
+* Query Sum
+
+1. cal 2's complement (-i)
+2. AND with original value i * -i
+3. SUB from original value i-= i* -i
+
+```
+int query(int x)      //returns the sum of first x elements in given array a[]
+{
+     int sum = 0;
+     for(; x > 0; x -= x&-x)
+         sum += BIT[x];
+     return sum;
+}
+```
+
+suppose we want to query first 14 elements. 
+
+We get ```sum = BIT[14] = (a[14]+a[13])```, then we isolate last SET bit 14(1110) and sub = 12. we then have
+```sum = BIT[14]+BIT[12] = (a[14]+a[13])+ (a[12]+...a[9])```, then last SET bit of 12(1100) and sub = 8, we have
+```sum = BIT[14]+BIT[12]+BIT[8] = (a[14]+a[13])+ (a[12]+...a[9])+(a[8]+..a[1])```, and last SET of 8(1000) an sub =0. loop end.
+
 
 ## Implementation
 
@@ -119,11 +195,11 @@ void updateBIT(int BITree[], int n, int index, int val)
     // Traverse all ancestors and add 'val' 
     while (index <= n) 
     { 
-    // Add 'val' to current node of BI Tree 
-    BITree[index] += val; 
-  
-    // Update index to that of parent in update View 
-    index += index & (-index); 
+      // Add 'val' to current node of BI Tree 
+      BITree[index] += val; 
+    
+      // Update index to that of parent in update View 
+      index += index & (-index); 
     } 
 } 
   
