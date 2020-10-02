@@ -41,6 +41,10 @@
   - [3 Sum](#3-sum)
     - [Valid-triangle-number](#valid-triangle-number)
 - [Sliding Windows](#sliding-windows)
+  - [Maximum Average Subarray](#maximum-average-subarray)
+    - [Maximum Average Subarray/fixed sliding window](#maximum-average-subarrayfixed-sliding-window)
+    - [Maximum Average Subarray/dynamic sliding window](#maximum-average-subarraydynamic-sliding-window)
+  - [Maximum value in sliding window](#maximum-value-in-sliding-window)
   - [Mini Sub string](#mini-sub-string)
   - [Longest Substring with At Most Two Distinct Characters](#longest-substring-with-at-most-two-distinct-characters)
   - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
@@ -1284,6 +1288,92 @@ while (right < s.size()) {
     }
 }
 ```
+
+## Maximum Average Subarray 
+
+### Maximum Average Subarray/fixed sliding window
+
+https://leetcode.com/problems/maximum-average-subarray-i/
+
+Given an array consisting of n integers, find the contiguous subarray of given length k that has the maximum average value. And you need to output the maximum average value.
+
+```CPP
+double findMaxAverage(vector<int>& nums, int k) {
+    double sum=0;
+    for(int i=0;i<k;i++)
+        sum+=nums[i];
+    double res=sum;
+    for(int i=k;i<nums.size();i++){
+        sum+=nums[i]-nums[i-k];
+        res=max(res,sum);
+    }
+    return res/k;
+}
+```
+
+### Maximum Average Subarray/dynamic sliding window
+
+https://leetcode.com/problems/maximum-average-subarray-ii/
+
+Given an array consisting of n integers, find the contiguous subarray whose length is greater than or equal to k that has the maximum average value. And you need to output the maximum average value.
+
+```
+Example 1:
+Input: [1,12,-5,-6,50,3], k = 4
+Output: 12.75
+Explanation:
+when length is 5, maximum average value is 10.8,
+when length is 6, maximum average value is 9.16667.
+Thus return 12.75.
+```
+
+## Maximum value in sliding window
+
+https://leetcode.com/problems/sliding-window-maximum/
+
+You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
+
+Return the max sliding window.
+
+ 
+```
+Example 1:
+
+Input: nums = [1,3,-1,-3,5,3,6,7], k = 3
+Output: [3,3,5,5,6,7]
+Explanation: 
+Window position                Max
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+```
+
+```CPP
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        //use deque, make sure the queue is always in sorted order with front the largest item's index
+        vector<int> ret;
+        deque<int> dq; //store index, with num[index] monotonic decreasing from front
+        for(int i=0;i<nums.size();i++){
+            if(!dq.empty() && (dq.front()==i-k)){
+                //the max value's index in deque reach the window size, need to pop out.
+                    dq.pop_front();
+            }
+            while(!dq.empty() && nums[dq.back()]<nums[i]){
+                dq.pop_back();
+            }
+            dq.push_back(i);
+            if (i>=k-1)
+                ret.push_back(nums[dq.front()]);
+        }
+        return ret;
+    }
+```
+
+
 
 ## Mini Sub string
 
