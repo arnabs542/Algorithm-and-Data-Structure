@@ -12,6 +12,7 @@
       - [Squares of a Sorted Array](#squares-of-a-sorted-array)
     - [Merge array](#merge-array)
     - [Replace Elements with Greatest Element on Right Side](#replace-elements-with-greatest-element-on-right-side)
+    - [Contains Duplicate](#contains-duplicate)
     - [Max consecutive Ones](#max-consecutive-ones)
     - [Read buffer from Read4](#read-buffer-from-read4)
 - [Sub Array](#sub-array)
@@ -47,8 +48,12 @@
   - [Maximum value in sliding window](#maximum-value-in-sliding-window)
   - [Mini Sub string](#mini-sub-string)
   - [Longest Substring with At Most Two Distinct Characters](#longest-substring-with-at-most-two-distinct-characters)
-  - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
+    - [Fruit Into Baskets](#fruit-into-baskets)
   - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
+  - [Longest Substring with Same Letters after K change](#longest-substring-with-same-letters-after-k-change)
+    - [Max Consecutive Ones with K changes](#max-consecutive-ones-with-k-changes)
+  - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
+  - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters-1)
 - [Histogram](#histogram)
   - [Water container problem](#water-container-problem)
     - [container with most water](#container-with-most-water)
@@ -318,6 +323,76 @@ vector<int> replaceElements(vector<int>& arr) {
     return arr;
 }
 ```
+
+### Contains Duplicate
+
+https://leetcode.com/problems/contains-duplicate-iii/
+
+Given an array of integers, find out whether there are two distinct indices i and j in the array such that the absolute difference between nums[i] and nums[j] is at most t and the absolute difference between i and j is at most k.
+
+```
+
+Example 1:
+
+Input: nums = [1,2,3,1], k = 3, t = 0
+Output: true
+Example 2:
+
+Input: nums = [1,0,1,1], k = 1, t = 2
+Output: true
+Example 3:
+
+Input: nums = [1,5,9,1,5,9], k = 2, t = 3
+Output: false
+```
+
+Method 1: check bound every time
+
+```CPP
+ bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+    set<int> s; // set is ordered automatically 
+    for (int i = 0; i < nums.size(); i++) {
+        if (i > k) 
+          s.erase(nums[i-k-1]); // keep the set contains nums i j at most k
+        // |x - nums[i]| <= t  ==> -t <= x - nums[i] <= t;
+        auto pos = s.lower_bound(nums[i] - t); // x-nums[i] >= -t ==> x >= nums[i]-t 
+        // x - nums[i] <= t ==> |x - nums[i]| <= t    
+        if (pos != s.end() && *pos - nums[i] <= t) 
+          return true;
+        s.insert(nums[i]);
+    }
+    return false;
+}
+```
+
+Method 2: 
+
+We use the concept of sliding window and buckets together to achieve an optimal solution with O(N) time complexity.
+
+Sliding window ensures only those indices are considered whose the absolute difference is at most k. We only consider k indices at a time. This fulfills the second condition.
+
+Buckets are used to ensure that the absolute difference between two numbers is at most t. Let's take a deeper look at them.
+We (floor) divide each number by t+1 and put it in a bucket with key as the quotient.
+
+```CPP
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+      if (nums.size() < 2 || k < 1 || t < 0) return false;
+      unordered_map<long long, long long> bucket;
+      for (int i = 0; i < nums.size(); i++)
+      {
+        if (i > k) bucket.erase(((long long)nums[i - k - 1]  - INT_MIN) / ((long long)t + 1));
+        long long num = (long long)nums[i] - INT_MIN;
+        long long id = num / ((long long)t + 1);
+        if (bucket.count(id)
+          || (bucket.count(id - 1) && nums[i] - bucket[id - 1] <= t)
+          || (bucket.count(id + 1) && bucket[id + 1] - nums[i] <= t))
+          return true;
+        bucket[id] = nums[i];
+      }
+      return false;       
+    }
+```
+
 
 ### Max consecutive Ones
 
@@ -1466,24 +1541,185 @@ Explanation: t is "aabbb" which its length is 5.
 
 ```CPP
     int lengthOfLongestSubstringTwoDistinct(string s) {
-          int start = 0;
+        int start = 0;
         unordered_map<char,int> m;
         int ret = 0;
-        for(int i=0;i<s.size();i++){
-            m[s[i]]++;
-            if(m.size()<=2){
-                ret = max(ret,i-start+1);
-            }
-            while(m.size()>2){
-                if(--m[s[start]]==0){ //move this start char position will eliminate one char in map, so reduce size
-                    m.erase(s[start]);
+        for(int i=0;i<str.size();i++){
+            m[str[i]]++;
+            while(m.size()>k){
+                if(--m[str[start]]==0){ //move this start char position will eliminate one char in map, so reduce size
+                    m.erase(str[start]);
                 }
                 start++;
             }
+            ret = max(ret,i-start+1);
         }
-        return ret;           
+        return ret;         
     }
 ```
+
+### Fruit Into Baskets
+
+In a row of trees, the i-th tree produces fruit with type tree[i].
+
+You start at any tree of your choice, then repeatedly perform the following steps:
+
+Add one piece of fruit from this tree to your baskets.  If you cannot, stop.
+Move to the next tree to the right of the current tree.  If there is no tree to the right, stop.
+Note that you do not have any choice after the initial choice of starting tree: you must perform step 1, then step 2, then back to step 1, then step 2, and so on until you stop.
+
+You have two baskets, and each basket can carry any quantity of fruit, but you want each basket to only carry one type of fruit each.
+
+What is the total amount of fruit you can collect with this procedure?
+
+```CPP
+    int totalFruit(vector<int>& tree) {
+                //Find out the longest length of subarrays with at most 2 different numbers
+        unordered_map<int, int> count;
+        int i, j;
+        int ret = 0;
+        for (i = 0, j = 0; j < tree.size(); ++j) {
+            count[tree[j]]++;
+            while (count.size() > 2) {
+                count[tree[i]]--;
+                if (count[tree[i]] == 0)
+                    count.erase(tree[i]);
+                i++;
+            }
+            ret = max(ret,j-i+1);
+        }
+        return ret;
+    }
+```
+
+## Longest Substring Without Repeating Characters
+
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+```CPP
+  static int findLength(const string& str) {
+
+      int start = 0, end = 0;
+      unordered_map<char, int> m;
+      int res = 0; // record longest length
+
+      for(end=0;end<str.size();end++) {
+          m[str[end]]++;
+          //repeating char appear, so move left
+          while (m[str[end]] > 1) {
+              m[str[start]]--;
+              start++;
+          }
+          res = max(res, end - start+1);
+      }
+      return res;
+
+  }
+```
+
+## Longest Substring with Same Letters after K change
+
+https://www.educative.io/courses/grokking-the-coding-interview/R8DVgjq78yR
+
+https://leetcode.com/problems/longest-repeating-character-replacement/
+
+Given a string s that consists of only uppercase English letters, you can perform at most k operations on that string.
+In one operation, you can choose any character of the string and change it to any other uppercase English character.
+Find the length of the longest sub-string containing all repeating letters you can get after performing the above operations.
+
+
+```
+Example 1:
+
+Input:
+s = "ABAB", k = 2
+
+Output:
+4
+
+Explanation:
+Replace the two 'A's with two 'B's or vice versa.
+ 
+
+Example 2:
+
+Input:
+s = "AABABBA", k = 1
+
+Output:
+4
+
+Explanation:
+Replace the one 'A' in the middle with 'B' and form "AABBBBA".
+The substring "BBBB" has the longest repeating letters, which is 4.
+```
+
+```CPP
+    int characterReplacement(string s, int k) {
+          int start = 0, end = 0;
+          unordered_map<char,int> m;
+          int maxRepeat = 0;  //at any given window, max 
+          int res = 0; // record longest length
+
+          for(end=0;end<s.size();end++) {
+              m[s[end]]++;
+              maxRepeat = max(maxRepeat, m[s[end]]);
+              //we can change at most K
+              if (end - start + 1 - maxRepeat > k) {
+                m[s[start]]--;
+                start++;
+              }
+              res = max(res, end - start+1);
+          }
+          return res;  
+    }
+```
+
+### Max Consecutive Ones with K changes
+
+https://leetcode.com/problems/max-consecutive-ones-iii/
+
+https://www.educative.io/courses/grokking-the-coding-interview/B6VypRxPolJ
+
+Given an array containing 0s and 1s, if you are allowed to replace no more than ‘k’ 0s with 1s, find the length of the longest contiguous subarray having all 1s.
+
+```
+Example 1:
+
+Input: Array=[0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1], k=2
+Output: 6
+Explanation: Replace the '0' at index 5 and 8 to have the longest contiguous subarray of 1s having length 6.
+Example 2:
+
+Input: Array=[0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1], k=3
+Output: 9
+Explanation: Replace the '0' at index 6, 9, and 10 to have the longest contiguous subarray of 1s having length 9.
+```
+
+
+
+```CPP
+int longestOnes(vector<int>& arr, int K) {
+      int start = 0, end = 0;
+      int maxOnes = 0;  //at any given window, max 
+      int res = 0; // record longest length
+
+      for(end=0;end<arr.size();end++) {
+          if(arr[end]==1)
+            maxOnes++;
+          //we can change at most K
+          if (end - start + 1 - maxOnes > K) {
+            if(arr[start]==1)
+              maxOnes--;
+            start++;
+          }
+          res = max(res, end - start+1);
+      }
+      return res;       
+}
+```
+
+
 
 ## Find All Anagrams in a String
 
