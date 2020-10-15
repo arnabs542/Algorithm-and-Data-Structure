@@ -3,8 +3,9 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Array](#array)
-- [Heap and Stack](#heap-and-stack)
 - [String](#string)
+- [Sliding Window](#sliding-window)
+- [Heap and Stack](#heap-and-stack)
 - [Hash Table](#hash-table)
 - [List](#list)
 - [Binary Search](#binary-search)
@@ -23,11 +24,16 @@
 
 [Array](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/array.md)
 
+# String
+[String](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/string.md)
+
+# Sliding Window
+[Sliding Window](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/sliding_window.md)
+
 # Heap and Stack
 [Stack, Priority Queue Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/heap_stack.md)
 
-# String
-[String](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/string.md)
+
 
 # Hash Table
 

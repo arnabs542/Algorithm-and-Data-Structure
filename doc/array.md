@@ -52,7 +52,9 @@
   - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
   - [Longest Substring with Same Letters after K change](#longest-substring-with-same-letters-after-k-change)
     - [Max Consecutive Ones with K changes](#max-consecutive-ones-with-k-changes)
+  - [Permutation in a String](#permutation-in-a-string)
   - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
+  - [Smallest Window containing Substring](#smallest-window-containing-substring)
   - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters-1)
 - [Histogram](#histogram)
   - [Water container problem](#water-container-problem)
@@ -1719,6 +1721,109 @@ int longestOnes(vector<int>& arr, int K) {
 }
 ```
 
+## Permutation in a String
+
+https://www.educative.io/courses/grokking-the-coding-interview/N8vB7OVYo2D
+
+https://leetcode.com/problems/permutation-in-string/
+
+Given two strings s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string's permutations is the substring of the second string.
+
+ 
+```
+Example 1:
+
+Input: s1 = "ab" s2 = "eidbaooo"
+Output: True
+Explanation: s2 contains one permutation of s1 ("ba").
+Example 2:
+
+Input:s1= "ab" s2 = "eidboaoo"
+Output: False
+```
+
+```CPP
+static bool findPermutation(const string &str, const string &pattern) {
+        if(pattern.size()==0)
+            return true;
+        unordered_map<char,int> m;
+        int l = 0;
+        int r = 0;
+        int cnt = 0;
+        for(int i=0;i<pattern.size();i++){
+            m[pattern[i]]++;  
+            cnt++;
+        }
+        for(int l=0,r=0;r<str.size();r++){
+            if(m.find(str[r])!=m.end() && m[str[r]]-->0){
+                //m[s2[r]] could be smaller than 0, so s2[r] pays off and have more, leaving for l to move
+                cnt--;
+                while(cnt==0){//include all in pattern
+                    if(r-l+1==pattern.size())  {
+                        return true;
+                    }
+                    //if size > pattern, move left pointer
+                    if(m.find(str[l])!=m.end() && m[str[l]]++==0){
+                        cnt++;
+                    }
+                    l++;
+                }
+            }
+        }
+        return false;
+  }
+```
+
+A more descriptive solution is
+
+1. Create a HashMap to calculate the frequencies of all characters in the pattern.
+
+2. Iterate through the string, adding one character at a time in the sliding window.
+
+3. If the character being added matches a character in the HashMap, decrement its frequency in the map. If the character frequency becomes zero, we got a complete match.
+
+4. If at any time, the number of characters matched is equal to the number of distinct characters in the pattern (i.e., total characters in the HashMap), we have gotten our required permutation.
+
+5. If the window size is greater than the length of the pattern, shrink the window to make it equal to the size of the pattern. At the same time, if the character going out was part of the pattern, put it back in the frequency HashMap.
+
+```CPP
+bool checkInclusion(string pattern, string str) {
+    if(pattern.size()==0)
+        return true;
+    unordered_map<char,int> m;
+    int l = 0;
+    int r = 0;
+    int cnt = 0;
+    for(int i=0;i<pattern.size();i++){
+        m[pattern[i]]++;  
+    }
+    for(r=0;r<str.size();r++){
+        if(m.find(str[r])!=m.end()){
+            m[str[r]]--;  
+            //find all occurence for this letter
+            if(m[str[r]]==0){
+                cnt++;
+            }
+        }
+        
+        if(cnt == m.size() && (r-l+1)==pattern.size()){
+            return true;
+        }
+        if(r>=pattern.size()-1){
+            if(m.find(str[l])!=m.end()){
+                if(m[str[l]]==0)
+                    cnt--;
+                m[str[l]]++;
+
+            }
+            l++;
+        }
+
+
+    }
+    return false;
+}
+```
 
 
 ## Find All Anagrams in a String
@@ -1798,6 +1903,20 @@ public:
     }
 };
 ```
+
+## Smallest Window containing Substring
+
+https://leetcode.com/problems/minimum-window-substring/
+
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+```
+Example:
+
+Input: S = "ADOBECODEBANC", T = "ABC"
+Output: "BANC"
+```
+
 
 ##  Longest Substring Without Repeating Characters
 
