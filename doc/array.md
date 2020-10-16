@@ -15,6 +15,10 @@
     - [Contains Duplicate](#contains-duplicate)
     - [Max consecutive Ones](#max-consecutive-ones)
     - [Read buffer from Read4](#read-buffer-from-read4)
+  - [Cyclic Sort](#cyclic-sort)
+    - [Find missing numbers](#find-missing-numbers)
+    - [Find the Corrupt Pair](#find-the-corrupt-pair)
+    - [Smallest missing positive](#smallest-missing-positive)
 - [Sub Array](#sub-array)
   - [Common Tchnqiues](#common-tchnqiues)
   - [Sub Array Sum](#sub-array-sum)
@@ -488,6 +492,148 @@ public:
     }
 };
 ```
+
+## Cyclic Sort
+
+### Find missing numbers
+
+https://www.educative.io/courses/grokking-the-coding-interview/Y52qNM0ljWK
+
+We are given an unsorted array containing numbers taken from the range 1 to ‘n’. The array can have duplicates, which means some numbers will be missing. Find all those missing numbers.
+
+```
+Example 1:
+
+Input: [2, 3, 1, 8, 2, 3, 5, 1]
+Output: 4, 6, 7
+Explanation: The array should have all numbers from 1 to 8, due to duplicates 4, 6, and 7 are missing.
+Example 2:
+
+Input: [2, 4, 1, 2]
+Output: 3
+Example 3:
+
+Input: [2, 3, 2, 1]
+Output: 4
+```
+
+```CPP
+static vector<int> findNumbers(vector<int> &nums) {
+      int i = 0;
+      while (i < nums.size()) {
+        if (nums[i] != nums[nums[i] - 1]) {
+          swap(nums, i, nums[i] - 1);
+        } else {
+          i++;
+        }
+      }
+
+      vector<int> missingNumbers;
+      for (i = 0; i < nums.size(); i++) {
+        if (nums[i] != i + 1) {
+          missingNumbers.push_back(i + 1);
+        }
+      }
+
+      return missingNumbers;
+  }
+
+private:
+  static void swap(vector<int> &arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+```
+
+###  Find the Corrupt Pair 
+
+We are given an unsorted array containing ‘n’ numbers taken from the range 1 to ‘n’. The array originally contained all the numbers from 1 to ‘n’, but due to a data error, one of the numbers got duplicated which also resulted in one number going missing. Find both these numbers.
+
+```
+Example 1:
+
+Input: [3, 1, 2, 5, 2]
+Output: [2, 4]
+Explanation: '2' is duplicated and '4' is missing.
+Example 2:
+
+Input: [3, 1, 2, 3, 6, 4]
+Output: [3, 5]
+Explanation: '3' is duplicated and '5' is missing.
+```
+
+```CPP
+//Since only one number got corrupted, the number at the wrong index is the duplicated number and the index itself represents the missing number.
+
+static vector<int> findNumbers(vector<int> &nums) {
+    int i = 0;
+    while (i < nums.size()) {
+      if (nums[i] != nums[nums[i] - 1]) {
+        swap(nums, i, nums[i] - 1);
+      } else {
+        i++;
+      }
+    }
+
+    for (i = 0; i < nums.size(); i++) {
+      if (nums[i] != i + 1) {
+        return vector<int>{nums[i], i + 1};
+      }
+    }
+
+    return vector<int>{-1, -1};
+  }
+
+ private:
+  static void swap(vector<int> &arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+```
+
+### Smallest missing positive
+
+https://leetcode.com/problems/first-missing-positive/
+
+https://www.educative.io/courses/grokking-the-coding-interview/R1GXQ071GQ0
+
+```CPP
+    int firstMissingPositive(vector<int>& nums) {
+/*
+ideally we should have vector as 1,2,3,...n. so nums[i-1]=i
+
+Just go through the array sequentially and for every index write the value at the index to the index specified by value, recursively placing any value at that location to its place and throwing away values > N (<0). Then go again through the array looking for the spot where value doesn't match the index - that's the smallest value not in the array. 
+*/
+
+  int i = 0;
+    while (i < nums.size()) {
+      //for negative or >size num, not process, their position will be missing positive
+      if (nums[i] > 0 && nums[i] <= nums.size() && nums[i] != nums[nums[i] - 1]) {
+        swap(nums, i, nums[i] - 1);
+      } else {
+        i++;
+      }
+    }
+
+    for (i = 0; i < nums.size(); i++) {
+      if (nums[i] != i + 1) {
+        return i + 1;
+      }
+    }
+
+    return nums.size() + 1;
+  }
+
+ private:
+  static void swap(vector<int> &arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+```
+
 
 
 # Sub Array

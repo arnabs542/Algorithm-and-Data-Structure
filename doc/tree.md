@@ -28,6 +28,9 @@
     - [Count Univalue Subtrees](#count-univalue-subtrees)
     - [Lowest Common Ancestor of a Binary Tree](#lowest-common-ancestor-of-a-binary-tree)
     - [Path Sum](#path-sum)
+      - [Check Path sum exists](#check-path-sum-exists)
+      - [All path to a sum](#all-path-to-a-sum)
+      - [Path Sum(no need to be leaf)](#path-sumno-need-to-be-leaf)
       - [Max path Sum](#max-path-sum)
     - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
     - [Valid sequence in Tree](#valid-sequence-in-tree)
@@ -65,6 +68,11 @@
   - [Tree is Balanced Binary tree?](#tree-is-balanced-binary-tree)
   - [Valid BST](#valid-bst)
   - [Level Tranversal](#level-tranversal)
+    - [minimum depth](#minimum-depth)
+    - [Level Order Successor](#level-order-successor)
+    - [Connect Level Order Siblings/Populating Next Right](#connect-level-order-siblingspopulating-next-right)
+      - [Connect All Level Order Siblings](#connect-all-level-order-siblings)
+    - [Right Side view](#right-side-view)
     - [Deepest leaves sum](#deepest-leaves-sum)
     - [Lowest common Ancestor](#lowest-common-ancestor)
   - [Recover BST](#recover-bst)
@@ -837,6 +845,8 @@ if we know node may exist in tree
 
 ### Path Sum
 
+#### Check Path sum exists
+
 https://leetcode.com/problems/path-sum/
 
 ```CPP
@@ -859,6 +869,7 @@ https://leetcode.com/problems/path-sum/
     }
 ```
 
+#### All path to a sum 
 
 https://leetcode.com/problems/path-sum-ii/
 
@@ -914,6 +925,8 @@ void help(TreeNode* root, int sum, vector<vector<int>>& ret, vector<int> &one){
         
 }
 ```
+
+#### Path Sum(no need to be leaf)
 
 https://leetcode.com/problems/path-sum-iii/
 
@@ -2029,6 +2042,224 @@ bool isBSThelper(TreeNode *root, long min, long max){
 ```
 
 ## Level Tranversal
+
+### minimum depth
+
+Find the minimum depth of a binary tree. The minimum depth is the number of nodes along the shortest path from the root node to the nearest leaf node.
+
+https://leetcode.com/problems/minimum-depth-of-binary-tree/
+
+https://www.educative.io/courses/grokking-the-coding-interview/3jwVx84OMkO
+
+1. BFS way
+
+```CPP
+static int findDepth(TreeNode *root) {
+    if (root == nullptr) {
+      return 0;
+    }
+
+    queue<TreeNode *> queue;
+    queue.push(root);
+    int minimumTreeDepth = 0;
+    while (!queue.empty()) {
+      minimumTreeDepth++;
+      int levelSize = queue.size();
+      for (int i = 0; i < levelSize; i++) {
+        TreeNode *currentNode = queue.front();
+        queue.pop();
+
+        // check if this is a leaf node
+        if (currentNode->left == nullptr && currentNode->right == nullptr) {
+          return minimumTreeDepth;
+        }
+
+        // insert the children of current node in the queue
+        if (currentNode->left != nullptr) {
+          queue.push(currentNode->left);
+        }
+        if (currentNode->right != nullptr) {
+          queue.push(currentNode->right);
+        }
+      }
+    }
+    return minimumTreeDepth;
+  }
+```
+
+2. DFS
+
+```CPP
+int minDepth(TreeNode *root) {
+    if(root== NULL) return 0;
+    if (root->left==NULL && root->right==NULL){
+        return 1;
+    }
+    //here to define INT_MAX otherwise compare may need unexpected results
+    int left_depth = INT_MAX;
+    int right_depth = INT_MAX;
+    if(root->left)
+        left_depth = minDepth(root->left)+1;
+        
+    if(root->right)
+        right_depth = minDepth(root->right)+1;
+    
+    return left_depth<right_depth?left_depth:right_depth;
+
+}
+```
+
+### Level Order Successor
+
+https://www.educative.io/courses/grokking-the-coding-interview/7nO4VmA74Lr
+
+Given a binary tree and a node, find the level order successor of the given node in the tree. The level order successor is the node that appears right after the given node in the level order traversal.
+
+```CPP
+static TreeNode *findSuccessor(TreeNode *root, int key) {
+    if (root == nullptr) {
+      return nullptr;
+    }
+
+    queue<TreeNode *> queue;
+    queue.push(root);
+    while (!queue.empty()) {
+      TreeNode *currentNode = queue.front();
+      queue.pop();
+      // insert the children of current node in the queue
+      if (currentNode->left != nullptr) {
+        queue.push(currentNode->left);
+      }
+      if (currentNode->right != nullptr) {
+        queue.push(currentNode->right);
+      }
+
+      // break if we have found the key
+      if (currentNode->val == key) {
+        break;
+      }
+    }
+
+    return queue.front();
+  }
+```
+
+### Connect Level Order Siblings/Populating Next Right
+
+https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
+
+https://www.educative.io/courses/grokking-the-coding-interview/m2YYxXDOJ03
+
+Given a binary tree, connect each node with its level order successor. The last node of each level should point to a null node.
+
+```CPP
+Node* connect(Node* root) {
+    if(root==NULL)
+        return root;
+    
+    queue<Node*> q;
+    q.push(root);
+    
+    while(!q.empty()){
+        
+        int len=q.size();
+        //level by level
+        for(int i=0;i<len;i++){
+            Node* cur=q.front();
+            q.pop();
+            //not to right most
+            if(i<len-1)
+                cur->next=q.front();
+            else
+                cur->next=NULL;
+            if(cur->left)
+                q.push(cur->left);
+            if(cur->right)
+                q.push(cur->right);
+        }
+    }
+    
+    return root;
+        
+}
+```
+
+
+#### Connect All Level Order Siblings
+
+https://www.educative.io/courses/grokking-the-coding-interview/NE5109Jl02v 
+
+extended version, if current level -> next could be point to next level's begining
+
+```CPP
+Node* connect(Node* root) {
+    if(root==NULL)
+        return root;
+    
+    queue<Node*> q;
+    q.push(root);
+    Node* prev = NULL;
+    
+    while(!q.empty()){
+        
+        int len=q.size();
+        //level by level
+        for(int i=0;i<len;i++){
+            Node* cur=q.front();
+            q.pop();
+            //not to right most
+            if(prev!=NULL)
+              prev->next = cur;
+
+            prev = cur;
+            if(cur->left)
+                q.push(cur->left);
+            if(cur->right)
+                q.push(cur->right);
+        }
+    }
+    
+    return root;
+        
+}
+
+```
+
+### Right Side view
+
+Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
+
+https://leetcode.com/problems/binary-tree-right-side-view/
+
+https://www.educative.io/courses/grokking-the-coding-interview/B8nj5RB1LJo
+
+```CPP
+vector<int> rightSideView(TreeNode* root) {
+    vector<int> ret;
+    if(root==NULL)
+            return ret;
+    queue<TreeNode*> q;
+    q.push(root);
+    while(!q.empty()){
+
+        int len=q.size();
+        //level by level
+        for(int i=0;i<len;i++){
+            TreeNode* cur=q.front();
+            q.pop();
+            //right most
+            if(i==len-1)
+                ret.push_back(cur->val);
+
+            if(cur->left)
+                q.push(cur->left);
+            if(cur->right)
+                q.push(cur->right);
+        }
+    }
+    return ret;
+}
+```
 
 ### Deepest leaves sum
 
