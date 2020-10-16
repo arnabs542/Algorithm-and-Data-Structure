@@ -31,6 +31,7 @@
       - [Check Path sum exists](#check-path-sum-exists)
       - [All path to a sum](#all-path-to-a-sum)
       - [Path Sum(no need to be leaf)](#path-sumno-need-to-be-leaf)
+      - [Sum Root to Leaf Numbers](#sum-root-to-leaf-numbers)
       - [Max path Sum](#max-path-sum)
     - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
     - [Valid sequence in Tree](#valid-sequence-in-tree)
@@ -1014,6 +1015,62 @@ int help(TreeNode* root, int last, int& sum){
 }
 ```
 
+#### Sum Root to Leaf Numbers
+
+https://leetcode.com/problems/sum-root-to-leaf-numbers/
+
+Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+An example is the root-to-leaf path 1->2->3 which represents the number 123.
+Find the total sum of all root-to-leaf numbers.
+
+Note: A leaf is a node with no children.
+
+```
+Example:
+
+Input: [4,9,0,5,1]
+    4
+   / \
+  9   0
+ / \
+5   1
+Output: 1026
+Explanation:
+The root-to-leaf path 4->9->5 represents the number 495.
+The root-to-leaf path 4->9->1 represents the number 491.
+The root-to-leaf path 4->0 represents the number 40.
+Therefore, sum = 495 + 491 + 40 = 1026.
+```
+
+```CPP
+int sumNumbers(TreeNode* root) {
+    int cur_sum =0;
+    int total_sum = 0;
+    help(root, cur_sum, total_sum);
+    return total_sum;
+}
+
+void help(TreeNode* root, int cur_sum, int& total_sum){
+    if(!root) {
+        return;
+    }
+    
+    cur_sum = cur_sum*10 + root->val;
+    
+    if(root->left == NULL && root->right==NULL){
+        total_sum+=cur_sum;
+        return;
+    }
+        
+
+    if(root->left)
+        help(root->left, cur_sum, total_sum);
+    if(root->right)
+        help(root->right, cur_sum, total_sum);
+    
+}
+```
+
 #### Max path Sum
 
 https://leetcode.com/problems/binary-tree-maximum-path-sum/
@@ -1061,6 +1118,8 @@ int help(TreeNode* root, int &maxPath){
     return root->val + max(l, r);
 }
 ```
+
+
 
 
 ### Larger/smaller item in Tree path
