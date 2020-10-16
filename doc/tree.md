@@ -30,8 +30,10 @@
     - [Path Sum](#path-sum)
       - [Check Path sum exists](#check-path-sum-exists)
       - [All path to a sum](#all-path-to-a-sum)
+        - [Count Paths for a Sum](#count-paths-for-a-sum)
       - [Path Sum(no need to be leaf)](#path-sumno-need-to-be-leaf)
       - [Sum Root to Leaf Numbers](#sum-root-to-leaf-numbers)
+      - [Path With Given Sequence](#path-with-given-sequence)
       - [Max path Sum](#max-path-sum)
     - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
     - [Valid sequence in Tree](#valid-sequence-in-tree)
@@ -927,6 +929,36 @@ void help(TreeNode* root, int sum, vector<vector<int>>& ret, vector<int> &one){
 }
 ```
 
+##### Count Paths for a Sum
+
+https://leetcode.com/problems/path-sum-iii/
+
+https://www.educative.io/courses/grokking-the-coding-interview/xV2J7jvN1or
+
+You are given a binary tree in which each node contains an integer value.
+Find the number of paths that sum to a given value.
+The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+
+```CPP
+int pathSum(TreeNode* root, int sum) {
+    int ret = 0;
+    if(root==NULL)
+        return 0;
+    return help(root, 0, sum) + pathSum(root->left, sum)+ pathSum(root->right, sum);
+}
+
+int help(TreeNode* root, int last, int& sum){
+    if(!root) 
+        return 0;
+    int cur = last + root->val;
+    
+    if (cur==sum)
+        return  1+ help(root->left, cur, sum) + help(root->right, cur, sum);
+    else
+        return  help(root->left, cur, sum) + help(root->right, cur, sum);
+}
+```
+
 #### Path Sum(no need to be leaf)
 
 https://leetcode.com/problems/path-sum-iii/
@@ -1070,6 +1102,46 @@ void help(TreeNode* root, int cur_sum, int& total_sum){
     
 }
 ```
+
+#### Path With Given Sequence
+
+https://www.educative.io/courses/grokking-the-coding-interview/m280XNlPOkn
+
+Given a binary tree and a number sequence, find if the sequence is present as a root-to-leaf path in the given tree.
+
+```CPP
+static bool findPath(TreeNode *root, const vector<int> &sequence) {
+    if (root == nullptr) {
+      return sequence.empty();
+    }
+
+    return findPathRecursive(root, sequence, 0);
+  }
+
+ private:
+  static bool findPathRecursive(TreeNode *currentNode, const vector<int> &sequence,
+                                int sequenceIndex) {
+    if (currentNode == nullptr) {
+      return false;
+    }
+
+    if (sequenceIndex >= sequence.size() || currentNode->val != sequence[sequenceIndex]) {
+      return false;
+    }
+
+    // if the current node is a leaf, add it is the end of the sequence, we have found a path!
+    if (currentNode->left == nullptr && currentNode->right == nullptr &&
+        sequenceIndex == sequence.size() - 1) {
+      return true;
+    }
+
+    // recursively call to traverse the left and right sub-tree
+    // return true if any of the two recursive call return true
+    return findPathRecursive(currentNode->left, sequence, sequenceIndex + 1) ||
+           findPathRecursive(currentNode->right, sequence, sequenceIndex + 1);
+  }
+```
+
 
 #### Max path Sum
 

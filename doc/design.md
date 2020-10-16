@@ -10,7 +10,8 @@
 - [rate Limiter](#rate-limiter)
 - [Min Stack](#min-stack)
 - [Circular Buffer](#circular-buffer)
-- [Dot Product of Two Sparse Vectors](#dot-product-of-two-sparse-vectors)
+- [Sparse Vector](#sparse-vector)
+  - [Dot Product of Two Sparse Vectors](#dot-product-of-two-sparse-vectors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -569,7 +570,9 @@ public:
 };
 ```
 
-# Dot Product of Two Sparse Vectors
+# Sparse Vector
+
+## Dot Product of Two Sparse Vectors
 
 https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
 
