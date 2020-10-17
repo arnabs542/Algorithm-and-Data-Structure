@@ -6,7 +6,7 @@
   - [K way Merge](#k-way-merge)
     - [Merge K sorted List](#merge-k-sorted-list)
   - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
-    - [K-th Smallest in Array](#k-th-smallest-in-array)
+    - [K-th Largest in Array](#k-th-largest-in-array)
     - [K-th Smallest In stream](#k-th-smallest-in-stream)
     - [K smallest In Matrix](#k-smallest-in-matrix)
     - [K smallest In M Sorted Lists](#k-smallest-in-m-sorted-lists)
@@ -140,11 +140,10 @@ public:
 
 ## K-th Largest/Smallest problem
 
-* Method 1: Sort and get the K-th, the drawback is complexity is ```Nlog(N)```
+since we only interested in K-th, just use heap and complexity is ```Nlog(K)```
 
-* Method 2: since we only interested in K-th, just use heap and complexity is ```Nlog(K)```, Use heap will be best. Also it can deal with the streaming case
 
-### K-th Smallest in Array
+### K-th Largest in Array
 
 https://leetcode.com/problems/kth-largest-element-in-an-array/
 
@@ -164,25 +163,35 @@ Output: 4
 Note:
 You may assume k is always valid, 1 ≤ k ≤ array's length.
 
+* __min-heap__ K is minimum of K maximum numbers, which is K-th largest
+
 ```CPP
 class Solution {
 public:
-    //for min heap, we need compare function which is not default less, but larger
-    struct mycompare{
-        bool operator()(int a, int b){
-            return a>b;
-        }
-    };
-
     int findKthLargest(vector<int>& nums, int k) {
-        //should have a min heap size k, where top is the minimum of max k values.
-        priority_queue<int,vector<int>,mycompare> pq;
-        for(int i=0;i<nums.size();i++){
-            pq.push(nums[i]);
-            if(pq.size()>k)
+        priority_queue<int, vector<int>, greater<int>> pq;
+        for (int num : nums) {
+            pq.push(num);
+            if (pq.size() > k) {
                 pq.pop();
+            }
         }
-        
+        return pq.top();
+    }
+};
+```
+
+
+* __max-heap__ K is max, so if we pop K-1 numbers, we pop K-1 larger number , and remaining is K-th largest
+
+```CPP
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        priority_queue<int> pq(nums.begin(), nums.end());
+        for (int i = 0; i < k - 1; i++) {
+            pq.pop();
+        }
         return pq.top();
     }
 };
@@ -364,11 +373,12 @@ struct valueCompare {
     // put the 1st element of each array in the min heap, along with indexes in 2 d vector
     for (int i = 0; i < lists.size(); i++) {
       if (!lists[i].empty()) {
-        minHeap.push(make_pair(lists[i][0], make_pair(i, 0)));
+        pq.push(make_pair(lists[i][0], make_pair(i, 0)));
       }
     }
 
     // take the smallest (top) element form the min heap, if the running count is equal to k return
+    // we have taken k minimum already, return 
     // the number if the array of the top element has more elements, add the next element to the
     // heap
     int numberCount = 0, result;
@@ -391,6 +401,39 @@ struct valueCompare {
   }
 ```
 
+* We can also use Max Heap to solve this problem, insert all into heap, and limit Heap size to K, so finally top is max of K minimum items, which is K-th smallest
+
+
+```CPP
+ public:
+  struct valueCompare {
+    bool operator()(const pair<int, pair<int, int>> &x, const pair<int, pair<int, int>> &y) {
+      return x.first > y.first;
+    }
+  };
+
+  static int findKthSmallest(const vector<vector<int>> &lists, int k) {
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, valueCompare>
+        maxHeap;
+
+    // put the 1st element of each array in the min heap
+    for (int i = 0; i < lists.size(); i++) {
+      for (int j = 0; j < lists[i].size(); j++) {
+        maxHeap.push(make_pair(lists[i][0], make_pair(i, 0)));
+        if (maxHeap.size() > k) {
+          maxHeap.pop();
+      }
+      }
+    }
+
+
+    return maxHeap.top().first;
+  }
+```
+
+
+
+
 ### K pairs of smallest/largest Sum
 
 https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
@@ -411,7 +454,7 @@ private:
 public:
     vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
         vector<vector<int>> ret;
-
+        //Max heap, top is max of K items in heap
         priority_queue<pair<int, int>, vector<pair<int, int>>, mycompare> pq;
         for(int i=0;i<nums1.size();i++){
             for(int j=0;j<nums2.size();j++){
@@ -508,6 +551,10 @@ vector<int> smallestRange(vector<vector<int>>& nums) {
 ```
 
 ## Two Heaps
+
+In many problems, where we are given a set of elements such that we can divide them into two parts. To solve the problem, we are interested in knowing the smallest element in one part and the biggest element in the other part. This pattern is an efficient approach to solve such problems.
+
+This pattern uses two Heaps to solve these problems; A Min Heap to find the smallest element and a Max Heap to find the biggest element.
 
 ### Find the median value in data stream on the fly:
 
