@@ -3,12 +3,15 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Heap](#heap)
+  - [K way Merge](#k-way-merge)
+    - [Merge K sorted List](#merge-k-sorted-list)
   - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
-    - [In array](#in-array)
-    - [In stream](#in-stream)
-    - [In Matrix](#in-matrix)
-    - [Merge/Order List/Vector](#mergeorder-listvector)
-  - [Search in sorted list of vectors](#search-in-sorted-list-of-vectors)
+    - [K-th Smallest in Array](#k-th-smallest-in-array)
+    - [K-th Smallest In stream](#k-th-smallest-in-stream)
+    - [K smallest In Matrix](#k-smallest-in-matrix)
+    - [K smallest In M Sorted Lists](#k-smallest-in-m-sorted-lists)
+    - [K pairs of smallest/largest Sum](#k-pairs-of-smallestlargest-sum)
+    - [smallest range in K lists](#smallest-range-in-k-lists)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
     - [Max value with constraint](#max-value-with-constraint)
@@ -70,13 +73,78 @@ Time complexity for construct the heap is:
 ```shell
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
+
+## K way Merge
+
+Whenever we are given ‘K’ sorted arrays, we can use a Heap to efficiently perform a sorted traversal of all the elements of all arrays. 
+
+### Merge K sorted List
+
+https://leetcode.com/problems/merge-k-sorted-lists/
+
+You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+
+Merge all the linked-lists into one sorted linked-list and return it.
+
+ 
+```
+Example 1:
+
+Input: lists = [[1,4,5],[1,3,4],[2,6]]
+Output: [1,1,2,3,4,4,5,6]
+Explanation: The linked-lists are:
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+merging them into one sorted list:
+1->1->2->3->4->4->5->6
+```
+
+```CPP
+class Solution {
+public:
+    struct mycompare{
+        bool operator()(ListNode* a, ListNode* b){
+            return a->val>b->val;
+        }
+    };
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode* ret = NULL;
+
+        //construct min heap
+        priority_queue<ListNode*, vector<ListNode*>, mycompare> pq; 
+        ListNode* dummy = new ListNode(0);
+        ListNode* head = dummy;
+        for(int i=0; i<lists.size(); i++){ 
+            if(lists[i]){ 
+                pq.push(lists[i]);
+            }
+        }
+
+        while(!pq.empty()){
+            head->next = pq.top();
+            head = head->next;
+            if(head->next)
+                pq.push(head->next);
+            pq.pop();
+        }
+        
+        return dummy->next;
+        
+    }
+};
+```
+
 ## K-th Largest/Smallest problem
 
 * Method 1: Sort and get the K-th, the drawback is complexity is ```Nlog(N)```
 
 * Method 2: since we only interested in K-th, just use heap and complexity is ```Nlog(K)```, Use heap will be best. Also it can deal with the streaming case
 
-### In array
+### K-th Smallest in Array
 
 https://leetcode.com/problems/kth-largest-element-in-an-array/
 
@@ -120,7 +188,7 @@ public:
 };
 ```
 
-### In stream
+### K-th Smallest In stream
 we can expand this problem, let's see 
 
 https://leetcode.com/problems/kth-largest-element-in-a-stream/
@@ -197,7 +265,7 @@ public:
 ```
 
 
-### In Matrix
+### K smallest In Matrix
 
 https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
 
@@ -258,120 +326,185 @@ public:
 
 /* complexity will be K*log(Row) */
 ```
-### Merge/Order List/Vector
 
-https://leetcode.com/problems/merge-k-sorted-lists/
+### K smallest In M Sorted Lists
 
-You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+https://www.educative.io/courses/grokking-the-coding-interview/myAqDMyRXn3
 
-Merge all the linked-lists into one sorted linked-list and return it.
+Given ‘M’ sorted arrays, find the K’th smallest number among all the arrays.
 
- 
 ```
 Example 1:
 
-Input: lists = [[1,4,5],[1,3,4],[2,6]]
-Output: [1,1,2,3,4,4,5,6]
-Explanation: The linked-lists are:
-[
-  1->4->5,
-  1->3->4,
-  2->6
-]
-merging them into one sorted list:
-1->1->2->3->4->4->5->6
+Input: L1=[2, 6, 8], L2=[3, 6, 7], L3=[1, 3, 4], K=5
+Output: 4
+Explanation: The 5th smallest number among all the arrays is 4, this can be verified from the merged 
+list of all the arrays: [1, 2, 3, 3, 4, 6, 6, 7, 8]
+Example 2:
+
+Input: L1=[5, 8, 9], L2=[1, 7], K=3
+Output: 7
+Explanation: The 3rd smallest number among all the arrays is 7.
 ```
 
 ```CPP
-class Solution {
-public:
-    struct mycompare{
-        bool operator()(ListNode* a, ListNode* b){
-            return a->val>b->val;
-        }
-    };
 
-    ListNode* mergeKLists(vector<ListNode*>& lists) {
-        ListNode* ret = NULL;
+// the input is a list of arrays compared to LinkedLists. This means that when we want to push the next number in the heap we need to know what the index of the current number in the current array was.
 
-        //construct min heap
-        priority_queue<ListNode*, vector<ListNode*>, mycompare> pq; 
-        ListNode* dummy = new ListNode(0);
-        ListNode* head = dummy;
-        for(int i=0; i<lists.size(); i++){ 
-            if(lists[i]){ 
-                pq.push(lists[i]);
-            }
-        }
-
-        while(!pq.empty()){
-            head->next = pq.top();
-            head = head->next;
-            if(head->next)
-                pq.push(head->next);
-            pq.pop();
-        }
-        
-        return dummy->next;
-        
+struct valueCompare {
+    bool operator()(const pair<int, pair<int, int>> &x, const pair<int, pair<int, int>> &y) {
+      return x.first > y.first;
     }
-};
+  };
+
+  static int findKthSmallest(const vector<vector<int>> &lists, int k) {
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, valueCompare>
+        minHeap;
+
+    // put the 1st element of each array in the min heap, along with indexes in 2 d vector
+    for (int i = 0; i < lists.size(); i++) {
+      if (!lists[i].empty()) {
+        minHeap.push(make_pair(lists[i][0], make_pair(i, 0)));
+      }
+    }
+
+    // take the smallest (top) element form the min heap, if the running count is equal to k return
+    // the number if the array of the top element has more elements, add the next element to the
+    // heap
+    int numberCount = 0, result;
+    while (!minHeap.empty()) {
+      auto cur = minHeap.top();
+      minHeap.pop();
+      result = cur.first;
+      if (++numberCount == k) {
+        break;
+      }
+      cur.second.second++; //go to next col in current row
+      //if within boudary
+      if (lists[cur.second.first].size() > cur.second.second) {
+        cur.first = lists[cur.second.first][cur.second.second];
+        minHeap.push(cur);
+      }
+    }
+
+    return result;
+  }
 ```
 
-## Search in sorted list of vectors
+### K pairs of smallest/largest Sum
 
-Some problem exhibts like there are vectors with items are sorted vector, and need to do some stuffs
+https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
 
-https://leetcode.com/articles/smallest-range/
+https://www.educative.io/courses/grokking-the-coding-interview/B1JKxRB8EDJ
 
-You have k lists of sorted integers in ascending order. Find the smallest range that includes at least one number from each of the k lists.
+You are given two integer arrays nums1 and nums2 sorted in ascending order and an integer k.
+Define a pair (u,v) which consists of one element from the first array and one element from the second array.
+Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums.
 
-We define the range [a,b] is smaller than range [c,d] if b-a < d-c or a < c if b-a == d-c.
+```CPP
+private:
+    struct mycompare{
+        bool operator()(pair<int, int>& p1, pair<int, int>& p2){
+            return p1.first + p1.second < p2.first + p2.second;
+        }
+    };
+public:
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<vector<int>> ret;
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>, mycompare> pq;
+        for(int i=0;i<nums1.size();i++){
+            for(int j=0;j<nums2.size();j++){
+                if(pq.size()<k){
+                    pq.push(make_pair(nums1[i],nums2[j]));
+                }else{
+                    pair<int,int> cur_max = pq.top();
+                    pair<int,int> newone = make_pair(nums1[i],nums2[j]);
+                    if(cur_max.first+cur_max.second>nums1[i] + nums2[j]){
+                        pq.push(newone);
+                        pq.pop();
+                    }else{
+                      //since it is increasing array, from then on, we can not fin any pairs which is smaller 
+                      break;
+                    }
+                        
+                }
+            }
+        }
+        
+        while(!pq.empty()){
+            ret.push_back(pq.top());
+            pq.pop();
+        }
+        reverse(ret.begin(),ret.end());
+        return ret;
+    }
+```
+
+### smallest range in K lists
+
+https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/
+
+https://www.educative.io/courses/grokking-the-coding-interview/JPGWDNRx3w2
+
+Given ‘M’ sorted arrays, find the smallest range that includes at least one number from each of the ‘M’ lists.
 
 ```
 Example 1:
-Input:[[4,10,15,24,26], [0,9,12,20], [5,18,22,30]]
-Output: [20,24]
-Explanation:
-List 1: [4, 10, 15, 24,26], 24 is in range [20,24].
-List 2: [0, 9, 12, 20], 20 is in range [20,24].
-List 3: [5, 18, 22, 30], 22 is in range [20,24].
+
+Input: L1=[1, 5, 8], L2=[4, 12], L3=[7, 8, 10]
+Output: [4, 7]
+Explanation: The range [4, 7] includes 5 from L1, 4 from L2 and 7 from L3.
+Example 2:
+
+Input: L1=[1, 9], L2=[4, 12], L3=[7, 10, 16]
+Output: [9, 12]
+Explanation: The range [9, 12] includes 9 from L1, 12 from L2 and 10 from L3.
 ```
+
+We can start by inserting the first number from all the arrays in a min-heap. We will keep track of the largest number that we have inserted in the heap (let’s call it currentMaxNumber).
+
+In a loop, we’ll take the smallest (top) element from the min-heap andcurrentMaxNumber has the largest element that we inserted in the heap. If these two numbers give us a smaller range, we’ll update our range.
 
 ```CPP
 vector<int> smallestRange(vector<vector<int>>& nums) {
-    typedef vector<int>::iterator vi;
-    struct comp {
-        bool operator()(pair<vi, vi> p1, pair<vi, vi> p2) {
-            return * p1.first > * p2.first;
+        typedef vector<int>::iterator vi;
+        struct comp {
+            bool operator()(pair<vi, vi> p1, pair<vi, vi> p2) {
+                return *p1.first > *p2.first;
+            }
+        }; 
+        
+        int l = INT_MAX, h = INT_MIN;
+        priority_queue<pair<vi, vi>, vector<pair<vi, vi>>, comp> pq;
+        for(int i=0;i<nums.size();i++){
+            l = min(l, nums[i][0]);
+            h = max(h, nums[i][0]);
+            //min heap based on low bound, what stored is iterator, which we can use ++ to go to next in vector.
+            pq.push(make_pair(nums[i].begin(), nums[i].end())); 
+            
         }
-    };
-
-    int l = INT_MAX, h = INT_MIN;
-    priority_queue<pair<vi, vi>, vector<pair<vi, vi>>, comp> pq;
-    for(int i=0;i<nums.size();i++){
-        l = min(l, nums[i][0]);
-        h = max(h, nums[i][0]);
-        pq.push(make_pair(nums[i].begin(), nums[i].end())); //min heap
-
+        vector<int> ret = {l,h};
+        
+        while(true){
+            auto cur =pq.top();
+            pq.pop();
+            ++cur.first; //go to next in current min's vector
+            if (cur.first == cur.second)   //reach one list's end
+                break;
+            pq.push(cur);  //push cur min's next item in vector
+            //update both low and high
+            l = *pq.top().first;
+            h = max(h, *cur.first);
+            if (h - l < ret[1] - ret[0])
+                ret = {l, h};
+            
+            
+        }
+        
+        return ret;
+        
     }
-    vector<int> ret = {l,h};
-
-    while(true){
-        auto cur =pq.top();
-        pq.pop();
-        ++cur.first;
-        if (cur.first == cur.second)   //reach one list's end
-            break;
-        pq.push(cur);  //push cur min's next item in vector
-        l = * pq.top().first;
-        h = max(h, * cur.first);
-        if (h - l < ret[1] - ret[0])
-            ret = {l, h};
-    }
-    return ret;
-}
-
 ```
 
 ## Two Heaps

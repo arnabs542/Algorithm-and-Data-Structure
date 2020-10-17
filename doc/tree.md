@@ -959,6 +959,72 @@ int help(TreeNode* root, int last, int& sum){
 }
 ```
 
+```CPP
+    int pathSum(TreeNode* root, int sum) {
+        vector<int> cur;
+        int cnt = 0;
+        help(root,  cur, sum, cnt);
+        return cnt;
+    }
+    
+    void help(TreeNode* root, vector<int> cur, int sum, int& cnt){
+        if(root==NULL)
+            return;
+        
+        cur.push_back(root->val);
+        
+        int path_sum = 0;
+        // find the sums of all sub-paths ending in current node, so reverse go through vector
+        for (int i=cur.size()-1;i>=0;i--) {
+          path_sum += cur[i];
+          if (path_sum == sum) {
+            cnt++;
+          }
+        }
+        
+            
+        help(root->left, cur, sum, cnt);
+        help(root->right, cur, sum, cnt);
+
+        // remove the current node from the path to backtrack,
+        cur.pop_back();
+
+    }
+```
+
+* Improved solution 3
+
+```CPP
+//record all prefix sums in  hash table. For current prefix sum x, check if (x - target) appears in the hash table.
+int pathSum(TreeNode* root, int sum) {
+        unordered_map<int, int> m;
+
+        
+        int total = 0;
+        helper(root, 0, sum, total, m);
+        return total;
+    }
+    
+    void helper(TreeNode *p, int cur, int sum, int &total, unordered_map<int, int> &m) {
+        if (!p) return;
+        
+        cur += p->val;
+        
+        if(cur==sum){
+            total++;
+        }
+        
+        if (m.find(cur - sum) != m.end()) 
+            total += m[cur - sum];
+        m[cur]++;
+        
+        helper(p->left, cur, sum, total, m);
+        helper(p->right, cur, sum, total, m);
+        
+        m[cur]--;
+    }
+```
+
 #### Path Sum(no need to be leaf)
 
 https://leetcode.com/problems/path-sum-iii/
