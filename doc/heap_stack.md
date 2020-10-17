@@ -8,8 +8,8 @@
   - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
     - [K-th Largest in Array](#k-th-largest-in-array)
     - [K-th Smallest In stream](#k-th-smallest-in-stream)
-    - [K smallest In Matrix](#k-smallest-in-matrix)
     - [K smallest In M Sorted Lists](#k-smallest-in-m-sorted-lists)
+    - [K smallest In Matrix](#k-smallest-in-matrix)
     - [K pairs of smallest/largest Sum](#k-pairs-of-smallestlargest-sum)
     - [smallest range in K lists](#smallest-range-in-k-lists)
   - [Two Heaps](#two-heaps)
@@ -163,7 +163,7 @@ Output: 4
 Note:
 You may assume k is always valid, 1 ≤ k ≤ array's length.
 
-* __min-heap__ K is minimum of K maximum numbers, which is K-th largest
+* __min-heap__ heap top is minimum of K maximum numbers, which is K-th largest
 
 ```CPP
 class Solution {
@@ -182,7 +182,7 @@ public:
 ```
 
 
-* __max-heap__ K is max, so if we pop K-1 numbers, we pop K-1 larger number , and remaining is K-th largest
+* __max-heap__ heap top is max, so if we pop K-1 numbers, we pop K-1 larger number , and remaining is K-th largest
 
 ```CPP
 class Solution {
@@ -273,69 +273,6 @@ public:
  */
 ```
 
-
-### K smallest In Matrix
-
-https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
-
-Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
-
-Note that it is the kth smallest element in the sorted order, not the kth distinct element.
-
-```
-Example:
-
-matrix = [
-   [ 1,  5,  9],
-   [10, 11, 13],
-   [12, 13, 15]
-],
-k = 8,
-
-return 13.
-```
-
-Note:
-You may assume k is always valid, 1 ≤ k ≤ n2.
-
-
-```CPP
-class Solution {
-public:
-    struct mycompare{
-        bool operator()(pair<int,pair<int,int>> a, pair<int,pair<int,int>> b){
-            return a.first>b.first;
-        }
-    };
-    int kthSmallest(vector<vector<int>>& matrix, int k) {
-        int n = matrix.size(); //n*n matrix
-        //construct minheap, so top is min value.  item is int(val), and pair<> matrix index
-        priority_queue <pair<int,pair<int,int>>, vector<pair<int,pair<int,int>>>, mycompare> pq;
-        //insert all first col, 
-        for(int i=0;i<n;i++){
-            pq.push(make_pair(matrix[i][0],make_pair(i,0)));
-        }
-        //pick any value [row,col+1] where [row,col] is location of top of heap, so it is definitely larger than top of heap.
-        //insert to heap, and pop top(min value)
-        int ret;
-        while(k--){
-            int val=pq.top().first;
-            int x=pq.top().second.first;
-            int y=pq.top().second.second;
-            ret = val;
-            pq.pop();
-            if(y<n-1){
-                pq.push(make_pair(matrix[x][y+1],make_pair(x,y+1)));
-            }
-        }
-        
-        return ret;
-    }
-};
-
-/* complexity will be K*log(Row) */
-```
-
 ### K smallest In M Sorted Lists
 
 https://www.educative.io/courses/grokking-the-coding-interview/myAqDMyRXn3
@@ -377,10 +314,9 @@ struct valueCompare {
       }
     }
 
-    // take the smallest (top) element form the min heap, if the running count is equal to k return
+    // take the smallest (top) element form the min heap, if the running count is equal to k 
     // we have taken k minimum already, return 
-    // the number if the array of the top element has more elements, add the next element to the
-    // heap
+
     int numberCount = 0, result;
     while (!minHeap.empty()) {
       auto cur = minHeap.top();
@@ -431,6 +367,69 @@ struct valueCompare {
   }
 ```
 
+
+### K smallest In Matrix
+
+https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
+
+Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
+
+Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+
+```
+Example:
+
+matrix = [
+   [ 1,  5,  9],
+   [10, 11, 13],
+   [12, 13, 15]
+],
+k = 8,
+
+return 13.
+```
+
+Note:
+You may assume k is always valid, 1 ≤ k ≤ n2.
+
+
+```CPP
+class Solution {
+public:
+    struct mycompare{
+        bool operator()(pair<int,pair<int,int>> a, pair<int,pair<int,int>> b){
+            return a.first>b.first;
+        }
+    };
+    int kthSmallest(vector<vector<int>>& matrix, int k) {
+        int n = matrix.size(); //n*n matrix
+        //construct minheap, so top is min value.  item is int(val), and pair<> matrix index
+        priority_queue <pair<int,pair<int,int>>, vector<pair<int,pair<int,int>>>, mycompare> pq;
+        //insert all first col, 
+        for(int i=0;i<n;i++){
+            pq.push(make_pair(matrix[i][0],make_pair(i,0)));
+        }
+        //pick any value [row,col+1] where [row,col] is location of top of heap, so it is definitely larger than top of heap.
+        //insert to heap, and pop top(min value)
+        //after pop K-1 times(K-1 smaller value, next is K-th smallest)
+        int ret;
+        while(k--){
+            int val=pq.top().first;
+            int x=pq.top().second.first;
+            int y=pq.top().second.second;
+            ret = val;
+            pq.pop();
+            if(y<n-1){
+                pq.push(make_pair(matrix[x][y+1],make_pair(x,y+1)));
+            }
+        }
+        
+        return ret;
+    }
+};
+
+/* complexity will be K*log(Row) */
+```
 
 
 
