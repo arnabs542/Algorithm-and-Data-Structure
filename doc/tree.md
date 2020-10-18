@@ -34,6 +34,7 @@
       - [Path Sum(no need to be leaf)](#path-sumno-need-to-be-leaf)
       - [Sum Root to Leaf Numbers](#sum-root-to-leaf-numbers)
       - [Path With Given Sequence](#path-with-given-sequence)
+      - [Tree Diamter](#tree-diamter)
       - [Max path Sum](#max-path-sum)
     - [Larger/smaller item in Tree path](#largersmaller-item-in-tree-path)
     - [Valid sequence in Tree](#valid-sequence-in-tree)
@@ -1208,6 +1209,36 @@ static bool findPath(TreeNode *root, const vector<int> &sequence) {
   }
 ```
 
+#### Tree Diamter
+
+https://leetcode.com/problems/diameter-of-binary-tree/
+
+Given a binary tree, you need to compute the length of the diameter of the tree. The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+
+```CPP
+    int diameterOfBinaryTree(TreeNode* root) {
+        int ret = 0;
+        help(root, ret);
+        return ret;
+    }
+    
+    int help(TreeNode* node, int& ret){
+        if(node==NULL)
+            return 0;
+
+        int left = help(node->left, ret);
+        int right = help(node->right, ret);
+        
+        //get diamater if current node is root,
+        int cur =  left+right + 1;
+        ret = max(ret, cur);
+        
+        //return if current node is in branch, back to next level to calculate
+        return max(left, right) + 1;
+        
+    }
+```
+
 
 #### Max path Sum
 
@@ -1256,6 +1287,8 @@ int help(TreeNode* root, int &maxPath){
     return root->val + max(l, r);
 }
 ```
+
+
 
 
 

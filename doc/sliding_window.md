@@ -13,10 +13,11 @@
   - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
   - [Longest Substring with Same Letters after K change](#longest-substring-with-same-letters-after-k-change)
     - [Max Consecutive Ones with K changes](#max-consecutive-ones-with-k-changes)
+  - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters-1)
   - [Permutation in a String](#permutation-in-a-string)
   - [Find All Anagrams in a String](#find-all-anagrams-in-a-string)
   - [Smallest Window containing Substring](#smallest-window-containing-substring)
-  - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters-1)
+  - [Words Concatenation](#words-concatenation)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -393,6 +394,56 @@ int longestOnes(vector<int>& arr, int K) {
 }
 ```
 
+##  Longest Substring Without Repeating Characters
+
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+```
+Example 1:
+
+Input: "abcabcbb"
+Output: 3 
+Explanation: The answer is "abc", with the length of 3. 
+Example 2:
+
+Input: "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3. 
+             Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+```
+
+* For substring, slide window is no brainer
+
+```CPP
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+            int left = 0, right = 0;
+            unordered_map<char, int> window;
+            int res = 0; // record longest length
+
+            while (right < s.size()) {
+                char c1 = s[right];
+                window[c1]++;
+                right++;
+                //repeating char appear, so move left
+                while (window[c1] > 1) {
+                    char c2 = s[left];
+                    window[c2]--;
+                    left++;
+                }
+                res = max(res, right - left);
+            }
+            return res;
+    }
+};
+```
+
 ## Permutation in a String
 
 https://www.educative.io/courses/grokking-the-coding-interview/N8vB7OVYo2D
@@ -472,17 +523,20 @@ bool checkInclusion(string pattern, string str) {
     for(r=0;r<str.size();r++){
         if(m.find(str[r])!=m.end()){
             m[str[r]]--;  
-            //find all occurence for this letter
+            //find all occurence for this letter, 
+            //notice here value for map could be <0, so we get some buffer when move left
             if(m[str[r]]==0){
                 cnt++;
             }
         }
-        
+        //matches all char, and len is same(no additional char in)
         if(cnt == m.size() && (r-l+1)==pattern.size()){
             return true;
         }
+        //shrink the window
         if(r>=pattern.size()-1){
             if(m.find(str[l])!=m.end()){
+              //since char going out is in patternm put back into map
                 if(m[str[l]]==0)
                     cnt--;
                 m[str[l]]++;
@@ -501,6 +555,8 @@ bool checkInclusion(string pattern, string str) {
 ## Find All Anagrams in a String
 
 https://leetcode.com/problems/find-all-anagrams-in-a-string/
+
+https://www.educative.io/courses/grokking-the-coding-interview/YQ8N2OZq0VM
 
 Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
 
@@ -538,47 +594,51 @@ The substring with start index = 2 is "ab", which is an anagram of "ab".
 The same solution as before:
 
 ```CPP
-class Solution {
-public:
-    vector<int> findAnagrams(string s, string t) {
-        vector<int> res;
-        int left = 0, right = 0;
-        unordered_map<char, int> needs;
-        unordered_map<char, int> window;
-        for (char c : t) needs[c]++;
-        int match = 0;
-
-        while (right < s.size()) {
-            char c1 = s[right];
-            if (needs.count(c1)) {
-                window[c1]++;
-                if (window[c1] == needs[c1])
-                    match++;
-            }
-            right++;
-
-            while (match == needs.size()) {
-                //match anagrams
-                if (right - left == t.size()) {
-                    res.push_back(left);
-                }
-                char c2 = s[left];
-                if (needs.count(c2)) {
-                    window[c2]--;
-                    if (window[c2] < needs[c2])
-                        match--;
-                }
-                left++;
-            }
-        }
-        return res;
+vector<int> findAnagrams(string str, string pattern) {
+    int start = 0, matched = 0;
+    unordered_map<char, int> m;
+    for (auto c : pattern) {
+      m[c]++;
     }
-};
+
+    vector<int> ret;
+    // our goal is to match all the characters from the map with the current window
+    for (int end = 0; end < str.length(); end++) {
+      char right = str[end];
+      // decrement the frequency of the matched character
+      if (m.find(right) != m.end()) {
+        m[right]--;
+        if (m[right] == 0) {
+          matched++;
+        }
+      }
+
+      if (matched == m.size()) {  // have we found an anagram?
+        ret.push_back(start);
+      }
+
+      if (end >= pattern.length() - 1) {  // shrink the window
+        char left = str[start];
+        if (m.find(left) != m.end()) {
+          if (m[left] == 0) {
+            matched--;  // before putting the character back, decrement the matched count
+          }
+          // put the character back
+          m[left]++;
+        }
+        start++;
+      }
+    }
+
+    return ret;
+}
 ```
 
 ## Smallest Window containing Substring
 
 https://leetcode.com/problems/minimum-window-substring/
+
+https://www.educative.io/courses/grokking-the-coding-interview/3wDJAYG2pAR
 
 Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
 
@@ -589,53 +649,109 @@ Input: S = "ADOBECODEBANC", T = "ABC"
 Output: "BANC"
 ```
 
+This problem follows the Sliding Window pattern and has a lot of similarities with Permutation in a String with one difference. In this problem, we need to find a substring having all characters of the pattern which means that the required substring can have some additional characters and doesn’t need to be a permutation of the pattern. Here is how we will manage these differences:
 
-##  Longest Substring Without Repeating Characters
 
-https://leetcode.com/problems/longest-substring-without-repeating-characters/
+```CPP
+string minWindow(string s, string t) {
+    map<char,int> m; //char and its occurence
+    for(int i=0;i<t.size();i++){
+        m[t[i]]++;
+    }
+    int start=0;
+    int end = 0;
+    string ret = "";
+    int len = INT_MAX;
+    int cnt = t.size();
+    for(end=0;end<s.size();end++){
+        
+        char right = s[end];
+        if(m.find(right)!= m.end() ){
+            m[right]--;
+            //decrease for every match
+            if(m[right]>=0)
+                cnt--;
+        }
+        //found all
+        while(cnt==0){
+            if(end-start+1<len){
+                len = end-start+1;
+                ret = s.substr(start,end-start+1);
+            }
+            char left = s[start];
+            //moving from start
+            if(m.find(left)!= m.end()){
+                //note that we could have redundant matching characters, 
+                //only check cnt when no redendant available
+                if(m[left] == 0)
+                    cnt++;
+                m[left]++;
+            }
+            
+            start++;
+        }
+
+    }
+
+    return ret;
+}
+```
+
+## Words Concatenation
+
+
+
+https://www.educative.io/courses/grokking-the-coding-interview/Y5YDWzqPn7O
+
+Given a string and a list of words, find all the starting indices of substrings in the given string that are a concatenation of all the given words exactly once without any overlapping of words. It is given that all words are of the same length.
 
 ```
 Example 1:
 
-Input: "abcabcbb"
-Output: 3 
-Explanation: The answer is "abc", with the length of 3. 
+Input: String="catfoxcat", Words=["cat", "fox"]
+Output: [0, 3]
+Explanation: The two substring containing both the words are "catfox" & "foxcat".
 Example 2:
 
-Input: "bbbbb"
-Output: 1
-Explanation: The answer is "b", with the length of 1.
-Example 3:
-
-Input: "pwwkew"
-Output: 3
-Explanation: The answer is "wke", with the length of 3. 
-             Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+Input: String="catcatfoxfox", Words=["cat", "fox"]
+Output: [3]
+Explanation: The only substring containing both the words is "catfox".
 ```
 
-* For substring, slide window is no brainer
-
 ```CPP
-class Solution {
-public:
-    int lengthOfLongestSubstring(string s) {
-            int left = 0, right = 0;
-            unordered_map<char, int> window;
-            int res = 0; // record longest length
-
-            while (right < s.size()) {
-                char c1 = s[right];
-                window[c1]++;
-                right++;
-                //repeating char appear, so move left
-                while (window[c1] > 1) {
-                    char c2 = s[left];
-                    window[c2]--;
-                    left++;
-                }
-                res = max(res, right - left);
-            }
-            return res;
+static vector<int> findWordConcatenation(const string &str, const vector<string> &words) {
+    unordered_map<string, int> wordFrequencyMap;
+    for (auto word : words) {
+      wordFrequencyMap[word]++;
     }
-};
+
+    vector<int> resultIndices;
+    int wordsCount = words.size(), wordLength = words[0].length();
+
+    for (int i = 0; i <= str.length() - wordsCount * wordLength; i++) {
+      unordered_map<string, int> wordsSeen;
+      for (int j = 0; j < wordsCount; j++) {
+        int nextWordIndex = i + j * wordLength;
+        // get the next word from the string
+        string word = str.substr(nextWordIndex, wordLength);
+        if (wordFrequencyMap.find(word) ==
+            wordFrequencyMap.end()) {  // break if we don't need this word
+          break;
+        }
+
+        wordsSeen[word]++;  // add the word to the 'wordsSeen' map
+
+        // no need to process further if the word has higher frequency than required
+        if (wordsSeen[word] > wordFrequencyMap[word]) {
+          break;
+        }
+
+        if (j + 1 == wordsCount) {  // store index if we have found all the words
+          resultIndices.push_back(i);
+        }
+      }
+    }
+
+    return resultIndices;
+  }
 ```

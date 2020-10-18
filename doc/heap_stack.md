@@ -10,11 +10,11 @@
     - [K-th Smallest In stream](#k-th-smallest-in-stream)
     - [K smallest In M Sorted Lists](#k-smallest-in-m-sorted-lists)
     - [K smallest In Matrix](#k-smallest-in-matrix)
-    - [K pairs of smallest/largest Sum](#k-pairs-of-smallestlargest-sum)
+    - [K pairs of smallest Sum](#k-pairs-of-smallest-sum)
     - [smallest range in K lists](#smallest-range-in-k-lists)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
-    - [Max value with constraint](#max-value-with-constraint)
+    - [Maximize Capital/IPO](#maximize-capitalipo)
   - [Interval sort](#interval-sort)
   - [Rearrange:Hash Map with Priority queue](#rearrangehash-map-with-priority-queue)
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
@@ -433,7 +433,7 @@ public:
 
 
 
-### K pairs of smallest/largest Sum
+### K pairs of smallest Sum
 
 https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
 
@@ -451,9 +451,10 @@ private:
         }
     };
 public:
-    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
-        vector<vector<int>> ret;
-        //Max heap, top is max of K items in heap
+    vector<pair<int,int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<pair<int,int>> ret;
+        //Max heap, keep K smalleset values, top is max of K items in heap
+
         priority_queue<pair<int, int>, vector<pair<int, int>>, mycompare> pq;
         for(int i=0;i<nums1.size();i++){
             for(int j=0;j<nums2.size();j++){
@@ -462,6 +463,7 @@ public:
                 }else{
                     pair<int,int> cur_max = pq.top();
                     pair<int,int> newone = make_pair(nums1[i],nums2[j]);
+                    //upcomming < top, 
                     if(cur_max.first+cur_max.second>nums1[i] + nums2[j]){
                         pq.push(newone);
                         pq.pop();
@@ -475,10 +477,9 @@ public:
         }
         
         while(!pq.empty()){
-            ret.push_back(pq.top());
+            ret.push_front(pq.top());
             pq.pop();
         }
-        reverse(ret.begin(),ret.end());
         return ret;
     }
 ```
@@ -560,15 +561,17 @@ This pattern uses two Heaps to solve these problems; A Min Heap to find the smal
 Design a median holder function: use two heaps: maxheap to hold the smaller half of data stream, and minheap to hold the larger half of data stream. Need to balance both heaps to same size(or one can only hold 1 more item )
 https://leetcode.com/problems/find-median-from-data-stream/
 
- ```CPP
+```CPP
+ //two heaps: max_half has max half nums, min_half has small half nums
+ priority_queue<int> min_half;  //max heap: top of min_half heap is max value in min heap
+ priority_queue<int, vector<int>, mycompare> max_half; //min heap: top of max_half heap is min value of max heap
+
  struct mycompare{
     bool operator()(int a, int b){
         return a>b;
     }
 };
- //two heaps: max_half has max half nums, min_half has small half nums
- priority_queue<int> min_half;  //max heap: top of min_half heap is max value in min heap
- priority_queue<int, vector<int>, mycompare> max_half; //min heap: top of max_half heap is min value of max heap
+
 
  // Adds a number into the data structure.
  void addNum(int num) {
@@ -595,9 +598,13 @@ https://leetcode.com/problems/find-median-from-data-stream/
  }
  ```
 
-### Max value with constraint
+### Maximize Capital/IPO
 
- You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.https://leetcode.com/contest/leetcode-weekly-contest-18a/problems/ipo/
+https://www.educative.io/courses/grokking-the-coding-interview/B6x69OLX4jY
+
+https://leetcode.com/problems/ipo/
+
+ You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.
 
 ```CPP
   struct cost_compare{
