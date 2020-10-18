@@ -5,13 +5,13 @@
 - [Heap](#heap)
   - [K way Merge](#k-way-merge)
     - [Merge K sorted List](#merge-k-sorted-list)
-  - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
-    - [K-th Largest in Array](#k-th-largest-in-array)
-    - [K-th Smallest In stream](#k-th-smallest-in-stream)
-    - [K smallest In M Sorted Lists](#k-smallest-in-m-sorted-lists)
-    - [K smallest In Matrix](#k-smallest-in-matrix)
-    - [K pairs of smallest Sum](#k-pairs-of-smallest-sum)
-    - [smallest range in K lists](#smallest-range-in-k-lists)
+    - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
+      - [K-th Largest in Array](#k-th-largest-in-array)
+      - [K-th Smallest In stream](#k-th-smallest-in-stream)
+      - [K smallest In M Sorted Lists](#k-smallest-in-m-sorted-lists)
+      - [K smallest In Matrix](#k-smallest-in-matrix)
+      - [K pairs of smallest Sum](#k-pairs-of-smallest-sum)
+      - [smallest range in K lists](#smallest-range-in-k-lists)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
     - [Maximize Capital/IPO](#maximize-capitalipo)
@@ -138,12 +138,12 @@ public:
 };
 ```
 
-## K-th Largest/Smallest problem
+### K-th Largest/Smallest problem
 
 since we only interested in K-th, just use heap and complexity is ```Nlog(K)```
 
 
-### K-th Largest in Array
+#### K-th Largest in Array
 
 https://leetcode.com/problems/kth-largest-element-in-an-array/
 
@@ -197,7 +197,7 @@ public:
 };
 ```
 
-### K-th Smallest In stream
+#### K-th Smallest In stream
 we can expand this problem, let's see 
 
 https://leetcode.com/problems/kth-largest-element-in-a-stream/
@@ -273,7 +273,7 @@ public:
  */
 ```
 
-### K smallest In M Sorted Lists
+#### K smallest In M Sorted Lists
 
 https://www.educative.io/courses/grokking-the-coding-interview/myAqDMyRXn3
 
@@ -368,7 +368,7 @@ struct valueCompare {
 ```
 
 
-### K smallest In Matrix
+#### K smallest In Matrix
 
 https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
 
@@ -433,7 +433,7 @@ public:
 
 
 
-### K pairs of smallest Sum
+#### K pairs of smallest Sum
 
 https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
 
@@ -484,7 +484,7 @@ public:
     }
 ```
 
-### smallest range in K lists
+#### smallest range in K lists
 
 https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/
 

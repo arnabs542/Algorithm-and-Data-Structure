@@ -32,19 +32,26 @@ unfollow(followerId, followeeId): Follower unfollows a followee.
 ```
 
 ```CPP
-struct tweet_format{
-    int user_id;
-    int time_id;
-    int tweet_id;
-};
-bool tweet_compare (tweet_format i,tweet_format j) { return (i.time_id>j.time_id); }
-
 class Twitter {
-    //tweet_format tweet;
+    // tweet;
+    typedef struct{
+        int user_id;
+        int time_id;
+        int tweet_id; 
+    }tweet;
+
+    
+    struct tweet_compare{
+        bool operator()(tweet i,tweet j){
+            return i.time_id<j.time_id;
+        }
+    };
+
+
     int time_global;
 
-    map<int,set<int>> following; //user and all its following
-    map<int, vector<tweet_format>> user_tweets; 
+    unordered_map<int,set<int>> following; //user and all its following
+    unordered_map<int, vector<tweet>> tweets; 
 public:
     /** Initialize your data structure here. */
     Twitter() {
@@ -54,40 +61,44 @@ public:
     /** Compose a new tweet. */
     void postTweet(int userId, int tweetId) {
         //insert to itself tweet list
-        tweet_format tweet;
-        tweet.user_id = userId;
-        tweet.time_id = ++ time_global;
-        tweet.tweet_id = tweetId;
-        user_tweets[userId].push_back(tweet);
+        tweet t;
+        t.user_id = userId;
+        t.time_id = ++time_global;
+        t.tweet_id = tweetId;
+        tweets[userId].push_back(t);
     }
     
     /** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
     vector<int> getNewsFeed(int userId) {
-        vector<tweet_format> tweet_all;
+        //always keep latest time tweet
+        priority_queue<tweet, vector<tweet>, tweet_compare> maxHeap;
+        
         vector<int> ret;
+        
+        for(int i=0;i<tweets[userId].size();i++){
+                maxHeap.push(tweets[userId][i]);
+        }
 
         for (auto user: following[userId]){
             
             //push all current userId's following's tweet into vector
-            for(int i=0;i<user_tweets[user].size();i++){
-                tweet_all.push_back(user_tweets[user][i]);
+            for(int i=0;i<tweets[user].size();i++){
+                maxHeap.push(tweets[user][i]);
             }
-        }
-        
-        //add all of its own tweets
-        for(int i=0;i<user_tweets[userId].size();i++){
-            tweet_all.push_back(user_tweets[userId][i]);
+
         }
 
-        std::sort(tweet_all.begin(),tweet_all.end(),tweet_compare);
-        int len = tweet_all.size();
-        if(len<10){
-             for(int i=0;i<len;i++)
-                ret.push_back(tweet_all[i].tweet_id);
-        }else{
-            for(int i=0;i<10;i++)
-                ret.push_back(tweet_all[i].tweet_id);
+        
+        int cnt = 0;
+
+        while(!maxHeap.empty()){
+            ret.push_back(maxHeap.top().tweet_id);
+            maxHeap.pop();
+            cnt++;
+            if(cnt==10)
+                break;
         }
+
         return ret;
     }
     
@@ -102,6 +113,7 @@ public:
     void unfollow(int followerId, int followeeId) {
         following[followerId].erase(followeeId);
      }
+};
 };
 
 /**
