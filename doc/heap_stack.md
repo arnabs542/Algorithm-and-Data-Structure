@@ -18,6 +18,9 @@
     - [Maximize Capital/IPO](#maximize-capitalipo)
     - [Find Next Interval](#find-next-interval)
   - [Interval sort](#interval-sort)
+    - [Merge Interval](#merge-interval)
+    - [Meeting room needed](#meeting-room-needed)
+    - [Common Free time](#common-free-time)
   - [Rearrange:Hash Map with Priority queue](#rearrangehash-map-with-priority-queue)
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
     - [Task schedule](#task-schedule)
@@ -761,6 +764,7 @@ vector<int> findRightInterval(vector<vector<int>>& intervals) {
 
 ## Interval sort
 
+### Merge Interval
 
 https://leetcode.com/problems/merge-intervals/
 
@@ -804,6 +808,7 @@ public:
 };
 ```
 
+### Meeting room needed
 
 https://leetcode.com/problems/meeting-rooms-ii/
 
@@ -814,6 +819,17 @@ Given [[0, 30],[5, 10],[15, 20]],
 return 2.
 
 ```CPP
+
+/*
+ * Definition for an interval.
+ * struct Interval {
+ *     int start;
+ *     int end;
+ *     Interval() : start(0), end(0) {}
+ *     Interval(int s, int e) : start(s), end(e) {}
+ * };
+ */
+
 class Solution {
 private:
   static bool mycompare(Interval s1, Interval s2){
@@ -847,6 +863,8 @@ public:
   }
 };
 ```
+
+### Common Free time
 
 https://leetcode.com/problems/employee-free-time/
 
