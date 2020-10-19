@@ -14,7 +14,9 @@
       - [smallest range in K lists](#smallest-range-in-k-lists)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
+    - [Sliding Window Median(Find Median in stream)](#sliding-window-medianfind-median-in-stream)
     - [Maximize Capital/IPO](#maximize-capitalipo)
+    - [Find Next Interval](#find-next-interval)
   - [Interval sort](#interval-sort)
   - [Rearrange:Hash Map with Priority queue](#rearrangehash-map-with-priority-queue)
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
@@ -563,8 +565,8 @@ https://leetcode.com/problems/find-median-from-data-stream/
 
 ```CPP
  //two heaps: max_half has max half nums, min_half has small half nums
- priority_queue<int> min_half;  //max heap: top of min_half heap is max value in min heap
- priority_queue<int, vector<int>, mycompare> max_half; //min heap: top of max_half heap is min value of max heap
+ priority_queue<int> maxHeap;  //max heap: top of min_half heap is max value in min heap
+ priority_queue<int, vector<int>, mycompare> minHeap; //min heap: top of max_half heap is min value of max heap
 
  struct mycompare{
     bool operator()(int a, int b){
@@ -575,28 +577,57 @@ https://leetcode.com/problems/find-median-from-data-stream/
 
  // Adds a number into the data structure.
  void addNum(int num) {
-     //need to make sure push into both heap, otherwise if two heaps are equal and one new item //input, this new item could be mistakely choosen as median since later balance function //is not called
-     max_half.push(num);
-     min_half.push(max_half.top());
-     max_half.pop();
 
-     //balance both heap, make sure max_half is either equal size of min_half or has one more item
-     while(min_half.size()>max_half.size()+1){
-         max_half.push(min_half.top());
-         min_half.pop();
-     }
+    if (maxHeap.empty() || maxHeap.top() >= num) {
+      maxHeap.push(num);
+    } else {
+      minHeap.push(num);
+    }
+
+    // either both the heaps will have equal number of elements or max-heap will have one
+    // more element than the min-heap
+    if (maxHeap.size() > minHeap.size() + 1) {
+      minHeap.push(maxHeap.top());
+      maxHeap.pop();
+    } else if (maxHeap.size() < minHeap.size()) {
+      maxHeap.push(minHeap.top());
+      minHeap.pop();
+    }
 
  }
 
  // Returns the median of current data stream
  double findMedian() {
-     if(max_half.size()==min_half.size()){
-         return (min_half.top()+max_half.top())/2.0;
-     }else{
-         return (double) min_half.top();
-     }
+    if (maxHeap.size() == minHeap.size()) {
+      // we have even number of elements, take the average of middle two elements
+      return maxHeap.top() / 2.0 + minHeap.top() / 2.0;
+    }
+    // because max-heap will have one more element than the min-heap
+    return maxHeap.top();
  }
- ```
+```
+
+### Sliding Window Median(Find Median in stream)
+
+https://www.educative.io/courses/grokking-the-coding-interview/3Y9jm7XRrXO
+
+https://leetcode.com/problems/sliding-window-median/
+
+Given an array of numbers and a number ‘k’, find the median of all the ‘k’ sized sub-arrays (or windows) of the array.
+```
+Example 1:
+
+Input: nums=[1, 2, -1, 3, 5], k = 2
+Output: [1.5, 0.5, 1.0, 4.0]
+Explanation: Lets consider all windows of size ‘2’:
+
+[1, 2, -1, 3, 5] -> median is 1.5
+[1, 2, -1, 3, 5] -> median is 0.5
+[1, 2, -1, 3, 5] -> median is 1.0
+[1, 2, -1, 3, 5] -> median is 4.0
+```
+
+
 
 ### Maximize Capital/IPO
 
@@ -606,48 +637,126 @@ https://leetcode.com/problems/ipo/
 
  You are given several projects. For each project i, it has a pure profit Pi and a minimum capital of Ci is needed to start the corresponding project. Initially, you have W capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.
 
+
+```
+Example 1:
+
+Input: Project Capitals=[0,1,2], Project Profits=[1,2,3], Initial Capital=1, Number of Projects=2
+Output: 6
+Explanation:
+
+With initial capital of ‘1’, we will start the second project which will give us profit of ‘2’. Once we selected our first project, our total capital will become 3 (profit + initial capital).
+With ‘3’ capital, we will select the third project, which will give us ‘3’ profit.
+After the completion of the two projects, our total capital will be 6 (1+2+3).
+```
+
+
 ```CPP
+
+//Find all the projects that we can choose with the available capital.
+//From the list of projects in the 1st step, choose the project that gives us a maximum profit.
+
   struct cost_compare{
       bool operator()(pair<int,int> a, pair<int,int> b){
           return a.first>b.first;
       }
-  };
+    };
 
-  struct profit_compare{
+    struct profit_compare{
       bool operator()(pair<int,int> a, pair<int,int> b){
-          return a.second<b.second;
+          return a.first<b.first;
       }
-  };
+    };
+    
+    
+    int findMaximizedCapital(int numberOfProjects, int initialCapital, vector<int> &profits,  vector<int> &capital) {
+        int n = profits.size();
+        priority_queue<pair<int, int>, vector<pair<int, int>>, cost_compare> minCapitalHeap;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, profit_compare> maxProfitHeap;
 
-  int findMaximizedCapital(int k, int W, vector<int>& Profits, vector<int>& Capital) {
-     priority_queue<pair<int,int>,vector<pair<int,int>>,cost_compare> cost; //min heap for cost
-     priority_queue<pair<int,int>,vector<pair<int,int>>,profit_compare> profit; //max heap for profit
+        // insert all project capitals to a min-heap
+        for (int i = 0; i < n; i++) {
+          minCapitalHeap.push(make_pair(capital[i], i));
+        }
+
+        // let's try to find a total of 'numberOfProjects' best projects
+        int availableCapital = initialCapital;
+        for (int i = 0; i < numberOfProjects; i++) {
+          // find all projects that can be selected within the available capital
+          //check which one can be max profit
+          while (!minCapitalHeap.empty() && minCapitalHeap.top().first <= availableCapital) {
+            auto capitalIndex = minCapitalHeap.top().second;
+            minCapitalHeap.pop();
+            maxProfitHeap.push(make_pair(profits[capitalIndex], capitalIndex));
+          }
+
+          // terminate if we are not able to find any project that can be completed within the available
+          // capital
+          if (maxProfitHeap.empty()) {
+            break;
+          }
+
+          // select the project with the maximum profit
+          availableCapital += maxProfitHeap.top().first;
+          maxProfitHeap.pop();
+        }
+
+        return availableCapital;
+      
+    }
+```
+
+### Find Next Interval
+
+https://leetcode.com/problems/find-right-interval/
+
+https://www.educative.io/courses/grokking-the-coding-interview/gkkmqXO6zrY
 
 
-     int len = Capital.size();
-     pair<int,int> cur;
-     for(int i=0;i<len;i++){
-       cur = make_pair(Capital[i],Profits[i]);
-       cost.push(cur);
-     }
-     int picks = 0;
-     while(k>0){
+You are given an array of intervals, where intervals[i] = [starti, endi] and each starti is unique.
 
-       while(!cost.empty() && W>=cost.top().first){
-          //only pick possible project, do not trade yet
-          profit.push(cost.top());
-          cost.pop();
-       }
-       if(profit.empty())
-          break;
-      //deal the real transaction here
-        cur = profit.top();
-        W = W + cur.second;
-        profit.pop();
-        k--;
-     }
-     return W;    
-  }
+The right interval for an interval i is an interval j such that startj >= endi and startj is minimized.
+
+Return an array of right interval indices for each interval i. If no right interval exists for interval i, then put -1 at index i.
+
+ 
+```
+Example 1:
+
+Input: intervals = [[1,2]]
+Output: [-1]
+Explanation: There is only one interval in the collection, so it outputs -1.
+Example 2:
+
+Input: intervals = [[3,4],[2,3],[1,2]]
+Output: [-1,0,1]
+Explanation: There is no right interval for [3,4].
+The right interval for [2,3] is [3,4] since start0 = 3 is the smallest start that is >= end1 = 3.
+The right interval for [1,2] is [2,3] since start1 = 2 is the smallest start that is >= end2 = 2.
+Example 3:
+
+Input: intervals = [[1,4],[2,3],[3,4]]
+Output: [-1,2,-1]
+Explanation: There is no right interval for [1,4] and [3,4].
+The right interval for [2,3] is [3,4] since start2 = 3 is the smallest start that is >= end1 = 3.
+```
+
+```CPP
+vector<int> findRightInterval(vector<vector<int>>& intervals) {
+    map<int, int> hash; //K is interval start , v is index
+    vector<int> res;
+    int n = intervals.size();
+    for (int i = 0; i < n; ++i)
+        hash[intervals[i][0]] = i;
+    for (auto in : intervals) {
+        auto itr = hash.lower_bound(in[1]);
+        if (itr == hash.end()) 
+            res.push_back(-1);
+        else 
+            res.push_back(itr->second);
+    }
+    return res;
+}
 ```
 
 ## Interval sort
