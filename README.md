@@ -5,7 +5,8 @@
 - [Array](#array)
 - [String](#string)
 - [Sliding Window](#sliding-window)
-- [Heap and Stack](#heap-and-stack)
+- [Heap](#heap)
+- [Stack](#stack)
 - [Hash Table](#hash-table)
 - [List](#list)
 - [Binary Search](#binary-search)
@@ -30,9 +31,11 @@
 # Sliding Window
 [Sliding Window](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/sliding_window.md)
 
-# Heap and Stack
-[Stack, Priority Queue Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/heap_stack.md)
+# Heap
+[Heap/Priority Queue](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/heap.md)
 
+# Stack
+[Heap/Priority Queue](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/stack.md)
 
 
 # Hash Table
