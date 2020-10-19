@@ -20,6 +20,7 @@
         - [Stock Span](#stock-span)
         - [Daily Temperature](#daily-temperature)
       - [Minimum Cost Tree From Leaf Values](#minimum-cost-tree-from-leaf-values)
+    - [Remove K digits](#remove-k-digits)
     - [Max tree](#max-tree)
   - [Largest Area](#largest-area)
     - [Largest Rectangle in Histogram](#largest-rectangle-in-histogram)
@@ -787,6 +788,56 @@ int mctFromLeafValues(vector<int>& arr) {
         
     }
 ```
+
+### Remove K digits
+
+https://leetcode.com/problems/remove-k-digits/
+
+Given a non-negative integer num represented as a string, remove k digits from the number so that the new number is the smallest possible.
+
+Note:
+The length of num is less than 10002 and will be ≥ k.
+The given num does not contain any leading zero.
+
+```
+Example 1:
+
+Input: num = "1432219", k = 3
+Output: "1219"
+Explanation: Remove the three digits 4, 3, and 2 to form the new number 1219 which is the smallest.
+```
+
+```CPP
+ string removeKdigits(string num, int k) {
+        //the is equivilent to pick up len-k digit to get the minimum
+        string ret;
+        int len = num.size();
+        if( len == k) return string("0");
+        //while the last number is larger than the new one, 
+        // keep poping out the last number until a smaller one appears
+        for(int i=0;i<num.size();i++){
+            while(!ret.empty() && k>0 && ret.back()>num[i]){
+                ret.pop_back();
+                k--;
+            }
+            ret.push_back(num[i]);
+        }
+        //remianing is monotonitically increase
+        // discard the last k digits
+        // e.g. 123456 k=3
+        while (k != 0){
+            k--;
+            ret.pop_back();
+        }
+        
+       // for sol with leading zeros
+        // e.g. 10200 k=1
+        while(ret[0] == '0') ret.erase(0,1);
+        
+        return ret.length() == 0 ? "0" : ret;
+    }
+```
+
 
 ### Max tree 
 

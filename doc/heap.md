@@ -13,10 +13,16 @@
       - [K pairs of smallest Sum](#k-pairs-of-smallest-sum)
       - [smallest range in K lists](#smallest-range-in-k-lists)
   - [Top K Problem](#top-k-problem)
-    - [K-th Smallest/Largest](#k-th-smallestlargest)
-      - [K-th Cloest points](#k-th-cloest-points)
+    - [K-th Smallest/Largest number](#k-th-smallestlargest-number)
+    - [K-th Cloest points](#k-th-cloest-points)
+    - [K largest in stream](#k-largest-in-stream)
     - [Minimum Cost to Connect Sticks](#minimum-cost-to-connect-sticks)
     - [Top K frequent numbers](#top-k-frequent-numbers)
+    - [K Closest Numbers](#k-closest-numbers)
+  - [Rearrange:Hash Map with Top K](#rearrangehash-map-with-top-k)
+    - [Reorganize String](#reorganize-string)
+    - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
+    - [Task schedule](#task-schedule)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
     - [Sliding Window Median(Find Median in stream)](#sliding-window-medianfind-median-in-stream)
@@ -26,12 +32,7 @@
     - [Merge Interval](#merge-interval)
     - [Meeting room needed](#meeting-room-needed)
     - [Common Free time](#common-free-time)
-  - [Rearrange:Hash Map with Priority queue](#rearrangehash-map-with-priority-queue)
-    - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
-    - [Task schedule](#task-schedule)
   - [Auto completion system](#auto-completion-system)
-  - [Other Heap Problem](#other-heap-problem)
-    - [Define own compare func:Top K Frequent Words](#define-own-compare-functop-k-frequent-words)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -538,7 +539,7 @@ vector<int> smallestRange(vector<vector<int>>& nums) {
 
 ## Top K Problem
 
-### K-th Smallest/Largest
+### K-th Smallest/Largest number
 
 ```CPP
 static int findKthSmallestNumber(const vector<int> &nums, int k) {
@@ -564,7 +565,7 @@ static int findKthSmallestNumber(const vector<int> &nums, int k) {
   }
 ```
 
-#### K-th Cloest points
+### K-th Cloest points
 
 https://leetcode.com/problems/k-closest-points-to-origin/
 
@@ -622,6 +623,39 @@ vector<vector<int>> kClosest(vector<vector<int>>& points, int K) {
     return ret;
     
 }
+```
+
+### K largest in stream
+
+https://leetcode.com/problems/kth-largest-element-in-a-stream/
+
+```CPP
+struct mycompare{
+        bool operator()(int a, int b){
+            return a>b;
+        }
+    };
+    //top is minimum out of K largest
+    priority_queue<int,vector<int>,mycompare> minHeap;
+    int len = 0;
+    
+    KthLargest(int k, vector<int>& nums) {
+        len = k;
+        //min heap, top is minimum of largest K
+        for(int i=0;i<nums.size();i++){
+            pq.push(nums[i]);
+            if(pq.size()>k)
+                pq.pop();
+        }
+    }
+    
+    int add(int val) {
+        pq.push(val);
+        if(pq.size()>len) 
+            pq.pop();
+        return pq.top();
+
+    }
 ```
 
 ### Minimum Cost to Connect Sticks
@@ -711,6 +745,259 @@ public:
     }
 };
 ```
+
+### K Closest Numbers
+
+https://www.educative.io/courses/grokking-the-coding-interview/N8MJQNYyJPL
+
+Given a sorted number array and two integers ‘K’ and ‘X’, find ‘K’ closest numbers to ‘X’ in the array. Return the numbers in the sorted order. ‘X’ is not necessarily present in the array.
+
+```
+Example 1:
+
+Input: [5, 6, 7, 8, 9], K = 3, X = 7
+Output: [6, 7, 8]
+Example 2:
+
+Input: [2, 4, 5, 6, 9], K = 3, X = 6
+Output: [4, 5, 6]
+```
+
+```CPP
+
+
+  struct numCompare {
+    bool operator()(const pair<int, int> &x, const pair<int, int> &y) { return x.first > y.first; }
+  };
+
+  static vector<int> findClosestElements(const vector<int> &arr, int K, int X) {
+    int index = binarySearch(arr, X);
+    int low = index - K, high = index + K;
+    low = max(low, 0);                      // 'low' should not be less than zero
+    high = min(high, (int)arr.size() - 1);  // 'high' should not be greater the size of the array
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, numCompare> minHeap;
+    // add all candidate elements to the min heap, sorted by their absolute difference from 'X'
+    for (int i = low; i <= high; i++) {
+      minHeap.push(make_pair(abs(arr[i] - X), i));
+    }
+
+    // we need the top 'K' elements having smallest difference from 'X'
+    vector<int> result;
+    for (int i = 0; i < K; i++) {
+      result.push_back(arr[minHeap.top().second]);
+      minHeap.pop();
+    }
+
+    sort(result.begin(), result.end());
+    return result;
+  }
+
+  static int binarySearch(const vector<int> &arr, int target) {
+    int low = 0;
+    int high = (int)arr.size() - 1;
+    while (low <= high) {
+      int mid = low + (high - low) / 2;
+      if (arr[mid] == target) {
+        return mid;
+      }
+      if (arr[mid] < target) {
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+    if (low > 0) {
+      return low - 1;
+    }
+    return low;
+  }
+
+```
+
+
+
+## Rearrange:Hash Map with Top K
+
+
+* we need to record both hash map with val representing count, and have another priority queue based on hash map val
+
+* every round pop from priority queue, decrease count,
+
+* re push back to priority_queue
+
+### Reorganize String
+
+https://leetcode.com/problems/reorganize-string/
+
+https://www.educative.io/courses/grokking-the-coding-interview/xV7wx4o8ymB
+
+Given a string, find if its letters can be rearranged in such a way that no two same characters come next to each other.
+
+```
+Example 1:
+
+Input: "aappp"
+Output: "papap"
+Explanation: In "papap", none of the repeating characters come next to each other.
+```
+
+### Rearrange String k Distance Apart
+
+* Key idea is to use hash map and priority queue. hash map's key is char and val is how many times it appears, pq is to record via map's val
+
+* Every time just to process map and pq. pop pq with counter decrease and re push to pq
+
+https://leetcode.com/problems/rearrange-string-k-distance-apart/#/description
+
+Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
+
+```
+Example 1:
+s = "aabbcc", k = 3
+Result: "abcabc"
+
+The same letters are at least distance 3 from each other.
+Example 2:
+s = "aaabc", k = 3
+Answer: ""
+
+It is not possible to rearrange the string.
+Example 3:
+s = "aaadbbcc", k = 2
+Answer: "abacabcd"
+Another possible answer is: "abcabcda"
+The same letters are at least distance 2 from each other.
+```
+
+```CPP
+string rearrangeString(string s, int k) {
+    int len = s.size();
+    if(k==0)
+        return s;
+
+    map<char,int> m;
+    for(int i=0;i<s.size();i++){
+        m[s[i]]++;
+    }
+    string ret = "";
+
+    priority_queue<pair<int,char>> pq;  //count and char
+    for(auto i:m){
+        pq.push(make_pair(i.second,i.first)); //heap via char's occurence count
+    }
+
+    while(!pq.empty()){
+        vector<pair<int,char>> tmp;
+        int cnt = min(len,k);
+        for(int i=0;i<cnt;i++){
+            if(!pq.empty()){
+                pair<int,char> cur = pq.top();
+                if(--cur.first>0)
+                    tmp.push_back(cur);
+                ret+=cur.second;
+                pq.pop();
+                len--;
+            }else{
+                return "";
+            }
+        }
+        for(int i=0;i<tmp.size();i++){
+            pq.push(tmp[i]);
+        }
+    }
+
+    return ret;
+}
+```
+
+Another method
+```CPP
+string rearrangeString(string s, int k) {
+    int len = s.size();
+    if(k==0)
+        return s;
+
+    vector<int> cnt(26,0);
+    for(int i=0;i<len;i++)
+        cnt[s[i]-'a']++;
+    string ret = "";
+    //keep track of the most left position that one character can appear.
+    vector<int> valid(26,0);
+
+    for(int i=0;i<len;i++){
+        int pos = findMaxleft(cnt, valid, i);
+        if(pos==-1)
+            return "";
+        cnt[pos]--;
+        valid[pos] = i+k;
+        ret += char('a'+pos);
+
+    }
+    return ret;
+}
+
+int findMaxleft(vector<int> &cnt, vector<int> &valid, int index){
+    int pos = -1;
+    int v = INT_MIN;
+    for(int i=0;i<cnt.size();i++){
+       if(cnt[i]>0 && cnt[i]>v && index>=valid[i]){
+           v = cnt[i];
+           pos = i;
+       }
+   }
+   return pos;
+}
+```
+
+### Task schedule
+https://leetcode.com/problems/task-scheduler/#/description
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+
+Example 1:
+Input: tasks = ['A','A','A','B','B','B'], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+```CPP
+int leastInterval(vector<char>& tasks, int n) {
+    map<char,int> m;
+    for(int i=0;i<tasks.size();i++){
+        m[tasks[i]]++;
+    }
+    priority_queue<int> pq; //heap for task's count
+    for(auto i:m){
+        pq.push(i.second);
+    }
+    int ret = 0;
+    int cycle = n+1;
+    while(!pq.empty()){
+        int t = 0;
+        vector<int> tmp;
+        for(int i=0;i<cycle;i++){
+            if(!pq.empty()){
+                tmp.push_back(pq.top());
+                pq.pop();
+                t++;
+            }
+        }
+        for (int i=0;i<tmp.size();i++) {
+            if (--tmp[i]>0) {
+                pq.push(tmp[i]);
+            }
+        }
+        ret += !pq.empty() ? cycle : t;
+    }
+
+    return ret;
+}
+```
+
 
 ## Two Heaps
 
@@ -1067,168 +1354,7 @@ public:
 
 
 
-## Rearrange:Hash Map with Priority queue
 
-
-* we need to record both hash map with val representing count, and have another priority queue based on hash map val
-
-* every round pop from priority queue, decrease count,
-
-* re push back to priority_queue
-
-### Rearrange String k Distance Apart
-
-* Key idea is to use hash map and priority queue. hash map's key is char and val is how many times it appears, pq is to record via map's val
-
-* Every time just to process map and pq. pop pq with counter decrease and re push to pq
-
-https://leetcode.com/problems/rearrange-string-k-distance-apart/#/description
-
-Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
-All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
-
-Example 1:
-s = "aabbcc", k = 3
-Result: "abcabc"
-
-The same letters are at least distance 3 from each other.
-Example 2:
-s = "aaabc", k = 3
-Answer: ""
-
-It is not possible to rearrange the string.
-Example 3:
-s = "aaadbbcc", k = 2
-Answer: "abacabcd"
-Another possible answer is: "abcabcda"
-The same letters are at least distance 2 from each other.
-
-```CPP
-string rearrangeString(string s, int k) {
-    int len = s.size();
-    if(k==0)
-        return s;
-
-    map<char,int> m;
-    for(int i=0;i<s.size();i++){
-        m[s[i]]++;
-    }
-    string ret = "";
-
-    priority_queue<pair<int,char>> pq;  //count and char
-    for(auto i:m){
-        pq.push(make_pair(i.second,i.first)); //heap via char's occurence count
-    }
-
-    while(!pq.empty()){
-        vector<pair<int,char>> tmp;
-        int cnt = min(len,k);
-        for(int i=0;i<cnt;i++){
-            if(!pq.empty()){
-                pair<int,char> cur = pq.top();
-                if(--cur.first>0)
-                    tmp.push_back(cur);
-                ret+=cur.second;
-                pq.pop();
-                len--;
-            }else{
-                return "";
-            }
-        }
-        for(int i=0;i<tmp.size();i++){
-            pq.push(tmp[i]);
-        }
-    }
-
-    return ret;
-}
-```
-
-Another method
-```CPP
-string rearrangeString(string s, int k) {
-    int len = s.size();
-    if(k==0)
-        return s;
-
-    vector<int> cnt(26,0);
-    for(int i=0;i<len;i++)
-        cnt[s[i]-'a']++;
-    string ret = "";
-    //keep track of the most left position that one character can appear.
-    vector<int> valid(26,0);
-
-    for(int i=0;i<len;i++){
-        int pos = findMaxleft(cnt, valid, i);
-        if(pos==-1)
-            return "";
-        cnt[pos]--;
-        valid[pos] = i+k;
-        ret += char('a'+pos);
-
-    }
-    return ret;
-}
-
-int findMaxleft(vector<int> &cnt, vector<int> &valid, int index){
-    int pos = -1;
-    int v = INT_MIN;
-    for(int i=0;i<cnt.size();i++){
-       if(cnt[i]>0 && cnt[i]>v && index>=valid[i]){
-           v = cnt[i];
-           pos = i;
-       }
-   }
-   return pos;
-}
-```
-
-### Task schedule
-https://leetcode.com/problems/task-scheduler/#/description
-Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
-
-However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
-
-You need to return the least number of intervals the CPU will take to finish all the given tasks.
-
-Example 1:
-Input: tasks = ['A','A','A','B','B','B'], n = 2
-Output: 8
-Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
-
-```CPP
-int leastInterval(vector<char>& tasks, int n) {
-    map<char,int> m;
-    for(int i=0;i<tasks.size();i++){
-        m[tasks[i]]++;
-    }
-    priority_queue<int> pq; //heap for task's count
-    for(auto i:m){
-        pq.push(i.second);
-    }
-    int ret = 0;
-    int cycle = n+1;
-    while(!pq.empty()){
-        int t = 0;
-        vector<int> tmp;
-        for(int i=0;i<cycle;i++){
-            if(!pq.empty()){
-                tmp.push_back(pq.top());
-                pq.pop();
-                t++;
-            }
-        }
-        for (int i=0;i<tmp.size();i++) {
-            if (--tmp[i]>0) {
-                pq.push(tmp[i]);
-            }
-        }
-        ret += !pq.empty() ? cycle : t;
-    }
-
-    return ret;
-}
-```
 
 ## Auto completion system
 
@@ -1280,63 +1406,6 @@ vector<string> input(char c) {
 }
 ```
 
-## Other Heap Problem
-
-### Define own compare func:Top K Frequent Words
-
-https://leetcode.com/problems/top-k-frequent-words/
-
-Given a non-empty list of words, return the k most frequent elements.
-
-Your answer should be sorted by frequency from highest to lowest. If two words have the same frequency, then the word with the lower alphabetical order comes first.
-
-```
-Example 1:
-Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
-Output: ["i", "love"]
-Explanation: "i" and "love" are the two most frequent words.
-    Note that "i" comes before "love" due to a lower alphabetical order.
-Example 2:
-Input: ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], k = 4
-Output: ["the", "is", "sunny", "day"]
-Explanation: "the", "is", "sunny" and "day" are the four most frequent words,
-    with the number of occurrence being 4, 3, 2 and 1 respectively.
-
-```
-
-```CPP
-struct Comp {
-    bool operator()(const pair<string, int>& l, const pair<string, int>& r) const {
-        return l.second>r.second || ( l.second==r.second && l.first<r.first);
-    }
-};
-
-vector<string> topKFrequent(vector<string>& words, int k) {
-    //
-    
-    unordered_map<string, int> m;
-    for(auto w : words){
-        m[w]++;
-    }
-    //min heap to store K max, if count is same, pop lower alphabetical orde
-    priority_queue<pair<string,int>, vector<pair<string,int>>, Comp> pq;
-    
-    for (auto it : m){
-        pq.push(make_pair(it.first, it.second));
-        if(pq.size()>k) 
-            pq.pop();
-    }
-        
-    
-    vector<string> res;
-    while (!pq.empty()) {
-        res.insert(res.begin(),pq.top().first);
-        pq.pop();
-    }
-    
-    return res;
-}
-```
 
 
 
