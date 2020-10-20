@@ -17,7 +17,12 @@
     - [Minimum Difference with Key](#minimum-difference-with-key)
     - [Find K Closest Elements](#find-k-closest-elements)
   - [Bitonic(Monotonic increasing then decreasing)](#bitonicmonotonic-increasing-then-decreasing)
-    - [Find Peak Element](#find-peak-element)
+    - [Find Peak/Max Element](#find-peakmax-element)
+    - [Fine Element in Bitonic](#fine-element-in-bitonic)
+    - [Find Minimum in rotated array](#find-minimum-in-rotated-array)
+      - [Find minimum with duplicate](#find-minimum-with-duplicate)
+    - [Search in rotated sorted array](#search-in-rotated-sorted-array)
+      - [Search in rotated array with Duplicate](#search-in-rotated-array-with-duplicate)
     - [Local Minimum](#local-minimum)
   - [Other example](#other-example)
     - [Square Calculation](#square-calculation)
@@ -422,9 +427,13 @@ So assign left = mid + 1.
 
 ## Bitonic(Monotonic increasing then decreasing)
 
-### Find Peak Element
+
+
+### Find Peak/Max Element
 
 https://leetcode.com/problems/find-peak-element/
+
+https://www.educative.io/courses/grokking-the-coding-interview/RMyRR6wZoYK
 
 A peak element is an element that is greater than its neighbors.
 Given an input array nums, where nums[i] ≠ nums[i+1], find a peak element and return its index.
@@ -442,9 +451,12 @@ Input: nums = [1,2,1,3,5,6,4]
 Output: 1 or 5 
 ```
 
-Explanation: Your function can return either index number 1 where the peak element is 2, 
-             or index number 5 where the peak element is 6.
-Follow up: Your solution should be in logarithmic complexity.
+whenever we calculate the middle, we can compare the numbers pointed out by the index middle and middle+1 to find if we are in the ascending or the descending part. So:
+
+1. If arr[middle] > arr[middle + 1], we are in the second (descending) part of the bitonic array. Therefore, our required number could either be pointed out by middle or will be before middle. This means we will be doing: end = middle.
+
+
+2. If arr[middle] < arr[middle + 1], we are in the first (ascending) part of the bitonic array. Therefore, the required number will be after middle. This means we will be doing: start = middle + 1.
 
 
 ```CPP
@@ -466,6 +478,200 @@ int findPeakElement(vector<int>& nums) {
     
     return l;
 }
+```
+
+### Fine Element in Bitonic 
+
+https://www.educative.io/courses/grokking-the-coding-interview/7n3BlOvqW0r
+
+Given a Bitonic array, find if a given ‘key’ is present in it. An array is considered bitonic if it is monotonically increasing and then monotonically decreasing. Monotonically increasing or decreasing means that for any index i in the array arr[i] != arr[i+1].
+
+```CPP
+
+/*
+1. find max
+2. search for both 0->max and max+1->end
+*/
+
+int search(const vector<int> &arr, int key) {
+    int maxIndex = findMax(arr);
+    int keyIndex = binarySearch(arr, key, 0, maxIndex);
+    if (keyIndex != -1) {
+      return keyIndex;
+    }
+    return binarySearch(arr, key, maxIndex + 1, arr.size() - 1);
+}
+
+// find index of the maximum value in a bitonic array
+int findMax(const vector<int> &arr) {
+    int start = 0, end = arr.size() - 1;
+    while (start < end) {
+      int mid = start + (end - start) / 2;
+      if (arr[mid] > arr[mid + 1]) {
+        end = mid;
+      } else {
+        start = mid + 1;
+      }
+}
+
+int binarySearch(const vector<int> &arr, int key, int start, int end){
+    int ret = -1;
+    while(start<=end){
+        int mid = start + (end - start) / 2;
+
+        if (key == arr[mid]) {
+            return mid;
+        }
+
+        if (arr[start] < arr[end]) {  // ascending order
+            if (key < arr[mid]) {
+              end = mid - 1;
+            } else {  // key > arr[mid]
+              start = mid + 1;
+            }
+        }else{//decending
+            if (key > arr[mid]) {
+              end = mid - 1;
+            } else {  // key > arr[mid]
+              start = mid + 1;
+            }
+        }
+    }
+
+    return ret;
+
+}
+
+```
+
+### Find Minimum in rotated array
+
+https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+
+```CPP
+    int findMin(vector<int>& nums) {
+        int begin = 0;
+        int len = nums.size();
+        int end = len-1;
+        int ret = INT_MAX;
+
+        //rotation point is minimum
+        
+        while(begin<end){
+            int mid = begin + (end-begin)/2;
+            if(nums[mid]>nums[end]){//rotation point in right
+                begin = mid+1;
+            }else if(nums[mid]<nums[end]){//rotation point is right
+                end = mid;
+            }
+        }
+        
+        return nums[end];
+    }
+```
+
+#### Find minimum with duplicate
+
+```CPP
+    int findMin(vector<int>& nums) {
+        int begin = 0;
+        int len = nums.size();
+        int end = len-1;
+        
+        while(begin<end){
+            int mid = begin + (end-begin)/2;
+            if(nums[mid]>nums[end]){
+                begin = mid+1;
+            }else if(nums[mid]<nums[end]){
+                end = mid;
+            }else{
+                //num[mid] == num[hi], we couldn't sure the position of minimum in mid's left or right, so reduce one high
+                end--;
+            }
+        }
+        
+        return nums[begin];
+    }
+
+```
+
+### Search in rotated sorted array
+
+https://www.educative.io/courses/grokking-the-coding-interview/N8XZQ1q1O46
+
+https://leetcode.com/problems/search-in-rotated-sorted-array/
+
+Given an array of numbers which is sorted in ascending order and also rotated by some arbitrary number, find if a given ‘key’ is present in it.
+
+```CPP
+/*
+If arr[start] <= arr[middle], the numbers from start to middle are sorted in ascending order.
+Else, the numbers from middle+1 to end are sorted in ascending order.
+*/
+
+int search(vector<int>& arr, int key) {
+    int start = 0, end = arr.size() - 1;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (arr[mid] == key) {
+        return mid;
+      }
+
+      if (arr[start] <= arr[mid]) {  // left side is sorted in ascending order
+        if (key >= arr[start] && key < arr[mid]) {
+          end = mid - 1;
+        } else {  // key > arr[mid]
+          start = mid + 1;
+        }
+      } else {  // right side is sorted in ascending order
+        if (key > arr[mid] && key <= arr[end]) {
+          start = mid + 1;
+        } else {
+          end = mid - 1;
+        }
+      }
+    }
+
+    // we are not able to find the element in the given array
+    return -1;
+}
+```
+
+#### Search in rotated array with Duplicate
+
+```CPP
+bool search(vector<int>& arr, int key) {
+        int start = 0, end = arr.size() - 1;
+        while (start <= end) {
+          int mid = start + (end - start) / 2;
+          if (arr[mid] == key) {
+            return true;
+          }
+
+          // the only difference from the previous solution,
+          // if numbers at indexes start, mid, and end are same, we can't choose a side
+          // the best we can do, is to skip one number from both ends as key != arr[mid]
+          if ((arr[start] == arr[mid]) && (arr[end] == arr[mid])) {
+            ++start;
+            --end;
+          } else if (arr[start] <= arr[mid]) {  // left side is sorted in ascending order
+            if (key >= arr[start] && key < arr[mid]) {
+              end = mid - 1;
+            } else {  // key > arr[mid]
+              start = mid + 1;
+            }
+          } else {  // right side is sorted in ascending order
+            if (key > arr[mid] && key <= arr[end]) {
+              start = mid + 1;
+            } else {
+              end = mid - 1;
+            }
+          }
+        }
+
+        // we are not able to find the element in the given array
+        return false;
+    }
 ```
 
 
