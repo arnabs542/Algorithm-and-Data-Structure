@@ -23,6 +23,7 @@
     - [Reorganize String](#reorganize-string)
     - [Rearrange String k Distance Apart](#rearrange-string-k-distance-apart)
     - [Task schedule](#task-schedule)
+    - [Max Frequency Stack](#max-frequency-stack)
   - [Two Heaps](#two-heaps)
     - [Find the median value in data stream on the fly:](#find-the-median-value-in-data-stream-on-the-fly)
     - [Sliding Window Median(Find Median in stream)](#sliding-window-medianfind-median-in-stream)
@@ -842,6 +843,55 @@ Output: "papap"
 Explanation: In "papap", none of the repeating characters come next to each other.
 ```
 
+```CPP
+struct mycomp {
+    bool operator()(const pair<char, int> &x, const pair<char, int> &y) 
+    { 
+        return x.second < y.second; 
+    }
+};
+
+string reorganizeString(string S) {
+    string ret = "";
+    unordered_map<char, int> m; //k is char, v is count
+    //max heap, top is max char occurence
+    priority_queue<pair<char, int>, vector<pair<char, int>>, mycomp> maxHeap;
+    
+    
+    for(int i=0;i<S.size();i++){
+        m[S[i]]++;
+    }
+    //heap with most occurence char in top
+    for(auto it: m){
+        maxHeap.push(it);
+    }
+    
+    pair<char, int> prev = {' ', -1};
+    
+    while(!maxHeap.empty()){
+        pair<char, int> cur = maxHeap.top();
+        //remove current char temporiaily 
+        maxHeap.pop();
+        // add the previous entry back in the heap if its frequency is greater than zero
+        //prev is different char
+        if (prev.second > 0) {
+            maxHeap.push(prev);
+        }
+        // append the current character to the result string and decrement its count
+        ret += cur.first;
+        cur.second--;
+        prev = cur;
+
+    }
+    
+    
+    
+    return ret.size() == S.length() ? ret : "";
+    
+}
+```
+
+
 ### Rearrange String k Distance Apart
 
 * Key idea is to use hash map and priority queue. hash map's key is char and val is how many times it appears, pq is to record via map's val
@@ -849,6 +899,8 @@ Explanation: In "papap", none of the repeating characters come next to each othe
 * Every time just to process map and pq. pop pq with counter decrease and re push to pq
 
 https://leetcode.com/problems/rearrange-string-k-distance-apart/#/description
+
+https://www.educative.io/courses/grokking-the-coding-interview/qA7n6820GjG
 
 Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
 All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
@@ -872,47 +924,53 @@ The same letters are at least distance 2 from each other.
 ```
 
 ```CPP
-string rearrangeString(string s, int k) {
-    int len = s.size();
-    if(k==0)
-        return s;
-
-    map<char,int> m;
-    for(int i=0;i<s.size();i++){
-        m[s[i]]++;
+struct valueCompare {
+    char operator()(const pair<char, int> &x, const pair<char, int> &y) {
+      return x.second < y.second;
     }
+  };
+
+
+string rearrangeString(string str, int k) {
+    if (k <= 1) return str;
+
+    unordered_map<char, int> m;
+    for (char c : str) {
+      m[c]++;
+    }
+
+    priority_queue<pair<char, int>, vector<pair<char, int>>, valueCompare> maxHeap;
+
+    // add all characters to the max heap
+    for (auto entry : m) {
+      maxHeap.push(entry);
+    }
+
+    queue<pair<char, int>> q;
     string ret = "";
-
-    priority_queue<pair<int,char>> pq;  //count and char
-    for(auto i:m){
-        pq.push(make_pair(i.second,i.first)); //heap via char's occurence count
+    while (!maxHeap.empty()) {
+      auto cur = maxHeap.top();
+      maxHeap.pop();
+      // append the current character to the result string and decrement its count
+      ret += cur.first;
+      cur.second--;
+      q.push(cur);
+        //K apart
+      if (q.size() == k) {
+        auto entry = q.front();
+        q.pop();
+        if (entry.second > 0) {
+          maxHeap.push(entry);
+        }
+      }
     }
 
-    while(!pq.empty()){
-        vector<pair<int,char>> tmp;
-        int cnt = min(len,k);
-        for(int i=0;i<cnt;i++){
-            if(!pq.empty()){
-                pair<int,char> cur = pq.top();
-                if(--cur.first>0)
-                    tmp.push_back(cur);
-                ret+=cur.second;
-                pq.pop();
-                len--;
-            }else{
-                return "";
-            }
-        }
-        for(int i=0;i<tmp.size();i++){
-            pq.push(tmp[i]);
-        }
-    }
-
-    return ret;
+    return ret.size() == str.size() ? ret : "";
 }
 ```
 
-Another method
+* Another method
+
 ```CPP
 string rearrangeString(string s, int k) {
     int len = s.size();
@@ -953,6 +1011,9 @@ int findMaxleft(vector<int> &cnt, vector<int> &valid, int index){
 
 ### Task schedule
 https://leetcode.com/problems/task-scheduler/#/description
+
+https://www.educative.io/courses/grokking-the-coding-interview/B1gBkopEBzk
+
 Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
 
 However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
@@ -965,37 +1026,130 @@ Output: 8
 Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
 
 ```CPP
-int leastInterval(vector<char>& tasks, int n) {
-    map<char,int> m;
-    for(int i=0;i<tasks.size();i++){
-        m[tasks[i]]++;
+struct valueCompare {
+    char operator()(const pair<int, int> &x, const pair<int, int> &y) {
+      return x.second < y.second;
     }
-    priority_queue<int> pq; //heap for task's count
-    for(auto i:m){
-        pq.push(i.second);
-    }
-    int ret = 0;
-    int cycle = n+1;
-    while(!pq.empty()){
-        int t = 0;
-        vector<int> tmp;
-        for(int i=0;i<cycle;i++){
-            if(!pq.empty()){
-                tmp.push_back(pq.top());
-                pq.pop();
-                t++;
-            }
-        }
-        for (int i=0;i<tmp.size();i++) {
-            if (--tmp[i]>0) {
-                pq.push(tmp[i]);
-            }
-        }
-        ret += !pq.empty() ? cycle : t;
+};
+
+
+int leastInterval(vector<char>& tasks, int k) {
+    int cnt = 0;
+    unordered_map<char, int> m;
+    for (char c : tasks) {
+      m[c]++;
     }
 
-    return ret;
+    priority_queue<pair<char, int>, vector<pair<char, int>>, valueCompare> maxHeap;
+
+    // add all tasks to the max heap
+    for (auto entry : m) {
+      maxHeap.push(entry);
+    }
+    
+    while (!maxHeap.empty()) {
+        vector<pair<char, int>> waitList;
+        int n = k + 1;  // try to execute as many as 'k+1' tasks from the max-heap
+        for (; n > 0 && !maxHeap.empty(); n--) {
+            cnt++;
+            auto cur = maxHeap.top();
+            maxHeap.pop();
+            if (cur.second > 1) {
+              cur.second--;
+              waitList.push_back(cur);
+            }
+        }
+        // put all the waiting list back on the heap
+        for (int i=0;i<waitList.size();i++) {
+            maxHeap.push(waitList[i]);
+        }
+        if (!maxHeap.empty()) {
+            cnt += n;  // 'n' additinoal idle intervals before next iteration
+        }
+
+  }
+  return cnt; 
+    
 }
+```
+
+### Max Frequency Stack
+
+https://leetcode.com/problems/maximum-frequency-stack/
+
+https://www.educative.io/courses/grokking-the-coding-interview/Y5zDWlVRz2p
+
+Design a class that simulates a Stack data structure, implementing the following two operations:
+
+push(int num): Pushes the number ‘num’ on the stack.
+pop(): Returns the most frequent number in the stack. If there is a tie, return the number which was pushed later.
+
+```
+Example:
+
+After following push operations: push(1), push(2), push(3), push(2), push(1), push(2), push(5)
+ 
+1. pop() should return 2, as it is the most frequent number
+2. Next pop() should return 1
+3. Next pop() should return 2
+```
+
+```CPP
+class Element {
+ public:
+  int number = 0;
+  int frequency = 0;
+  int sequenceNumber = 0;
+
+  Element(int number, int frequency, int sequenceNumber) {
+    this->number = number;
+    this->frequency = frequency;
+    this->sequenceNumber = sequenceNumber;
+  }
+};
+
+
+class FreqStack {
+public:
+    
+    struct frequencyCompare {
+        bool operator()(const Element &e1, const Element &e2) {
+          if (e1.frequency != e2.frequency) {
+            return e2.frequency > e1.frequency;
+          }
+          // if both elements have same frequency, return the one that was pushed later
+          return e2.sequenceNumber > e1.sequenceNumber;
+        }
+    };   
+    
+    int sequenceNumber = 0;
+    priority_queue<Element, vector<Element>, frequencyCompare> maxHeap;
+    unordered_map<int, int> m;
+    
+    FreqStack() {
+        
+    }
+    
+    void push(int x) {
+        m[x] += 1;
+        maxHeap.push({x, m[x], sequenceNumber++});
+    }
+    
+    int pop() {
+        int num = maxHeap.top().number;
+        maxHeap.pop();
+
+        // decrement the frequency or remove if this is the last number
+        if (m[num] > 1) {
+          m[num] -= 1;
+        } else {
+          m.erase(num);
+        }
+
+        return num;        
+    }
+};
+
 ```
 
 

@@ -19,6 +19,9 @@
   - [Common logic](#common-logic)
   - [Permutation](#permutation)
   - [SubSet](#subset)
+    - [Subset with Duplicate](#subset-with-duplicate)
+  - [Generalized Abbreviation](#generalized-abbreviation)
+  - [Different Ways to Add Parentheses](#different-ways-to-add-parentheses)
   - [Combination](#combination)
   - [Application](#application)
     - [Letter Combinations of a Phone Number](#letter-combinations-of-a-phone-number)
@@ -34,7 +37,6 @@
   - [Reject sampling](#reject-sampling)
   - [Suffle](#suffle)
   - [Revisor sampling](#revisor-sampling)
-- [Greedy](#greedy)
 - [Interval](#interval)
   - [Interval overlap](#interval-overlap)
     - [Merge intervals](#merge-intervals)
@@ -944,6 +946,153 @@ public:
 };
 ```
 
+### Subset with Duplicate
+
+https://www.educative.io/courses/grokking-the-coding-interview/7npk3V3JQNr
+
+https://leetcode.com/problems/subsets-ii/
+
+Given a collection of integers that might contain duplicates, nums, return all possible subsets (the power set).
+
+Note: The solution set must not contain duplicate subsets.
+
+```CPP
+vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        vector<vector<int>> ret;
+        vector<int> cur;
+        
+        if(nums.empty())
+            return ret;
+        
+        ret.push_back(vector<int>());
+        //each iteration return subsets with same number of items
+        std::sort(nums.begin(),nums.end());
+        for(int i=1;i<=nums.size();i++){
+            subsets_helper(nums,ret,cur,i,0);
+        }
+        
+        return ret;
+        
+    }
+    //width is the size of subsets with same len
+    void subsets_helper(vector<int>& nums,vector<vector<int>> &ret, vector<int> &cur,int width, int start){
+        if(cur.size()==width){
+            ret.push_back(cur);
+            return;
+        }
+        int prev = INT_MAX;
+        //duplicate can only happen in one level.
+        for(int i=start;i<nums.size();i++){
+            if(prev!=nums[i]){
+                prev = nums[i];
+                cur.push_back(nums[i]);
+                subsets_helper(nums,ret,cur,width,i+1);
+                cur.pop_back(); 
+            }
+        }
+    }
+```
+
+## Generalized Abbreviation
+
+https://leetcode.com/problems/generalized-abbreviation/
+
+Write a function to generate the generalized abbreviations of a word. 
+
+Note: The order of the output does not matter.
+
+```
+Example:
+
+Input: "word"
+Output:
+["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+```
+
+```CPP
+vector<string> generateAbbreviations(string word) {
+    /*
+    this is a combination problem:
+    for each char in word, either we keep it or abbreviate it
+    */
+    vector<string> ret;
+    string one = "";
+    help(ret,word,0,one,0);
+    return ret;
+}
+
+/*
+current char can be either keep itself, or abbreviated by len. 
+//pos is the current char's position in word. len is abbrevaite len
+*/
+void help(vector<string> &ret, string& word, int pos, string cur, int len){
+    if(pos==word.size()){
+        if(len>0){
+            cur+=to_string(len);
+        }
+        ret.push_back(cur);
+        return;
+    }
+    
+    help(ret,word,pos+1,cur,len+1);  //current char is abbreviated.
+    //current char is kept. get the len for last abbreviation, reset len to 0 since abbreviation is done 
+    help(ret,word,pos+1,cur+(len>0?to_string(len):"")+word[pos],0);
+}
+```
+
+## Different Ways to Add Parentheses
+
+https://leetcode.com/problems/different-ways-to-add-parentheses/
+
+https://www.educative.io/courses/grokking-the-coding-interview/N0Q3PKRKMPz
+
+Given an expression containing digits and operations (+, -, *), find all possible ways in which the expression can be evaluated by grouping the numbers and operators using parentheses.
+
+```
+Example 1:
+
+Input: "1+2*3"
+Output: 7, 9
+Explanation: 1+(2*3) => 7 and (1+2)*3 => 9
+Example 2:
+
+Input: "2*3-4-5"
+Output: 8, -12, 7, -7, -3 
+Explanation: 2*(3-(4-5)) => 8, 2*(3-4-5) => -12, 2*3-(4-5) => 7, 2*(3-4)-5 => -7, (2*3)-4-5 => -3
+```
+
+```CPP
+vector<int> diffWaysToCompute(string input) {
+    vector<int> ret;   
+    for(int i = 0;i<input.length();i++){
+        if(input[i]=='+'|| input[i]=='-'||input[i]=='*'){
+            string str1 = input.substr(0,i);
+            string str2 = input.substr(i+1);
+            vector<int> part1 = diffWaysToCompute(str1);
+            vector<int> part2 = diffWaysToCompute(str2);
+            for (int l : part1) {
+                for (int r : part2) {
+                    switch (input[i]) {
+                        case '+':
+                            ret.push_back(l + r);
+                            break;
+                        case '-':
+                            ret.push_back(l - r);
+                            break;
+                        default:
+                            ret.push_back(l * r);
+                    }
+                } 
+            }
+        }
+    }
+    
+    if (ret.empty())
+        ret.push_back(stoi(input));
+    return ret;
+}
+```
+
 ## Combination
 
 https://leetcode.com/problems/combinations/
@@ -1425,10 +1574,6 @@ int pick(int target,vector<int> n) {
 
 
 
-
-
-
-# Greedy
 
 # Interval
 

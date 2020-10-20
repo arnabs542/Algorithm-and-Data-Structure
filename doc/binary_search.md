@@ -8,16 +8,16 @@
       - [Key points](#key-points)
       - [Distinguishing Syntax:](#distinguishing-syntax)
     - [Framework 2: Boundary in Binary Search](#framework-2-boundary-in-binary-search)
-      - [Key Attributes:](#key-attributes)
-      - [Distinguishing Syntax:](#distinguishing-syntax-1)
-      - [Find Left Boundary](#find-left-boundary)
-      - [Find Right Boundary](#find-right-boundary)
-    - [Example: first bad version](#example-first-bad-version)
-  - [Other Binary Search Example](#other-binary-search-example)
+      - [Find Ceiling (Lower bound)](#find-ceiling-lower-bound)
+      - [Find Floor (Higher bound )](#find-floor-higher-bound-)
+    - [First bad version](#first-bad-version)
+    - [Search number range](#search-number-range)
+    - [Search in a sorted infinity Array](#search-in-a-sorted-infinity-array)
+    - [Minimum Difference with Key](#minimum-difference-with-key)
     - [Find K Closest Elements](#find-k-closest-elements)
-    - [Find First and Last Position of Element in Sorted Array](#find-first-and-last-position-of-element-in-sorted-array)
-    - [Local Minimum](#local-minimum)
+  - [Bitonic(Monotonic increasing then decreasing)](#bitonicmonotonic-increasing-then-decreasing)
     - [Find Peak Element](#find-peak-element)
+    - [Local Minimum](#local-minimum)
   - [Square Calculation](#square-calculation)
     - [Find K-th Smallest Pair Distance](#find-k-th-smallest-pair-distance)
     - [Median of Two Sorted Arrays](#median-of-two-sorted-arrays)
@@ -69,93 +69,66 @@ Searching Right: left = mid+1
 
 ### Framework 2: Boundary in Binary Search
 
-```
-int binarySearch(vector<int>& nums, int target){
-  if(nums.size() == 0)
-    return -1;
+https://www.educative.io/courses/grokking-the-coding-interview/qA5wW7R8ox7
 
-  int left = 0, right = nums.size();
-  while(left < right){
-    // Prevent (left + right) overflow
-    int mid = left + (right - left) / 2;
-    if(nums[mid] == target){ return mid; }
-    else if(nums[mid] < target) { left = mid + 1; }
-    else { right = mid; }
+
+#### Find Ceiling (Lower bound)
+
+```CPP
+static int searchCeilingOfANumber(const vector<int>& arr, int key) {
+    if (key > arr[arr.size() - 1]) {  // if the 'key' is bigger than the biggest element
+      return -1;
+    }
+
+    int start = 0, end = arr.size() - 1;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (key < arr[mid]) {
+        end = mid - 1;
+      } else if (key > arr[mid]) {
+        start = mid + 1;
+      } else {  // found the key
+        return mid;
+      }
+    }
+    // since the loop is running until 'start <= end', so at the end of the while loop, 'start ==
+    // end+1' we are not able to find the element in the given array, so the next big number will be
+    // arr[start]
+    return start;
   }
-
-  // Post-processing:
-  // End Condition: left == right
-  if(left != nums.size() && nums[left] == target) return left;
-  return -1;
-}
 ```
 
-#### Key Attributes:
 
-* An advanced way to implement Binary Search.
-* Search Condition needs to access element's immediate right neighbor
-* Use element's right neighbor to determine if condition is met and decide whether to go left or right
-Gurantees Search Space is at least 2 in size at each step
-*Post-processing required. Loop/Recursion ends when you have 1 element left. Need to assess if the remaining element meets the condition.
- 
-
-#### Distinguishing Syntax:
-
-```
-Initial Condition: left = 0, right = length
-Termination: left == right
-Searching Left: right = mid
-Searching Right: left = mid+1
-```
-
-#### Find Left Boundary
+#### Find Floor (Higher bound )
 
 ```CPP
-int left_bound(int[] nums, int target) {
-    if (nums.length == 0) return -1;
-    int left = 0;
-    int right = nums.length; //why right is 1 above boundary?
-
-    while (left < right) { // why <? not <=?
-        int mid = (left + right) / 2;
-        if (nums[mid] == target) {
-            right = mid;
-        } else if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid; // 
-        }
+static int searchFloorOfANumber(const vector<int>& arr, int key) {
+    if (key < arr[0]) {  // if the 'key' is smaller than the smallest element
+      return -1;
     }
-    return left;
-}
-```
 
-
-#### Find Right Boundary
-
-```CPP
-int right_bound(int[] nums, int target) {
-    if (nums.length == 0) return -1;
-    int left = 0, right = nums.length;
-
-    while (left < right) {
-        int mid = (left + right) / 2;
-        if (nums[mid] == target) {
-            left = mid + 1; 
-        } else if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid;
-        }
+    int start = 0, end = arr.size() - 1;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (key < arr[mid]) {
+        end = mid - 1;
+      } else if (key > arr[mid]) {
+        start = mid + 1;
+      } else {  // found the key
+        return mid;
+      }
     }
-    return left - 1; // why this?
-}
+    // since the loop is running until 'start <= end', so at the end of the while loop, 'start ==
+    // end+1' we are not able to find the element in the given array, so the next smaller number
+    // will be arr[end]
+    return end;
+  }
 ```
 
 
 
 
-### Example: first bad version
+### First bad version
 
 https://leetcode.com/problems/first-bad-version/
 
@@ -199,7 +172,145 @@ int firstBadVersion(int n) {
 }
 ```
 
-## Other Binary Search Example
+### Search number range
+
+https://www.educative.io/courses/grokking-the-coding-interview/R1B78K9oBEz
+
+https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+Given an array of numbers sorted in ascending order, find the range of a given number ‘key’. The range of the ‘key’ will be the first and last position of the ‘key’ in the array.
+
+Write a function to return the range of the ‘key’. If the ‘key’ is not present return [-1, -1].
+
+```
+Example 1:
+
+Input: [4, 6, 6, 6, 9], key = 6
+Output: [1, 3]
+Example 2:
+
+Input: [1, 3, 8, 10, 15], key = 10
+Output: [3, 3]
+```
+
+```CPP
+    vector<int> searchRange(vector<int>& nums, int target) {
+        vector<int> result(2,-1);
+        int left = -1;
+        int right = -1;
+        left = search(nums, target, false);
+        if (left != -1) {  // no need to search if lower bound is not there
+          right = search(nums, target, true);
+        }else{
+            return result;
+            
+        }
+        result[0] = left;
+        result[1] = right;
+        return result;
+    }
+    
+    int search(const vector<int> &nums, int target, bool upper_bound) {
+        int index = -1;
+        int start = 0, end = nums.size() - 1;
+        while (start <= end) {
+          int mid = start + (end - start) / 2;
+          if (target < nums[mid]) {
+            end = mid - 1;
+          } else if (target > nums[mid]) {
+            start = mid + 1;
+          } else {  // target == nums[mid]
+            index = mid;
+            if (upper_bound) {
+              start = mid + 1;  // search ahead to find the last index of 'key'
+            } else {
+              end = mid - 1;  // search behind to find the first index of 'key'
+            }
+          }
+        }
+        return index;
+  }
+```
+
+### Search in a sorted infinity Array
+
+https://www.educative.io/courses/grokking-the-coding-interview/B1ZW38kXJB2
+
+Since it is not possible to define an array with infinite (unknown) size, you will be provided with an interface ArrayReader to read elements of the array. ArrayReader.get(index) will return the number at index; if the array’s size is smaller than the index, it will return Integer.MAX_VALUE.
+
+```CPP
+static int search(ArrayReader *reader, int key) {
+    // find the proper bounds first
+    int start = 0, end = 1;
+    while (reader->get(end) < key) {
+      int newStart = end + 1;
+      end += (end - start + 1) * 2;  // increase to double the bounds size
+      start = newStart;
+    }
+    return binarySearch(reader, key, start, end);
+  }
+
+  static int binarySearch(ArrayReader *reader, int key, int start, int end) {
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (key < reader->get(mid)) {
+        end = mid - 1;
+      } else if (key > reader->get(mid)) {
+        start = mid + 1;
+      } else {  // found the key
+        return mid;
+      }
+    }
+
+    return -1;
+  }
+```
+
+### Minimum Difference with Key
+
+https://www.educative.io/courses/grokking-the-coding-interview/mymvP915LY9
+
+Given an array of numbers sorted in ascending order, find the element in the array that has the minimum difference with the given ‘key’.
+
+```
+Example 1:
+
+Input: [4, 6, 10], key = 7
+Output: 6
+Explanation: The difference between the key '7' and '6' is minimum than any other number in the array 
+```
+
+```CPP
+  static int searchMinDiffElement(const vector<int>& arr, int key) {
+    if (key < arr[0]) {
+      return arr[0];
+    }
+    if (key > arr[arr.size() - 1]) {
+      return arr[arr.size() - 1];
+    }
+
+    int start = 0, end = arr.size() - 1;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (key < arr[mid]) {
+        end = mid - 1;
+      } else if (key > arr[mid]) {
+        start = mid + 1;
+      } else {
+        return arr[mid];
+      }
+    }
+
+    // at the end of the while loop, 'start == end+1'
+    // we are not able to find the element in the given array
+    // return the element which is closest to the 'key'
+    if ((arr[start] - key) < (key - arr[end])) {
+      return arr[start];
+    }
+    return arr[end];
+  }
+```
+
 
 ### Find K Closest Elements
 
@@ -264,80 +375,7 @@ So assign left = mid + 1.
 };
 ```
 
-### Find First and Last Position of Element in Sorted Array
-
-https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
-
-Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.Your algorithm's runtime complexity must be in the order of O(log n).If the target is not found in the array, return [-1, -1].
-
-```
-Example 1:
-
-Input: nums = [5,7,7,8,8,10], target = 8
-Output: [3,4]
-Example 2:
-
-Input: nums = [5,7,7,8,8,10], target = 6
-Output: [-1,-1]
-```
-
-```CPP
-vector<int> searchRange(vector<int>& nums, int target) {
-    int start = 0, end = nums.size(), mid, left, right;
-    while (start < end) {
-        mid = (start + end) / 2;
-        if (nums[mid] >= target)
-            end = mid;
-        else
-            start = mid + 1;
-    }
-    //found the left in range
-    left = start;
-    start = left, end = nums.size();
-    while (start < end) {
-        mid = (start + end) / 2;
-        if (nums[mid] > target)
-            end = mid;
-        else
-            start = mid + 1;
-    }
-    right = start;
-    return left == right ? vector<int> {-1,-1} : vector<int> {left,right-1};
-}
-```
-
-
-### Local Minimum
-
-Local minimum
-Find array if there is local min(left and right is larger) and return index
-
-//Binary search
-```CPP
-int localMin(vector<int> nums){
-  int len=nums.size();
-  if(nums[0]<nums[1] || len==1 )
-    return 0;
-  if(nums[len-1]<nums[len-2])
-    return len-1;
-
-  int left = 1;
-  int right = len-2;
-  int mid = 0;
-  while(left<right){
-    mid = left+(right-left)/2;
-    if(nums[mid]>nums[mid+1]){
-      left = mid+1;  //there will be local min right half
-    }else if(nums[mid]>nums[mid-1]){
-      right = mid-1;
-    }else{
-      return mid;
-    }
-  }
-  return left;
-
-}
-```
+## Bitonic(Monotonic increasing then decreasing)
 
 ### Find Peak Element
 
@@ -384,6 +422,41 @@ int findPeakElement(vector<int>& nums) {
     return l;
 }
 ```
+
+
+### Local Minimum
+
+Local minimum
+Find array if there is local min(left and right is larger) and return index
+
+//Binary search
+```CPP
+int localMin(vector<int> nums){
+  int len=nums.size();
+  if(nums[0]<nums[1] || len==1 )
+    return 0;
+  if(nums[len-1]<nums[len-2])
+    return len-1;
+
+  int left = 1;
+  int right = len-2;
+  int mid = 0;
+  while(left<right){
+    mid = left+(right-left)/2;
+    if(nums[mid]>nums[mid+1]){
+      left = mid+1;  //there will be local min right half
+    }else if(nums[mid]>nums[mid-1]){
+      right = mid-1;
+    }else{
+      return mid;
+    }
+  }
+  return left;
+
+}
+```
+
+
 
 
 ## Square Calculation
