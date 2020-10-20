@@ -7,8 +7,10 @@
     - [Key points](#key-points)
     - [Distinguishing Syntax:](#distinguishing-syntax)
   - [Framework 2: Boundary in Binary Search](#framework-2-boundary-in-binary-search)
-    - [Find Ceiling (Lower bound)](#find-ceiling-lower-bound)
-    - [Find Floor (Higher bound )](#find-floor-higher-bound-)
+      - [Find Ceiling (Lower bound)](#find-ceiling-lower-bound)
+      - [Find Floor (Higher bound )](#find-floor-higher-bound-)
+      - [Find left Boundary](#find-left-boundary)
+      - [Find right Boundary](#find-right-boundary)
     - [First bad version](#first-bad-version)
     - [Search number range](#search-number-range)
     - [Search in a sorted infinity Array](#search-in-a-sorted-infinity-array)
@@ -70,7 +72,7 @@ Searching Right: left = mid+1
 https://www.educative.io/courses/grokking-the-coding-interview/qA5wW7R8ox7
 
 
-### Find Ceiling (Lower bound)
+#### Find Ceiling (Lower bound)
 
 ```CPP
 static int searchCeilingOfANumber(const vector<int>& arr, int key) {
@@ -97,7 +99,7 @@ static int searchCeilingOfANumber(const vector<int>& arr, int key) {
 ```
 
 
-### Find Floor (Higher bound )
+#### Find Floor (Higher bound )
 
 ```CPP
 static int searchFloorOfANumber(const vector<int>& arr, int key) {
@@ -123,7 +125,53 @@ static int searchFloorOfANumber(const vector<int>& arr, int key) {
   }
 ```
 
+#### Find left Boundary
 
+```CPP
+static int searchLeftBoudary(const vector<int>& nums, int key) {
+    if (key < nums[0]) {  // if the 'key' is smaller than the smallest element
+      return -1;
+    }
+
+    int start = 0, end = nums.size() - 1;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (key < arr[mid]) {
+        end = mid - 1;
+      } else if (key > nums[mid]) {
+        start = mid + 1;
+      } else {  // found the key, still move to left
+        end = mid-1;
+      }
+    }
+    //ending condition will be start = end+1, so start will be first index or key
+    return start;
+  }
+```
+
+#### Find right Boundary
+
+```CPP
+static int searchRightBoudary(const vector<int>& nums, int key) {
+    if (key > nums[nums.size()-1]) {  // if the 'key' is larger than the smallest element
+      return -1;
+    }
+
+    int start = 0, end = nums.size() - 1;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      if (key < arr[mid]) {
+        end = mid - 1;
+      } else if (key > nums[mid]) {
+        start = mid + 1;
+      } else {  // found the key, still move to right
+        start = mid+1;
+      }
+    }
+    //ending condition will be start = end+1, so end will be last index or key
+    return end;
+  }
+```
 
 
 ### First bad version
@@ -151,22 +199,21 @@ Then 4 is the first bad version.
 int firstBadVersion(int n) {
     int l = 1;
     int r = n;
+    
     int ret = l;
     
-    //this is a search left boundary problem 
-    //search for [l,r)
-    //ending condition is l==r (==mid) for while
-    //check condition for l==r in the begining
-    while(l<r){
+
+    while(l<=r){
         int mid = l+(r-l)/2;
+        //equal, find left 
         if (isBadVersion(mid)) {
-            r = mid;
+            r = mid-1;
         }else {
             l = mid+1;
-            ret = l;
         }
     }
-    return ret;
+    //ending condition is l=r+1, l is first bad, r is good
+    return l;
 }
 ```
 
