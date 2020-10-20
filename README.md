@@ -16,6 +16,7 @@
 - [Trie](#trie)
 - [DP](#dp)
 - [Big data](#big-data)
+- [Matrix](#matrix)
 - [Graph](#graph)
 - [Classical Algorithm](#classical-algorithm)
 - [Design](#design)
@@ -72,6 +73,9 @@
 
 # Big data
 [Big Data Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/big_data.md)
+
+# Matrix
+[Matrix](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/matrix.md)
 
 # Graph
 [Graph Subsection](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/Graph.md)
