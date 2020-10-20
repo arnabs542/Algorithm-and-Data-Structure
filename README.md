@@ -7,6 +7,7 @@
 - [Sliding Window](#sliding-window)
 - [Heap](#heap)
 - [Stack](#stack)
+- [Interval](#interval)
 - [Hash Table](#hash-table)
 - [List](#list)
 - [Binary Search](#binary-search)
@@ -35,7 +36,10 @@
 [Heap/Priority Queue](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/heap.md)
 
 # Stack
-[Heap/Priority Queue](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/stack.md)
+[Stack](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/stack.md)
+
+# Interval
+[Interval](https://github.com/zhangruiskyline/Algorithm-and-Data-Structure/blob/master/doc/interval.md)
 
 
 # Hash Table
