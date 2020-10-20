@@ -3,20 +3,21 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Interval](#interval)
-  - [Interval overlap](#interval-overlap)
-    - [Merge intervals](#merge-intervals)
-    - [Remove intervals so that no overlap happen](#remove-intervals-so-that-no-overlap-happen)
-    - [Interval Overlap](#interval-overlap)
-      - [Meeting room](#meeting-room)
-      - [Meeting Scheduler](#meeting-scheduler)
+  - [Merge intervals](#merge-intervals)
+  - [Insert interval](#insert-interval)
+  - [Remove intervals so that no overlap happen](#remove-intervals-so-that-no-overlap-happen)
+  - [Interval Intersection](#interval-intersection)
+  - [Minimum Meeting room](#minimum-meeting-room)
+  - [Meeting Scheduler](#meeting-scheduler)
+  - [Employee Free time](#employee-free-time)
+  - [Ballon Burst](#ballon-burst)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Interval
 
-## Interval overlap
 
-### Merge intervals
+## Merge intervals
 https://leetcode.com/problems/merge-intervals/#/description
 Given a collection of intervals, merge all overlapping intervals.
 
@@ -47,7 +48,41 @@ vector<Interval> merge(vector<Interval>& intervals) {
 }
 ```
 
-### Remove intervals so that no overlap happen
+## Insert interval
+
+https://leetcode.com/problems/insert-interval/
+
+https://www.educative.io/courses/grokking-the-coding-interview/3jKlyNMJPEM
+
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
+You may assume that the intervals were initially sorted according to their start times.
+
+
+```CPP
+vector<Interval> insert(vector<Interval>& intervals, Interval newInterval) {
+    vector<Interval> res;
+    int index = 0;
+    //insert interval in left, no overlap
+    while(index < intervals.size() && intervals[index].end < newInterval.start){
+        res.push_back(intervals[index++]);
+    }
+    //begin merge, until newInterval's end< start
+    while(index < intervals.size() && intervals[index].start <= newInterval.end){
+        newInterval.start = min(newInterval.start, intervals[index].start);
+        newInterval.end = max(newInterval.end, intervals[index].end);
+        index++;
+    }
+    res.push_back(newInterval);
+    while(index < intervals.size()){
+        res.push_back(intervals[index++]);
+    }
+    return res;
+}
+```
+
+
+
+## Remove intervals so that no overlap happen
 
 https://leetcode.com/problems/non-overlapping-intervals/#/description
 Given a collection of intervals, find the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
@@ -97,13 +132,54 @@ int eraseOverlapIntervals(vector<Interval>& intervals) {
 
 ```
 
-### Interval Overlap
+## Interval Intersection
 
-* usually these questions looks like get some min/max for interval list considering intervals could overlap
+https://leetcode.com/problems/interval-list-intersections/
 
-#### Meeting room
+https://www.educative.io/courses/grokking-the-coding-interview/JExVVqRAN9D
+
+Given two lists of intervals, find the intersection of these two lists. Each list consists of disjoint intervals sorted on their start time.
+```
+Example 1:
+
+Input: arr1=[[1, 3], [5, 6], [7, 9]], arr2=[[2, 3], [5, 7]]
+Output: [2, 3], [5, 6], [7, 7]
+Explanation: The output list contains the common intervals between the two lists.
+```
+
+```CPP
+vector<vector<int>> intervalIntersection(vector<vector<int>>& A, vector<vector<int>>& B) {
+    vector<vector<int>> ret;
+    
+    int i=0;
+    int j=0;
+    while(i<A.size() && j<B.size()){
+        /*
+        start = max(a.start, b.start)
+        end = min(a.end, b.end) 
+        */
+
+        int l=max(A[i][0], B[j][0]);
+        int u=min(A[i][1], B[j][1]);
+        if(l<=u) 
+            ret.push_back({l,u});
+        if(A[i][1] < B[j][1])   
+            i++;
+        else 
+            j++;
+    }
+    
+    return ret;
+}
+```
+
+
+## Minimum Meeting room
 
 https://leetcode.com/problems/meeting-rooms-ii/#/description
+
+https://www.educative.io/courses/grokking-the-coding-interview/JQMAmrVPL7l
+
 Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
 
 For example,
@@ -125,13 +201,14 @@ int minMeetingRooms(vector<Interval>& intervals) {
     if(intervals.size()==0)
         return 0;
     sort(intervals.begin(),intervals.end(),sortcomp);
+    //min heap, top is earilest ending time
     priority_queue<Interval, vector<Interval>, pq_compare> pq;//maintain the earliest ends time, min queue
     pq.push(intervals[0]);
     for(int i=1;i<intervals.size();i++){
         Interval tmp = pq.top();
-
+        //no additional room needed, pop current(current meeting end), push new, so meeting room is same
         if(intervals[i].start>=tmp.end){
-            pq.pop(); //extend current room
+            pq.pop(); 
         }
         pq.push(intervals[i]);
     }
@@ -140,7 +217,7 @@ int minMeetingRooms(vector<Interval>& intervals) {
 
 ```
 
-#### Meeting Scheduler
+## Meeting Scheduler
 
 https://leetcode.com/problems/meeting-scheduler/
 
@@ -214,6 +291,109 @@ vector<int> minAvailableDuration(vector<vector<int>>& slots1, vector<vector<int>
 }
 ```
 
+## Employee Free time
+
+https://leetcode.com/problems/employee-free-time/
+
+https://www.educative.io/courses/grokking-the-coding-interview/YQykDmBnvB0
+
+For ‘K’ employees, we are given a list of intervals representing the working hours of each employee. Our goal is to find out if there is a free interval that is common to all employees. You can assume that each list of employee working hours is sorted on the start time.
+
+```
+Example 1:
+
+Input: Employee Working Hours=[[[1,3], [5,6]], [[2,3], [6,8]]]
+Output: [3,5]
+Explanation: Both the employees are free between [3,5].
+Example 2:
+
+Input: Employee Working Hours=[[[1,3], [9,12]], [[2,4]], [[6,8]]]
+Output: [4,6], [8,9]
+Explanation: All employees are free between [4,6] and [8,9].
+```
+
+```CPP
+struct startCompare {
+        bool operator()(pair<Interval, pair<int, int>> &x,
+                        pair<Interval, pair<int, int>> &y) {
+          return x.first.start > y.first.start;
+        }
+    };
+    
+    vector<Interval> employeeFreeTime(vector<vector<Interval>>& schedule) {
+        vector<Interval> ret;
+        if (schedule.empty()) {
+          return ret;
+        }
+
+        // PriorityQueue to store one interval from each employee
+        //pair here is employ row index and col index 
+        priority_queue<pair<Interval, pair<int, int>>, vector<pair<Interval, pair<int, int>>>,
+                       startCompare>
+            minHeap;
+
+        // insert the first interval of each employee to the queue
+        for (int i = 0; i < schedule.size(); i++) {
+          minHeap.push(make_pair(schedule[i][0], make_pair(i, 0)));
+        }
+        
+        /*
+        Once we have the smallest start-time interval, we can then compare it with the next smallest start-time interval (again from the Heap) to find the gap
+        */
+        
+        Interval prev = minHeap.top().first; 
+        while(!minHeap.empty()){
+            auto next = minHeap.top();
+            minHeap.pop();
+            //no overlap
+            if (prev.end < next.first.start) {
+                ret.push_back({prev.end, next.first.start});
+                prev = next.first;
+              } else {  
+                // overlapping intervals, update the prev if needed
+                if (prev.end < next.first.end) {
+                  prev = next.first;
+                }
+            }
+            
+    
+            vector<Interval> cur_employee = schedule[next.second.first];
+            //index of current employee's next schedule
+            int next_index = next.second.second + 1;
+            if (cur_employee.size() > next_index) {
+                minHeap.push(make_pair(cur_employee[next_index],
+                                   make_pair(next.second.first, next_index)));
+            }
+        }
+        
+        return ret;
+    }
+```
+
+* Another simple way, flat out the interval
+
+```CPP
+vector<Interval> employeeFreeTime(vector<vector<Interval>>& schedule) {
+    vector<Interval> res, v;
+    for (auto a : schedule) {
+        v.insert(v.end(), a.begin(), a.end());
+    }
+    sort(v.begin(), v.end(), mycompare);
+    Interval t = v[0];
+    for (Interval i : v) {
+        if (t.end < i.start) {
+            res.push_back(Interval(t.end, i.start));
+            t = i;
+        } else {
+            t = (t.end < i.end) ? i : t;
+        }
+    }
+    return res;
+}
+```
+
+
+## Ballon Burst
 
 
 https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/#/description
