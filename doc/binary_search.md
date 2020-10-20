@@ -3,13 +3,12 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Binary search](#binary-search)
-  - [Binary search for Framework](#binary-search-for-framework)
-    - [Framework 1: Binary Search for target](#framework-1-binary-search-for-target)
-      - [Key points](#key-points)
-      - [Distinguishing Syntax:](#distinguishing-syntax)
-    - [Framework 2: Boundary in Binary Search](#framework-2-boundary-in-binary-search)
-      - [Find Ceiling (Lower bound)](#find-ceiling-lower-bound)
-      - [Find Floor (Higher bound )](#find-floor-higher-bound-)
+  - [Framework 1: Binary Search for target](#framework-1-binary-search-for-target)
+    - [Key points](#key-points)
+    - [Distinguishing Syntax:](#distinguishing-syntax)
+  - [Framework 2: Boundary in Binary Search](#framework-2-boundary-in-binary-search)
+    - [Find Ceiling (Lower bound)](#find-ceiling-lower-bound)
+    - [Find Floor (Higher bound )](#find-floor-higher-bound-)
     - [First bad version](#first-bad-version)
     - [Search number range](#search-number-range)
     - [Search in a sorted infinity Array](#search-in-a-sorted-infinity-array)
@@ -18,7 +17,8 @@
   - [Bitonic(Monotonic increasing then decreasing)](#bitonicmonotonic-increasing-then-decreasing)
     - [Find Peak Element](#find-peak-element)
     - [Local Minimum](#local-minimum)
-  - [Square Calculation](#square-calculation)
+  - [Other example](#other-example)
+    - [Square Calculation](#square-calculation)
     - [Find K-th Smallest Pair Distance](#find-k-th-smallest-pair-distance)
     - [Median of Two Sorted Arrays](#median-of-two-sorted-arrays)
 
@@ -29,9 +29,7 @@
 Anything that can split the Search space can use Binary search
 
 
-## Binary search for Framework
-
-### Framework 1: Binary Search for target
+## Framework 1: Binary Search for target
 
 ```CPP
 int binarySearch(int[] nums, int target) {
@@ -51,14 +49,14 @@ int binarySearch(int[] nums, int target) {
 }
 ```
 
-#### Key points
+### Key points
 
 
 * Most basic and elementary form of Binary Search
 * Search Condition can be determined without comparing to the element's neighbors (or use specific elements around it)
 * No post-processing required because at each step, you are checking to see if the element has been found. If you reach the end, then you know the element is not found
 
-#### Distinguishing Syntax:
+### Distinguishing Syntax:
 
 ```
 Initial Condition: left = 0, right = length-1
@@ -67,12 +65,12 @@ Searching Left: right = mid-1
 Searching Right: left = mid+1
 ```
 
-### Framework 2: Boundary in Binary Search
+## Framework 2: Boundary in Binary Search
 
 https://www.educative.io/courses/grokking-the-coding-interview/qA5wW7R8ox7
 
 
-#### Find Ceiling (Lower bound)
+### Find Ceiling (Lower bound)
 
 ```CPP
 static int searchCeilingOfANumber(const vector<int>& arr, int key) {
@@ -99,7 +97,7 @@ static int searchCeilingOfANumber(const vector<int>& arr, int key) {
 ```
 
 
-#### Find Floor (Higher bound )
+### Find Floor (Higher bound )
 
 ```CPP
 static int searchFloorOfANumber(const vector<int>& arr, int key) {
@@ -457,9 +455,9 @@ int localMin(vector<int> nums){
 ```
 
 
+## Other example
 
-
-## Square Calculation
+### Square Calculation
 https://leetcode.com/problems/sum-of-square-numbers/#/description
 
 Given a non-negative integer c, your task is to decide whether there're two integers a and b such that a2 + b2 = c.
