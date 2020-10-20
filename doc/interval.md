@@ -12,6 +12,7 @@
   - [Max CPU time](#max-cpu-time)
   - [Employee Free time](#employee-free-time)
   - [Ballon Burst](#ballon-burst)
+  - [Skyline](#skyline)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -493,4 +494,38 @@ int findMinArrowShots(vector<pair<int, int>>& points) {
     }
     return overlap.size();
 }
+```
+
+## Skyline
+
+A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when viewed from a distance. Now suppose you are given the locations and height of all the buildings as shown on a cityscape photo (Figure A), write a program to output the skyline formed by these buildings collectively (Figure B).
+
+```CPP
+vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
+        vector<pair<int, int>> res;
+        int cur=0, cur_X, cur_H =-1,  len = buildings.size();
+        priority_queue< pair<int, int>> liveBlg; // first: height, second, end time
+        while(cur<len || !liveBlg.empty())
+        { // if either some new building is not processed or live building queue is not empty
+            cur_X = liveBlg.empty()? buildings[cur][0]:liveBlg.top().second; // next timing point to process
+
+            if(cur>=len || buildings[cur][0] > cur_X)
+            { //first check if the current tallest building will end before the next timing point
+                  // pop up the processed buildings, i.e. those  have height no larger than cur_H and end before the top one
+                while(!liveBlg.empty() && ( liveBlg.top().second <= cur_X) ) liveBlg.pop();
+            }
+            else
+            { // if the next new building starts before the top one ends, process the new building in the vector
+                cur_X = buildings[cur][0];
+                while(cur<len && buildings[cur][0]== cur_X)  // go through all the new buildings that starts at the same point
+                {  // just push them in the queue
+                    liveBlg.push(make_pair(buildings[cur][2], buildings[cur][1]));
+                    cur++;
+                }
+            }
+            cur_H = liveBlg.empty()?0:liveBlg.top().first; // outut the top one
+            if(res.empty() || (res.back().second != cur_H) ) res.push_back(make_pair(cur_X, cur_H));
+        }
+        return res;
+    }
 ```
