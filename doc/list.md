@@ -4,6 +4,12 @@
 
 - [Linked List](#linked-list)
   - [Fine the Cycle in Linked List](#fine-the-cycle-in-linked-list)
+    - [Fast/Slow pointer](#fastslow-pointer)
+    - [Find cycle intersection](#find-cycle-intersection)
+    - [Happy Number](#happy-number)
+    - [Palindrome List](#palindrome-list)
+    - [Re Arrange List](#re-arrange-list)
+    - [Cycle in a Circular Array](#cycle-in-a-circular-array)
 - [Skip List](#skip-list)
   - [Architecture](#architecture)
     - [A naïve (but common) implementation](#a-na%C3%AFve-but-common-implementation)
@@ -18,7 +24,7 @@
 
 ## Fine the Cycle in Linked List
 
-> Fast/Slow pointer
+### Fast/Slow pointer
 
 ```CPP
 bool hasCycle(ListNode* head) {
@@ -56,6 +62,8 @@ ListNode* detectCycle(ListNode* head) {
     return slow;
 }
 ```
+
+### Find cycle intersection
 
 * Find and return the intersections of two lists. List could have loop
 
@@ -161,8 +169,66 @@ Node* checkCircle(Node* head){
 
 ```
 
+### Happy Number
 
-* Check Whether a linked list is PalindromeList
+https://www.educative.io/courses/grokking-the-coding-interview/39q3ZWq27jM
+
+https://leetcode.com/problems/happy-number/
+
+Write an algorithm to determine if a number n is "happy".
+
+A happy number is a number defined by the following process: Starting with any positive integer, replace the number by the sum of the squares of its digits, and repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1. Those numbers for which this process ends in 1 are happy numbers.
+
+Return True if n is a happy number, and False if not.
+
+```
+Example: 
+
+Input: 19
+Output: true
+Explanation: 
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+```
+
+```CPP
+static bool find(int num) {
+  int slow = num, fast = num;
+  do {
+    slow = findSquareSum(slow);                 // move one step
+    fast = findSquareSum(findSquareSum(fast));  // move two steps
+  } while (slow != fast);                       // found the cycle
+
+  return slow == 1;  // see if the cycle is stuck on the number '1'
+}
+
+
+static int findSquareSum(int num) {
+  int sum = 0, digit;
+  while (num > 0) {
+    digit = num % 10;
+    sum += digit * digit;
+    num /= 10;
+  }
+  return sum;
+}
+```
+
+### Palindrome List
+
+Your algorithm should use constant space and the input LinkedList should be in the original form once the algorithm is finished. The algorithm should have O(N)O(N) time complexity where ‘N’ is the number of nodes in the LinkedList.
+```
+Example 1:
+
+Input: 2 -> 4 -> 6 -> 4 -> 2 -> null
+Output: true
+Example 2:
+
+Input: 2 -> 4 -> 6 -> 4 -> 2 -> 2 -> null
+Output: false
+```
 
 The easy solution will be input a list into stack, and then compare.
 
@@ -170,7 +236,160 @@ If we need to have a solution which dose not require extra memory. we could reve
 
 
 ```CPP
+static bool isPalindrome(ListNode *head) {
+    if (head == nullptr || head->next == nullptr) {
+      return true;
+    }
 
+    // find middle of the LinkedList
+    ListNode *slow = head;
+    ListNode *fast = head;
+    while (fast != nullptr && fast->next != nullptr) {
+      slow = slow->next;
+      fast = fast->next->next;
+    }
+
+    ListNode *headSecondHalf = reverse(slow);  // reverse the second half
+    ListNode *copyHeadSecondHalf =
+        headSecondHalf;  // store the head of reversed part to revert back later
+
+    // compare the first and the second half
+    while (head != nullptr && headSecondHalf != nullptr) {
+      if (head->value != headSecondHalf->value) {
+        return false;
+      }
+      head = head->next;
+      headSecondHalf = headSecondHalf->next;
+    }
+
+    return true;
+  }
+
+
+  static ListNode *reverse(ListNode *head) {
+    ListNode *prev = nullptr;
+    while (head != nullptr) {
+      ListNode *next = head->next;
+      head->next = prev;
+      prev = head;
+      head = next;
+    }
+    return prev;
+  }
+```
+
+### Re Arrange List
+
+https://leetcode.com/problems/reorder-list/
+
+https://www.educative.io/courses/grokking-the-coding-interview/qAo438WozV7
+
+Given the head of a Singly LinkedList, write a method to modify the LinkedList such that the nodes from the second half of the LinkedList are inserted alternately to the nodes from the first half in reverse order. So if the LinkedList has nodes 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> null, your method should return 1 -> 6 -> 2 -> 5 -> 3 -> 4 -> null.
+
+Your algorithm should not use any extra space and the input LinkedList should be modified in-place.
+
+```
+Example 1:
+
+Input: 2 -> 4 -> 6 -> 8 -> 10 -> 12 -> null
+Output: 2 -> 12 -> 4 -> 10 -> 6 -> 8 -> null 
+Example 2:
+
+Input: 2 -> 4 -> 6 -> 8 -> 10 -> null
+Output: 2 -> 10 -> 4 -> 8 -> 6 -> null
+```
+
+```CPP
+void reorderList(ListNode* head) {
+    if (head == nullptr || head->next == nullptr) {
+      return;
+    }
+
+    // find the middle of the LinkedList
+    ListNode *slow = head, *fast = head;
+    while (fast != nullptr && fast->next != nullptr) {
+      slow = slow->next;
+      fast = fast->next->next;
+    }
+
+    // slow is now pointing to the middle node
+    ListNode *headSecondHalf = reverse(slow);  // reverse the second half
+    ListNode *headFirstHalf = head;
+
+    // rearrange to produce the LinkedList in the required order
+    while (headFirstHalf != nullptr && headSecondHalf != nullptr) {
+      ListNode *temp = headFirstHalf->next;
+      headFirstHalf->next = headSecondHalf;
+      headFirstHalf = temp;
+
+      temp = headSecondHalf->next;
+      headSecondHalf->next = headFirstHalf;
+      headSecondHalf = temp;
+    }
+
+    // set the next of the last node to 'null'
+    if (headFirstHalf != nullptr) {
+      headFirstHalf->next = nullptr;
+    }
+}
+
+ListNode *reverse(ListNode *head) {
+    ListNode *prev = nullptr;
+    while (head != nullptr) {
+      ListNode *next = head->next;
+      head->next = prev;
+      prev = head;
+      head = next;
+    }
+    return prev;
+}
+```
+
+### Cycle in a Circular Array
+
+https://leetcode.com/problems/circular-array-loop/
+
+https://www.educative.io/courses/grokking-the-coding-interview/3jY0GKpPDxr
+
+```CPP
+    bool circularArrayLoop(vector<int>& nums) {
+        for (int i = 0; i < nums.size(); i++) {
+          bool isForward = nums[i] >= 0;  // if we are moving forward or not
+          int slow = i, fast = i;
+
+          // if slow or fast becomes '-1' this means we can't find cycle for this number
+          do {
+            slow = findNextIndex(nums, isForward, slow);  // move one step for slow pointer
+            fast = findNextIndex(nums, isForward, fast);  // move one step for fast pointer
+            if (fast != -1) {
+              fast = findNextIndex(nums, isForward, fast);  // move another step for fast pointer
+            }
+          } while (slow != -1 && fast != -1 && slow != fast);
+
+          if (slow != -1 && slow == fast) {
+            return true;
+          }
+        }
+
+        return false;
+    }
+    
+    int findNextIndex(const vector<int> &arr, bool isForward, int currentIndex) {
+        bool direction = arr[currentIndex] >= 0;
+        if (isForward != direction) {
+          return -1;  // change in direction, return -1
+        }
+
+        // wrap around for negative numbers
+        int nextIndex = (currentIndex + arr[currentIndex] + arr.size()) % arr.size();
+
+        // one element cycle, return -1
+        if (nextIndex == currentIndex) {
+          nextIndex = -1;
+        }
+
+        return nextIndex;
+  }
 ```
 
 # Skip List
