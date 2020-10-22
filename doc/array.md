@@ -3,18 +3,21 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Basic Array Operation](#basic-array-operation)
-  - [Two pointer/Procee from End](#two-pointerprocee-from-end)
+  - [Two pointer](#two-pointer)
     - [In Place Operation](#in-place-operation)
       - [Remove element(Delete in place)](#remove-elementdelete-in-place)
       - [Move zeros(Swap inplace)](#move-zerosswap-inplace)
       - [Remove Duplicate in sorted array](#remove-duplicate-in-sorted-array)
-      - [Sort Array By Parity](#sort-array-by-parity)
-      - [Squares of a Sorted Array](#squares-of-a-sorted-array)
+    - [Sort Array By Parity](#sort-array-by-parity)
+    - [Squares of a Sorted Array](#squares-of-a-sorted-array)
     - [Merge array](#merge-array)
     - [Replace Elements with Greatest Element on Right Side](#replace-elements-with-greatest-element-on-right-side)
     - [Contains Duplicate](#contains-duplicate)
     - [Max consecutive Ones](#max-consecutive-ones)
     - [Read buffer from Read4](#read-buffer-from-read4)
+  - [Three pointers problems](#three-pointers-problems)
+    - [3 Sum](#3-sum)
+    - [Valid-triangle-number](#valid-triangle-number)
   - [Cyclic Sort](#cyclic-sort)
     - [Find missing numbers](#find-missing-numbers)
     - [Find the Corrupt Pair](#find-the-corrupt-pair)
@@ -42,9 +45,6 @@
     - [Contiguous subarray with equal number of 0 and 1](#contiguous-subarray-with-equal-number-of-0-and-1)
     - [Max Consecutive Ones(with flip most k zeros)](#max-consecutive-oneswith-flip-most-k-zeros)
   - [Array split/Cut/Partition Problem](#array-splitcutpartition-problem)
-- [Three pointers problems](#three-pointers-problems)
-  - [3 Sum](#3-sum)
-    - [Valid-triangle-number](#valid-triangle-number)
 - [Sliding Windows](#sliding-windows)
   - [Maximum Average Subarray](#maximum-average-subarray)
     - [Maximum Average Subarray/fixed sliding window](#maximum-average-subarrayfixed-sliding-window)
@@ -71,7 +71,7 @@
 
 # Basic Array Operation
 
-## Two pointer/Procee from End
+## Two pointer
 
 ### In Place Operation
 
@@ -191,7 +191,7 @@ int removeDuplicates(vector<int>& nums) {
 }
 ```
 
-#### Sort Array By Parity
+### Sort Array By Parity
 
 https://leetcode.com/problems/sort-array-by-parity/
 
@@ -218,7 +218,7 @@ vector<int> sortArrayByParity(vector<int>& A) {
 }
 ```
 
-#### Squares of a Sorted Array
+### Squares of a Sorted Array
 
 https://leetcode.com/problems/squares-of-a-sorted-array/
 
@@ -240,6 +240,7 @@ Output: [4,9,9,49,121]
 vector<int> sortedSquares(vector<int>& A) {
     int i =0;
     int j=A.size()-1;
+    //two pinter from each side 
     vector<int> ret(A.size(),0);
     for(int k=A.size()-1;k>=0;k--){
         if(abs(A[i])>abs(A[j])){
@@ -491,6 +492,121 @@ public:
         return counter;
     }
 };
+```
+
+## Three pointers problems
+> Common techniques
+* Sort the array
+* Fix the first pointer, and define left and right, search from beginning and end
+* define the condition properly
+
+### 3 Sum
+
+https://leetcode.com/problems/3sum/#/description
+
+Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+
+Note:
+The solution set must not contain duplicate triplets.
+
+```
+Example:
+
+Given array nums = [-1, 0, 1, 2, -1, -4],
+
+A solution set is:
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+
+```CPP
+vector<vector<int>> threeSum(vector<int>& nums) {
+    sort(nums.begin(),nums.end());
+    vector<vector<int>> ret;
+    for(int i=0;i<nums.size();i++){
+        int target = -nums[i];
+        int start = i+1;
+        int end = nums.size()-1;
+        while(start<end){
+            if(nums[start]+nums[end]>target){
+                end--;
+            }else if(nums[start]+nums[end]<target){
+                start++;
+            }else{
+                vector<int> one;
+                one.push_back(nums[i]);
+                one.push_back(nums[start]);
+                one.push_back(nums[end]);
+                ret.push_back(one);
+                int begin = nums[start];
+                int finish = nums[end];
+
+                while(start<end && nums[start]==begin)
+                    start++;
+                while(start<end && nums[end]==finish)
+                    end--;
+            }
+            if(start>=end)
+                break;
+        }
+                // Processing duplicates of Number 1
+        while (i + 1 < nums.size() && nums[i + 1] == nums[i])
+            i++;
+    }
+
+    return ret;
+}
+
+```
+
+### Valid-triangle-number
+
+There are lots of problem can be soled by similar idea.
+
+https://leetcode.com/problems/valid-triangle-number/#/description
+
+
+Given an array consists of non-negative integers, your task is to count the number of triplets chosen from the array that can make triangles if we take them as side lengths of a triangle.
+```
+Example 1:
+Input: [2,2,3,4]
+Output: 3
+Explanation:
+Valid combinations are: 
+2,3,4 (using the first 2)
+2,3,4 (using the second 2)
+2,2,3
+```
+Note:
+* The length of the given array won't exceed 1000.
+* The integers in the given array are in the range of [0, 1000].
+
+```CPP
+int triangleNumber(vector<int>& nums) {
+    //3 sum problem
+    int len = nums.size();
+    sort(nums.begin(),nums.end());
+    int ret = 0;
+    for(int i=2;i<len;i++){
+        int l=0;
+        int r=i-1;
+        while(l<r){
+            if(nums[l]+nums[r]>nums[i]){
+              //all l>current l can form triangle 
+                ret+=r-l;
+                r--;
+            }else {
+              l++;
+            }
+                
+        }
+    }
+
+    return ret;
+}
 ```
 
 ## Cyclic Sort
@@ -1379,120 +1495,7 @@ bool splitArray(vector<int>& nums) {
 ```
 
 
-# Three pointers problems
-> Common techniques
-* Sort the array
-* Fix the first pointer, and define left and right, search from beginning and end
-* define the condition properly
 
-## 3 Sum
-
-https://leetcode.com/problems/3sum/#/description
-
-Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
-
-Note:
-The solution set must not contain duplicate triplets.
-
-```
-Example:
-
-Given array nums = [-1, 0, 1, 2, -1, -4],
-
-A solution set is:
-[
-  [-1, 0, 1],
-  [-1, -1, 2]
-]
-```
-
-
-```CPP
-vector<vector<int>> threeSum(vector<int>& nums) {
-    sort(nums.begin(),nums.end());
-    vector<vector<int>> ret;
-    for(int i=0;i<nums.size();i++){
-        int target = -nums[i];
-        int start = i+1;
-        int end = nums.size()-1;
-        while(start<end){
-            if(nums[start]+nums[end]>target){
-                end--;
-            }else if(nums[start]+nums[end]<target){
-                start++;
-            }else{
-                vector<int> one;
-                one.push_back(nums[i]);
-                one.push_back(nums[start]);
-                one.push_back(nums[end]);
-                ret.push_back(one);
-                int begin = nums[start];
-                int finish = nums[end];
-
-                while(start<end && nums[start]==begin)
-                    start++;
-                while(start<end && nums[end]==finish)
-                    end--;
-            }
-            if(start>=end)
-                break;
-        }
-                // Processing duplicates of Number 1
-        while (i + 1 < nums.size() && nums[i + 1] == nums[i])
-            i++;
-    }
-
-    return ret;
-}
-
-```
-
-### Valid-triangle-number
-
-There are lots of problem can be soled by similar idea.
-
-https://leetcode.com/problems/valid-triangle-number/#/description
-
-
-Given an array consists of non-negative integers, your task is to count the number of triplets chosen from the array that can make triangles if we take them as side lengths of a triangle.
-```
-Example 1:
-Input: [2,2,3,4]
-Output: 3
-Explanation:
-Valid combinations are: 
-2,3,4 (using the first 2)
-2,3,4 (using the second 2)
-2,2,3
-```
-Note:
-* The length of the given array won't exceed 1000.
-* The integers in the given array are in the range of [0, 1000].
-
-```CPP
-int triangleNumber(vector<int>& nums) {
-    //3 sum problem
-    int len = nums.size();
-    sort(nums.begin(),nums.end());
-    int ret = 0;
-    for(int i=2;i<len;i++){
-        int l=0;
-        int r=i-1;
-        while(l<r){
-            if(nums[l]+nums[r]>nums[i]){
-              //all l>current l can form triangle 
-                ret+=r-l;
-                r--;
-            }else {
-              l++;
-            }
-                
-        }
-    }
-
-    return ret;
-}
-```
 
 # Sliding Windows
 

@@ -18,7 +18,7 @@
     - [Shortest path](#shortest-path)
       - [Path with Obstable](#path-with-obstable)
     - [Minimum Height Tree](#minimum-height-tree)
-- [Union Find(Connected Component)](#union-findconnected-component)
+- [Connected Component(Union Find, DFS, BFS)](#connected-componentunion-find-dfs-bfs)
   - [Basic idea](#basic-idea)
     - [Number of island](#number-of-island)
       - [Number of Island(count number of islands)](#number-of-islandcount-number-of-islands)
@@ -558,11 +558,11 @@ public:
 
 ```
 
-# Union Find(Connected Component)
+# Connected Component(Union Find, DFS, BFS)
 
 ## Basic idea
 1. via Union find: Basic idea is to find root/parents of certain node, and union if same parents
-2. have a log complexity way to find root for each node, each node could have 
+2. have a log complexity way to find root for each node
 2. DFS/BFS:  from one item(item in vector or point in 2-D matrix)
 	* search all surrounding via DFS/BFS
 	* mark visited(through either some visited mark, or change original value)
@@ -623,6 +623,8 @@ int numIslands(vector<vector<char>>& grid) {
 ```
 
 #### Number of Island(count number of islands)
+
+https://leetcode.com/problems/number-of-islands-ii/
 
 A 2d grid map of m rows and n columns is initially filled with water. We may perform an addLand operation which turns the water at position (row, col) into a land. Given a list of positions to operate, count the number of islands after each addLand operation. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
 
