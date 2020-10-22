@@ -18,23 +18,24 @@
     - [Shortest path](#shortest-path)
       - [Path with Obstable](#path-with-obstable)
     - [Minimum Height Tree](#minimum-height-tree)
-- [Connected components via Union Find/DFS/BFS](#connected-components-via-union-finddfsbfs)
+- [Union Find(Connected Component)](#union-findconnected-component)
   - [Basic idea](#basic-idea)
     - [Number of island](#number-of-island)
+      - [Number of Island(count number of islands)](#number-of-islandcount-number-of-islands)
     - [Number of connected component](#number-of-connected-component)
     - [Number of component with some step count](#number-of-component-with-some-step-count)
       - [Rotting Oranges](#rotting-oranges)
-    - [Number of island](#number-of-island-1)
     - [Friends Circle](#friends-circle)
     - [Graph Valid Tree](#graph-valid-tree)
 - [Topological Sort](#topological-sort)
   - [Top Sort](#top-sort)
-    - [Detect Circle via Topo Sort](#detect-circle-via-topo-sort)
-  - [DFS](#dfs-1)
-  - [BFS](#bfs-1)
+      - [DFS](#dfs-1)
+      - [BFS](#bfs-1)
+      - [Detect Circle via Topo Sort](#detect-circle-via-topo-sort)
+    - [Task/Course schedule](#taskcourse-schedule)
+      - [All Task/Course schedule](#all-taskcourse-schedule)
   - [Example](#example)
     - [Sequence Reconstruction](#sequence-reconstruction)
-    - [Course Schedule](#course-schedule)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -557,10 +558,11 @@ public:
 
 ```
 
-# Connected components via Union Find/DFS/BFS
+# Union Find(Connected Component)
 
 ## Basic idea
 1. via Union find: Basic idea is to find root/parents of certain node, and union if same parents
+2. have a log complexity way to find root for each node, each node could have 
 2. DFS/BFS:  from one item(item in vector or point in 2-D matrix)
 	* search all surrounding via DFS/BFS
 	* mark visited(through either some visited mark, or change original value)
@@ -618,6 +620,86 @@ int numIslands(vector<vector<char>>& grid) {
         eraseIslands(grid, i, j - 1);
         eraseIslands(grid, i, j + 1);
     }
+```
+
+#### Number of Island(count number of islands)
+
+A 2d grid map of m rows and n columns is initially filled with water. We may perform an addLand operation which turns the water at position (row, col) into a land. Given a list of positions to operate, count the number of islands after each addLand operation. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+```
+Example:
+
+Input: m = 3, n = 3, positions = [[0,0], [0,1], [1,2], [2,1]]
+Output: [1,1,2,3]
+Explanation:
+
+Initially, the 2d grid grid is filled with water. (Assume 0 represents water and 1 represents land).
+
+0 0 0
+0 0 0
+0 0 0
+Operation #1: addLand(0, 0) turns the water at grid[0][0] into a land.
+
+1 0 0
+0 0 0   Number of islands = 1
+0 0 0
+Operation #2: addLand(0, 1) turns the water at grid[0][1] into a land.
+
+1 1 0
+0 0 0   Number of islands = 1
+0 0 0
+Operation #3: addLand(1, 2) turns the water at grid[1][2] into a land.
+
+1 1 0
+0 0 1   Number of islands = 2
+0 0 0
+Operation #4: addLand(2, 1) turns the water at grid[2][1] into a land.
+
+1 1 0
+0 0 1   Number of islands = 3
+0 1 0
+```
+
+```CPP
+vector<int> roots;
+
+vector<int> numIslands2(int m, int n, vector<pair<int, int>>& positions) {
+    vector<int> res;
+    roots = vector<int>(m * n, -1);
+    vector<pair<int, int>> dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    int island = 0;
+    for (auto pos : positions) {
+        int x = pos.first, y = pos.second;
+        int idx_p = x * n + y;
+        roots[idx_p] = idx_p;
+        ++island;
+        for (auto dir : dirs) {
+            int row = x + dir.first, col = y + dir.second;
+            int idx_new = row * n + col;
+            //find there is cluster has been set
+            if (row >= 0 && row < m && col >= 0 && col < n && roots[idx_new] != -1) {
+                int rootNew = findRoot(idx_new);
+                int rootPos = findRoot(idx_p);
+                //link two components/islands
+                if (rootPos != rootNew) {
+                    roots[rootPos] = rootNew;
+                    --island;
+                }
+            }
+        }
+        res.push_back(island);
+    }
+    return res;
+}
+
+
+int findRoot(int idx) {
+    while(idx != roots[idx]) {
+        roots[idx] = roots[roots[idx]]; 
+        idx = roots[idx];
+    }
+    return idx;
+}
 ```
 
 ### Number of connected component
@@ -831,58 +913,7 @@ int orangesRotting(vector<vector<int>>& grid) {
 ```
 
 
-### Number of island
 
-https://leetcode.com/problems/number-of-islands/
-
-Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
-
- 
-```
-Example 1:
-
-Input: grid = [
-  ["1","1","1","1","0"],
-  ["1","1","0","1","0"],
-  ["1","1","0","0","0"],
-  ["0","0","0","0","0"]
-]
-Output: 1
-Example 2:
-
-Input: grid = [
-  ["1","1","0","0","0"],
-  ["1","1","0","0","0"],
-  ["0","0","1","0","0"],
-  ["0","0","0","1","1"]
-]
-Output: 3
-```
-
-```CPP
-//DFS, key idea is to remove 1->0 if visited
-    int numIslands(vector<vector<char>>& grid) {
-        if(grid.size() == 0 || grid[0].size() == 0)
-            return 0;
-        int ret = 0;
-        for(int i = 0; i < grid.size(); ++ i)
-            for(int j = 0; j < grid[0].size(); ++ j)
-                if(grid[i][j] == '1'){
-                    ++ ret;
-                    DFS(grid, i, j);
-                }
-        return ret;
-    }
-    
-    void DFS(vector<vector<char>> &grid, int x, int y){
-        
-        grid[x][y] = '0';
-        if(x<grid.size()-1 && grid[x+1][y]=='1') DFS(grid, x+1,y);
-        if(x>0 && grid[x-1][y]=='1') DFS(grid, x-1,y);
-        if(y<grid[0].size()-1 && grid[x][y+1]=='1') DFS(grid, x,y+1);
-        if(y>0 && grid[x][y-1]=='1') DFS(grid, x,y-1);
-    }
-```
 
 ### Friends Circle
 
@@ -1034,9 +1065,118 @@ Find any topological order for the given graph.
 
 ## Top Sort
 
+#### DFS
+https://www.youtube.com/watch?v=ddTC4Zovtbc
+
+https://www.cs.usfca.edu/~galles/visualization/TopoSortDFS.html
+
+The idea is to explore nodes and its neighbors recursively, using a set to check whether node has been visited
+
+```CPP
+/**
+* Definition for Directed graph.
+* struct DirectedGraphNode {
+*     int label;
+*     vector<DirectedGraphNode *> neighbors;
+*     DirectedGraphNode(int x) : label(x) {};
+* };
+*/
+class Solution {
+public:
+    /**
+    * @param graph: A list of Directed graph node
+    * @return: Any topological order for the given graph.
+    */
+    vector<DirectedGraphNode*> topSort(vector<DirectedGraphNode*> graph) {
+        // write your code here
+        set<DirectedGraphNode*> visit;
+        vector<DirectedGraphNode*> ret;
+        for (int i = 0; i<graph.size(); i++) {
+            if (visit.find(graph[i]) == visit.end()) {
+                Toposort_DFS(visit, graph[i], ret, graph);
+            }
+        }
+        std::reverse(ret.begin(), ret.end());
+        return ret;
+    }
+
+    void Toposort_DFS(set<DirectedGraphNode*> &visit, DirectedGraphNode* node, vector<DirectedGraphNode*> &ret, vector<DirectedGraphNode*> graph) {
+        visit.insert(node);
+        for (int i = 0; i<node->neighbors.size(); i++) {
+            if (visit.find(node->neighbors[i]) == visit.end()) {
+                Toposort_DFS(visit, node->neighbors[i], ret, graph);
+            }
+        }
+        //go to end, no direct child node, sink
+        ret.push_back(node);
+    }
+};
+
+```
 
 
-### Detect Circle via Topo Sort
+
+#### BFS
+
+https://www.educative.io/courses/grokking-the-coding-interview/m25rBmwLV00
+
+```CPP
+static vector<int> sort(int vertices, const vector<vector<int>>& edges) {
+    vector<int> sortedOrder;
+
+
+    // a. Initialize the graph
+    unordered_map<int, int> inDegree;       // count of incoming edges for every vertex
+    unordered_map<int, vector<int>> graph;  // adjacency list graph
+    for (int i = 0; i < vertices; i++) {
+      inDegree[i] = 0;
+      graph[i] = vector<int>();
+    }
+
+    // b. Build the graph
+    for (int i = 0; i < edges.size(); i++) {
+      int parent = edges[i][0];
+      int child = edges[i][1];
+      graph[parent].push_back(child);  // put the child into it's parent's list
+      inDegree[child]++;               // increment child's inDegree
+    }
+
+    // c. Find all sources i.e., all vertices with 0 in-degrees
+    queue<int> sources;
+    for (auto entry : inDegree) {
+      if (entry.second == 0) {
+        sources.push(entry.first);
+      }
+    }
+
+    // d. For each source, add it to the sortedOrder and subtract one from all of its children's
+    // in-degrees if a child's in-degree becomes zero, add it to the sources queue
+    while (!sources.empty()) {
+      int vertex = sources.front();
+      sources.pop();
+      sortedOrder.push_back(vertex);
+      vector<int> children =
+          graph[vertex];  // get the node's children to decrement their in-degrees
+      for (auto child : children) {
+        inDegree[child]--;
+        if (inDegree[child] == 0) {
+          sources.push(child);
+        }
+      }
+    }
+
+    if (sortedOrder.size() !=
+        vertices) {  // topological sort is not possible as the graph has a cycle
+      return vector<int>();
+    }
+
+    return sortedOrder;
+  }
+```
+
+
+
+#### Detect Circle via Topo Sort
 
 ```
 L = Empty list that will contain the sorted elements
@@ -1068,103 +1208,102 @@ To better understand the above algorithm, we summarize a few points here:
 2. Otherwise, i.e. we have removed all the edges from the graph, and we got ourselves a topological order of the graph.
 
 
-## DFS
-https://www.youtube.com/watch?v=ddTC4Zovtbc
+### Task/Course schedule
 
-https://www.cs.usfca.edu/~galles/visualization/TopoSortDFS.html
+https://leetcode.com/problems/course-schedule/
 
-The idea is to explore nodes and its neighbors recursively, using a set to check whether node has been visited
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses-1.
 
-```CPP
-/**
-* Definition for Directed graph.
-* struct DirectedGraphNode {
-*     int label;
-*     vector<DirectedGraphNode *> neighbors;
-*     DirectedGraphNode(int x) : label(x) {};
-* };
-*/
-class Solution {
-public:
-	/**
-	* @param graph: A list of Directed graph node
-	* @return: Any topological order for the given graph.
-	*/
-	vector<DirectedGraphNode*> topSort(vector<DirectedGraphNode*> graph) {
-		// write your code here
-		set<DirectedGraphNode*> visit;
-		vector<DirectedGraphNode*> ret;
-		for (int i = 0; i<graph.size(); i++) {
-			if (visit.find(graph[i]) == visit.end()) {
-				Toposort_DFS(visit, graph[i], ret, graph);
-			}
-		}
-		std::reverse(ret.begin(), ret.end());
-		return ret;
-	}
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
 
-	void Toposort_DFS(set<DirectedGraphNode*> &visit, DirectedGraphNode* node, vector<DirectedGraphNode*> &ret, vector<DirectedGraphNode*> graph) {
-		visit.insert(node);
-		for (int i = 0; i<node->neighbors.size(); i++) {
-			if (visit.find(node->neighbors[i]) == visit.end()) {
-				Toposort_DFS(visit, node->neighbors[i], ret, graph);
-			}
-		}
-		//go to end, no direct child node, sink
-		ret.push_back(node);
-	}
-};
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
 
+ 
+```
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: There are a total of 2 courses to take. 
+             To take course 1 you should have finished course 0. So it is possible.
+Example 2:
+
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: There are a total of 2 courses to take. 
+             To take course 1 you should have finished course 0, and to take course 0 you should
+             also have finished course 1. So it is impossible.
 ```
 
-
-
-## BFS
-The idea is come from wiki: https://en.wikipedia.org/wiki/Topological_sorting#Algorithms
-Two key point of Topological sorting using BFS is:
-1.	Build the map and relationship of each node (incoming and outgoing edges of each node).
-2.	BFS uses the indegrees of each node. We will first try to find a node with 0 indegree. If we fail to do so, there must be a cycle in the graph and we return false. Otherwise we have found one. We set its indegree to be -1 to prevent from visiting it again and reduce the indegrees of all its neighbors by 1. This process will be repeated for n (number of nodes) times. If we have not returned false, we will return true.
-Each time remove a node that with no incoming edges and at same time remove this node's outgoing edges.
-
 ```CPP
-vector<DirectedGraphNode*> topSort(vector<DirectedGraphNode*> graph) {
-        vector<DirectedGraphNode*> ret;
-        map<DirectedGraphNode*,int> indegree;
-        queue<DirectedGraphNode*> q;
-        //generate map
-        for(int i=0;i<graph.size();i++){
-            for(int j=0;j<graph[i]->neighbors.size();j++){
-                if(indegree.find(graph[i]->neighbors[j])==indegree.end())
-                    indegree[graph[i]->neighbors[j]] = 1;
-                else
-                    indegree[graph[i]->neighbors[j]] ++;
-            }
+vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<int> sortedOrder;
+
+        // a. Initialize the graph
+        unordered_map<int, int> inDegree;       // count of incoming edges for every vertex
+        unordered_map<int, vector<int>> graph;  // adjacency list graph
+        for (int i = 0; i < numCourses; i++) {
+          inDegree[i] = 0;
+          graph[i] = vector<int>();
         }
 
-        //put all nodes with no in-degree into queue and ret
-        for (int i = 0; i < graph.size(); ++i) {
-            if (indegree[graph[i]] == 0) {
-                ret.push_back(graph[i]);
-                q.push(graph[i]);
-            }
+        // b. Build the graph
+        for (int i = 0; i < prerequisites.size(); i++) {
+          int parent = prerequisites[i][1], child = prerequisites[i][0];
+          graph[parent].push_back(child);  // put the child into it's parent's list
+          inDegree[child]++;               // increment child's inDegree
         }
 
-        while (!q.empty()) {
-            DirectedGraphNode * cur = q.front();
-            q.pop();
-            for(int j = 0; j < cur->neighbors.size(); ++j) {
-                indegree[cur->neighbors[j]]--;
-                if (indegree[cur->neighbors[j]] == 0) {
-                    ret.push_back(cur->neighbors[j]);
-                    q.push(cur->neighbors[j]);
-                }
-            }
+        // c. Find all sources i.e., all vertices with 0 in-degrees
+        queue<int> sources;
+        for (auto entry : inDegree) {
+          if (entry.second == 0) {
+            sources.push(entry.first);
+          }
         }
 
-        return ret;
+        // d. For each source, add it to the sortedOrder and subtract one from all of its children's
+        // in-degrees if a child's in-degree becomes zero, add it to the sources queue
+        while (!sources.empty()) {
+          int vertex = sources.front();
+          sources.pop();
+          sortedOrder.push_back(vertex);
+          vector<int> children =
+              graph[vertex];  // get the node's children to decrement their in-degrees
+          for (auto child : children) {
+            inDegree[child]--;
+            if (inDegree[child] == 0) {
+              sources.push(child);
+            }
+          }
+        }
+        
+        return sortedOrder.size()==numCourses?sortedOrder: vector<int>{};
     }
+```
+
+#### All Task/Course schedule
+
+https://www.educative.io/courses/grokking-the-coding-interview/q2YmVjQMMr3
+
+There are ‘N’ tasks, labeled from ‘0’ to ‘N-1’. Each task can have some prerequisite tasks which need to be completed before it can be scheduled. Given the number of tasks and a list of prerequisite pairs, write a method to print all possible ordering of tasks meeting all prerequisites.
 
 ```
+Example 1:
+
+Input: Tasks=3, Prerequisites=[0, 1], [1, 2]
+Output: [0, 1, 2]
+Explanation: There is only possible ordering of the tasks.
+Example 2:
+
+Input: Tasks=4, Prerequisites=[3, 2], [3, 0], [2, 0], [2, 1]
+Output: 
+1) [3, 2, 0, 1]
+2) [3, 2, 1, 0]
+Explanation: There are two possible orderings of the tasks meeting all prerequisites.
+```
+
+
 
 
 
@@ -1228,60 +1367,7 @@ Output: true
     }
 ```
 
-### Course Schedule
 
-https://leetcode.com/problems/course-schedule/
-
-There are a total of numCourses courses you have to take, labeled from 0 to numCourses-1.
-
-Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
-
-Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
-
- 
-```
-Example 1:
-
-Input: numCourses = 2, prerequisites = [[1,0]]
-Output: true
-Explanation: There are a total of 2 courses to take. 
-             To take course 1 you should have finished course 0. So it is possible.
-Example 2:
-
-Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
-Output: false
-Explanation: There are a total of 2 courses to take. 
-             To take course 1 you should have finished course 0, and to take course 0 you should
-             also have finished course 1. So it is impossible.
-```
-
-```CPP
-    bool sequenceReconstruction(vector<int>& org, vector<vector<int>>& seqs) {
-        if (seqs.size() == 0) return false;
-        int n = org.size(), count = 0;
-        unordered_map<int, unordered_set<int>> graph;   // record parents
-        vector<int> degree(n+1, 0); // record out degree
-        for (auto s : seqs) {   // build graph
-            for (int i = s.size()-1; i >= 0; --i) {
-                if (s[i] > n or s[i] < 0) 
-                    return false; // in case number in seqs is out of range 1-n
-                if (i > 0 and graph[s[i]].find(s[i-1])==graph[s[i]].end()) {
-                    graph[s[i]].insert(s[i-1]);
-                    if (degree[s[i-1]]++ == 0) count ++;
-                }
-            }
-        }
-        if (count != n-1) 
-            return false; // all nodes should have degree larger than 0 except the last one
-        for (int i = n-1; i >= 0; --i) {    // topological sort
-            if (degree[org[i]] > 0) return false;   // the last node should have 0 degree
-            for (auto p : graph[org[i]]) 
-                if (--degree[p] == 0 and p != org[i-1]) // found a node that is not supposed to have 0 degree
-                    return false;
-        }
-        return true;        
-    }
-```
 
 
 
