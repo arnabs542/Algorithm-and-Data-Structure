@@ -4,6 +4,8 @@
 
 - [Basic Array Operation](#basic-array-operation)
   - [Two pointer](#two-pointer)
+        - [Fast/Slow pointer](#fastslow-pointer)
+        - [From both sides](#from-both-sides)
     - [In Place Operation](#in-place-operation)
       - [Remove element(Delete in place)](#remove-elementdelete-in-place)
       - [Move zeros(Swap inplace)](#move-zerosswap-inplace)
@@ -72,6 +74,10 @@
 # Basic Array Operation
 
 ## Two pointer
+
+##### Fast/Slow pointer
+
+##### From both sides
 
 ### In Place Operation
 
