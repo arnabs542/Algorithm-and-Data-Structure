@@ -17,9 +17,14 @@
     - [Contains Duplicate](#contains-duplicate)
     - [Max consecutive Ones](#max-consecutive-ones)
     - [Maximum Points You Can Obtain from Cards](#maximum-points-you-can-obtain-from-cards)
+    - [Sub Array with Product less than target](#sub-array-with-product-less-than-target)
     - [Read buffer from Read4](#read-buffer-from-read4)
+    - [Sort Color(Dutch flag)](#sort-colordutch-flag)
+    - [BackSpace String compare](#backspace-string-compare)
+    - [Shortest Unsorted Continuous Subarray](#shortest-unsorted-continuous-subarray)
   - [Three pointers problems](#three-pointers-problems)
     - [3 Sum](#3-sum)
+    - [3 Sum Cloest](#3-sum-cloest)
     - [Valid-triangle-number](#valid-triangle-number)
   - [Cyclic Sort](#cyclic-sort)
     - [Find missing numbers](#find-missing-numbers)
@@ -488,6 +493,42 @@ int maxScore(vector<int>& cardPoints, int k) {
 }
 ```
 
+### Sub Array with Product less than target
+
+https://leetcode.com/problems/subarray-product-less-than-k/
+
+https://www.educative.io/courses/grokking-the-coding-interview/RMV1GV1yPYz
+
+Your are given an array of positive integers nums.
+
+Count and print the number of (contiguous) subarrays where the product of all the elements in the subarray is less than k.
+
+```
+Example 1:
+Input: nums = [10, 5, 2, 6], k = 100
+Output: 8
+Explanation: The 8 subarrays that have product less than 100 are: [10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6].
+Note that [10, 5, 2] is not included as the product of 100 is not strictly less than k.
+```
+
+```CPP
+    int numSubarrayProductLessThanK(vector<int>& nums, int k) {
+            if (k == 0) 
+                return 0;
+            int cnt = 0;
+            int product = 1;
+            for (int i = 0, j = 0; j < nums.size(); j++) {
+                product *= nums[j];
+                while (i <= j && product >= k) {
+                    //move left pointer
+                    product /= nums[i++];
+                }
+                cnt += j - i + 1;
+            }
+            return cnt;
+    }
+```
+
 
 ### Read buffer from Read4
 
@@ -543,6 +584,166 @@ public:
     }
 };
 ```
+
+### Sort Color(Dutch flag)
+
+https://leetcode.com/problems/sort-colors/
+
+https://www.educative.io/courses/grokking-the-coding-interview/RMBxV6jz6Q0
+
+```CPP
+    void sortColors(vector<int>& arr) {
+            int low = 0, high = arr.size() - 1;
+            for (int i = 0; i <= high;) {
+              if (arr[i] == 0) {
+                swap(arr[i], arr[low]);
+                i++;
+                low++;
+              } else if (arr[i] == 1) {
+                i++;
+              } else {  
+                swap(arr[i], arr[high]);
+                // decrement 'high' only
+                high--;
+              }
+            }
+    }
+```
+
+### BackSpace String compare
+
+https://leetcode.com/problems/backspace-string-compare/
+
+Given two strings S and T, return if they are equal when both are typed into empty text editors. # means a backspace character.
+
+Note that after backspacing an empty text, the text will continue empty.
+
+```
+Example 1:
+
+Input: S = "ab#c", T = "ad#c"
+Output: true
+Explanation: Both S and T become "ac".
+Example 2:
+
+Input: S = "ab##", T = "c#d#"
+Output: true
+Explanation: Both S and T become "".
+Example 3:
+
+Input: S = "a##c", T = "#a#c"
+Output: true
+Explanation: Both S and T become "c".
+Example 4:
+
+Input: S = "a#c", T = "b"
+Output: false
+Explanation: S becomes "c" while T becomes "b".
+```
+
+
+```CPP
+    bool backspaceCompare(string S, string T) {
+        //count from back
+        int index1 = S.size()-1;
+        int index2 = T.size()-1;
+        while (index1 >= 0 || index2 >= 0) {
+              int i1 = getNextValidCharIndex(S, index1);
+              int i2 = getNextValidCharIndex(T, index2);
+
+              if (i1 < 0 && i2 < 0) {  // reached the end of both the strings
+                return true;
+              }
+
+              if (i1 < 0 || i2 < 0) {  // reached the end of one of the strings
+                return false;
+              }
+
+              if (S[i1] != T[i2]) {  // check if the characters are equal
+                return false;
+              }
+
+              index1 = i1 - 1;
+              index2 = i2 - 1;
+            }
+        
+        return true;
+        
+    }
+    
+    int getNextValidCharIndex(const string &str, int index) {
+        int backspaceCount = 0;
+        while (index >= 0) {
+          if (str[index] == '#') {  // found a backspace character
+            backspaceCount++;
+          } else if (backspaceCount > 0) {  // a non-backspace character
+            backspaceCount--;
+          } else {
+            break;
+          }
+
+          index--;  // skip a backspace or a valid character
+        }
+        return index;
+  }
+```
+
+### Shortest Unsorted Continuous Subarray
+
+https://leetcode.com/problems/shortest-unsorted-continuous-subarray/
+
+Given an integer array nums, you need to find one continuous subarray that if you only sort this subarray in ascending order, then the whole array will be sorted in ascending order.
+
+Return the shortest such subarray and output its length.
+
+ 
+```
+Example 1:
+
+Input: nums = [2,6,4,8,10,9,15]
+Output: 5
+Explanation: You need to sort [6, 4, 8, 10, 9] in ascending order to make the whole array sorted in ascending order.
+
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: 0
+```
+
+```CPP
+int findUnsortedSubarray(vector<int>& nums) {
+        int len = nums.size();
+        if (len==0 || len == 1) {
+            return 0;
+        }
+        //from right to left, record value not descending. find left most
+        int min_v = nums[len-1];
+        int l = -1;
+        for (int i = len - 2; i >=0; i--) {
+            if (nums[i] > min_v) {
+              l = i;
+            }else{
+                min_v = nums[i];
+            } 
+        }
+        if (l == -1) {
+            return 0;
+        }
+        //from left to rightm record value not ascending, find right most
+        int r = -1;
+        int max_v = nums[0];
+        for (int i = 1; i <len; i++) {
+            if (nums[i] < max_v) {
+              r = i;
+            }else{
+                max_v = nums[i];
+            } 
+        }
+        return r - l + 1;        
+    }
+```
+
 
 ## Three pointers problems
 > Common techniques
@@ -610,6 +811,51 @@ vector<vector<int>> threeSum(vector<int>& nums) {
     return ret;
 }
 
+```
+
+### 3 Sum Cloest 
+
+https://leetcode.com/problems/3sum-closest/
+
+https://www.educative.io/courses/grokking-the-coding-interview/3YlQz7PE7OA
+
+Given an array of unsorted numbers and a target number, find a triplet in the array whose sum is as close to the target number as possible, return the sum of the triplet. If there are more than one such triplet, return the sum of the triplet with the smallest sum.
+
+```
+Example 1:
+
+Input: [-2, 0, 1, 2], target=2
+Output: 1
+Explanation: The triplet [-2, 1, 2] has the closest sum to the target.
+```
+
+```CPP
+  static int searchTriplet(vector<int>& arr, int targetSum) {
+    sort(arr.begin(), arr.end());
+    int smallestDifference = numeric_limits<int>::max();
+    for (int i = 0; i < arr.size() - 2; i++) {
+      int left = i + 1, right = arr.size() - 1;
+      while (left < right) {
+        // comparing the sum of three numbers to the 'targetSum' can cause overflow
+        // so, we will try to find a target difference
+        int targetDiff = targetSum - arr[i] - arr[left] - arr[right];
+        if (targetDiff == 0) {            //  we've found a triplet with an exact sum
+          return targetSum - targetDiff;  // return sum of all the numbers
+        }
+
+        if (abs(targetDiff) < abs(smallestDifference)) {
+          smallestDifference = targetDiff;  // save the closest difference
+        }
+
+        if (targetDiff > 0) {
+          left++;  // we need a triplet with a bigger sum
+        } else {
+          right--;  // we need a triplet with a smaller sum
+        }
+      }
+    }
+    return targetSum - smallestDifference;
+  }
 ```
 
 ### Valid-triangle-number
@@ -998,20 +1244,22 @@ Can you do it in O(n) time?
 //K is current sum from begining of array, value is left most index that has the K
 
 int Longestsubarray(vector<int> nums, int k){
-  int ret = 0;
-  int sum = 0;
-  map<int,int> m;//key is sum val, val is index
-  m[0] = 0;  //so if sum-k = 0, means sum==k, we can have len
-  for(int i=0;i<nums.size();i++){
-    sum+=nums[i];
-    if(m.find(sum-k)!=m.end()){
-      ret = max(ret, i-m[sum-k]+1); //get the length
+    unordered_map<int, int> sums;
+    int cur_sum = 0;
+    int max_len = 0;
+    for (int i = 0; i < nums.size(); i++) {
+        cur_sum += nums[i];
+        if (cur_sum == k) {
+            max_len = i + 1;
+        } else if (sums.find(cur_sum - k) != sums.end()) {
+            max_len = max(max_len, i - sums[cur_sum - k]);
+        }
+        //do not update if already exist,
+        if (sums.find(cur_sum) == sums.end()) {
+            sums[cur_sum] = i;
+        }            
     }
-    //if sum is already there, we do not record index since we need left most index to get longest
-    if(m.find(sum)==m.end())  
-      m[sum] = i;
-  }
-
+    return max_len;
 }
 
 ```

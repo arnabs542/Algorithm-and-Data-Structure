@@ -235,6 +235,8 @@ Explanation: t is "aabbb" which its length is 5.
 
 ### Fruit Into Baskets
 
+https://leetcode.com/problems/fruit-into-baskets/
+
 In a row of trees, the i-th tree produces fruit with type tree[i].
 
 You start at any tree of your choice, then repeatedly perform the following steps:
