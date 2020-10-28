@@ -7,6 +7,7 @@
     - [Common solution Summary](#common-solution-summary)
     - [string partition](#string-partition)
     - [Permutation](#permutation)
+    - [Task Schedule](#task-schedule)
   - [Substring Problem from 2 or more strings](#substring-problem-from-2-or-more-strings)
     - [Longest Word in Dictionary through Deleting](#longest-word-in-dictionary-through-deleting)
     - [Find substring in String](#find-substring-in-string)
@@ -153,6 +154,8 @@ bool checkInclusion(string s1, string s2) {
     return false;
 }
 ```
+
+### Task Schedule
 
 https://leetcode.com/problems/task-scheduler/#/description
 Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
