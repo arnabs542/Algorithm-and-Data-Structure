@@ -17,8 +17,10 @@
 - [Subsequence Problem](#subsequence-problem)
 - [String BFS/Recursive](#string-bfsrecursive)
   - [Combination](#combination)
-  - [Expression(string as calculator expression)](#expressionstring-as-calculator-expression)
+  - [Expression Coding/Decoding](#expression-codingdecoding)
     - [String as calculator](#string-as-calculator)
+    - [Ecoding/Decoding String Expression](#ecodingdecoding-string-expression)
+      - [Minimum remove to valid parenthese](#minimum-remove-to-valid-parenthese)
     - [Expression operators (Via DFS)](#expression-operators-via-dfs)
     - [Word Ladder](#word-ladder)
   - [Data structure to string or vice verse](#data-structure-to-string-or-vice-verse)
@@ -491,7 +493,7 @@ void help(string &in, int i, int cnt, string &one, vector<string> ret){
 
 ```
 
-## Expression(string as calculator expression)
+## Expression Coding/Decoding
 
 Key of all these problem are caching the sign, and caching intermidtate(* ,/ or bracket) results in stack
 
@@ -519,6 +521,14 @@ Output: 23
 ```
 
 ```CPP
+
+/*
+digit: it should be one digit from the current number
+'+': number is over, we can add the previous number and start a new number
+'-': same as above
+'(': push the previous result and the sign into the stack, set result to 0, just calculate the new result within the parenthesis.
+')': pop out the top two numbers from stack, first one is the sign before this pair of parenthesis, second is the temporary result before this pair of parenthesis. We add them together.
+*/
     int calculate(string s) {
       int len = s.size();
       int sign = 1;
@@ -532,8 +542,10 @@ Output: 23
             //not number anymore, so we would need to get the current calculation num and accumulated ret
             ret+=sign*num;
             num = 0;
-            if(s[i]=='+') sign = 1;
-            if(s[i]=='-') sign = -1;
+            if(s[i]=='+') 
+              sign = 1;
+            if(s[i]=='-') 
+              sign = -1;
             if(s[i]=='('){
                 nums.push(ret);
                 ops.push(sign);
@@ -657,6 +669,53 @@ Some examples:
         while(i < s.length() && isdigit(s[i]))
             n = s[i++] - '0' + 10 * n;
         return n;
+    }
+```
+
+### Ecoding/Decoding String Expression
+
+#### Minimum remove to valid parenthese
+
+https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+
+Given a string s of '(' , ')' and lowercase English characters. 
+
+Your task is to remove the minimum number of parentheses ( '(' or ')', in any positions ) so that the resulting parentheses string is valid and return any valid string.
+
+Formally, a parentheses string is valid if and only if:
+
+It is the empty string, contains only lowercase characters, or
+It can be written as AB (A concatenated with B), where A and B are valid strings, or
+It can be written as (A), where A is a valid string.
+ 
+```
+Example 1:
+
+Input: s = "lee(t(c)o)de)"
+Output: "lee(t(c)o)de"
+Explanation: "lee(t(co)de)" , "lee(t(c)ode)" would also be accepted.
+```
+
+```CPP
+    string minRemoveToMakeValid(string s) {
+          stack<int> st;
+          for (auto i = 0; i < s.size(); ++i) {
+            if (s[i] == '(') st.push(i);
+            if (s[i] == ')') {
+                
+              if (!st.empty()) 
+                  st.pop();
+              else 
+                  s[i] = '*'; //invalid, need to remove
+            }
+          }
+        //ideally we should have empty stack 
+          while (!st.empty()) {
+            s[st.top()] = '*';
+            st.pop();
+          }
+          s.erase(remove(s.begin(), s.end(), '*'), s.end());
+          return s;
     }
 ```
 
