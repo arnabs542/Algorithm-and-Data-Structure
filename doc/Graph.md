@@ -14,6 +14,7 @@
     - [evaluate-division](#evaluate-division)
     - [reconstruct-itinerary](#reconstruct-itinerary)
     - [Check Valid Path](#check-valid-path)
+    - [Walls and Gates](#walls-and-gates)
   - [BFS](#bfs)
     - [Shortest path](#shortest-path)
       - [Path with Obstable](#path-with-obstable)
@@ -315,7 +316,65 @@ public:
 
 ### Check Valid Path
 
+### Walls and Gates
 
+https://leetcode.com/problems/walls-and-gates/
+
+You are given a m x n 2D grid initialized with these three possible values.
+
+-1 - A wall or an obstacle.
+0 - A gate.
+INF - Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than 2147483647.
+Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+
+```
+Example: 
+
+Given the 2D grid:
+
+INF  -1  0  INF
+INF INF INF  -1
+INF  -1 INF  -1
+  0  -1 INF INF
+```
+
+```CPP
+class Solution {
+    int row =0;
+    int col = 0;
+public:
+    void wallsAndGates(vector<vector<int>>& rooms) {
+        row=rooms.size();
+        if(!row) return;
+        col=rooms[0].size();
+        if(!col) return;
+        
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                if(rooms[i][j]==0){
+                    //starting from gate and traversal whole matrix
+                    DFS(rooms,i,j,0);
+                }
+            }
+        }
+  
+    }
+    
+    void DFS(vector<vector<int>>& rooms, int i, int j, int path){
+        if (i<0 || i >= row || j<0 || j >= col || path>rooms[i][j]) {
+            return;
+        }
+        else {
+            rooms[i][j] = path;
+            DFS(rooms, i - 1, j, path + 1);
+            DFS(rooms, i + 1, j, path + 1);
+            DFS(rooms, i, j - 1, path + 1);
+            DFS(rooms, i, j + 1, path + 1);
+        }
+        
+    }
+};
+```
 
 ## BFS
 
