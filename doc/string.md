@@ -18,6 +18,7 @@
 - [String BFS/Recursive](#string-bfsrecursive)
   - [Combination](#combination)
   - [Expression Coding/Decoding](#expression-codingdecoding)
+    - [String Compression](#string-compression)
     - [String as calculator](#string-as-calculator)
     - [Ecoding/Decoding String Expression](#ecodingdecoding-string-expression)
       - [Minimum remove to valid parenthese](#minimum-remove-to-valid-parenthese)
@@ -496,6 +497,86 @@ void help(string &in, int i, int cnt, string &one, vector<string> ret){
 ## Expression Coding/Decoding
 
 Key of all these problem are caching the sign, and caching intermidtate(* ,/ or bracket) results in stack
+
+### String Compression
+
+https://leetcode.com/problems/string-compression/
+
+Given an array of characters chars, compress it using the following algorithm:
+
+Begin with an empty string s. For each group of consecutive repeating characters in chars:
+
+If the group's length is 1, append the character to s.
+Otherwise, append the character followed by the group's length.
+The compressed string s should not be returned separately, but instead be stored in the input character array chars. Note that group lengths that are 10 or longer will be split into multiple characters in chars.
+
+After you are done modifying the input array, return the new length of the array.
+
+ 
+Follow up:
+Could you solve it using only O(1) extra space?
+
+``` 
+
+Example 1:
+
+Input: chars = ["a","a","b","b","c","c","c"]
+Output: Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
+Explanation: The groups are "aa", "bb", and "ccc". This compresses to "a2b2c3".
+
+```
+
+```CPP
+int compress(vector<char>& chars) {
+        
+        if(chars.size()<2){
+            return chars.size();
+        }
+        
+
+        char cur = chars[0];
+        int frequency = 1;
+        int index = 0;
+        
+        for(int i=1;i<chars.size();i++){
+            if(chars[i]!=cur){
+                if(frequency >1){
+                    //one for char, one for frequency
+                    chars[index++] = cur;
+                    string num = to_string(frequency);
+                    for(int j=0;j<num.size();j++){
+                        chars[index++] = num[j];
+                    }
+                    
+                }else{
+                    //only one
+                    chars[index++] = cur;
+                }
+
+                //start new
+                cur = chars[i];
+                frequency = 1;
+                
+            }else{
+               frequency++; 
+            }
+        }
+        
+        //process end
+        if(frequency >1){
+            chars[index++] = cur;
+            string num = to_string(frequency);
+            for(int j=0;j<num.size();j++){
+                chars[index++] = num[j];
+            }
+        }else{
+            chars[index++] = cur;
+        }
+        
+        return index;
+        
+    }
+```
 
 ### String as calculator
 

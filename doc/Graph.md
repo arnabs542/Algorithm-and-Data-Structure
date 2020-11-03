@@ -28,6 +28,7 @@
       - [Rotting Oranges](#rotting-oranges)
     - [Friends Circle](#friends-circle)
     - [Graph Valid Tree](#graph-valid-tree)
+    - [Making A Large Island](#making-a-large-island)
 - [Topological Sort](#topological-sort)
   - [Top Sort](#top-sort)
       - [DFS](#dfs-1)
@@ -1114,6 +1115,94 @@ public:
 	}
 };
 
+```
+
+### Making A Large Island
+
+https://leetcode.com/problems/making-a-large-island/
+
+In a 2D grid of 0s and 1s, we change at most one 0 to a 1.
+
+After, what is the size of the largest island? (An island is a 4-directionally connected group of 1s).
+
+```
+Example 1:
+
+Input: [[1, 0], [0, 1]]
+Output: 3
+Explanation: Change one 0 to 1 and connect two 1s, then we get an island with area = 3.
+Example 2:
+
+Input: [[1, 1], [1, 0]]
+Output: 4
+Explanation: Change the 0 to 1 and make the island bigger, only one island with area = 4.
+Example 3:
+
+Input: [[1, 1], [1, 1]]
+Output: 4
+Explanation: Can't change any 0 to 1, only one island with area = 4.
+```
+
+```CPP
+
+/*
+Explore every island using DFS, count its area, give it an island index and save the result to a {index: area} map.
+Loop every cell == 0, check its connected islands and calculate total islands area.
+*/
+
+int N;
+int largestIsland(vector<vector<int>>& grid) {
+    N = grid.size();
+    //DFS every island and give it an color of island (>1)
+    int color = 2, res = 0;
+    unordered_map <int, int>area;  //area color index is K, num of 1 is value
+    for (int x = 0; x < N; ++x) {
+        for (int y = 0; y < N; ++y) {
+            if (grid[x][y] == 1) {
+                area[color] = dfs(grid, x, y, color);
+                res = max(res, area[color++]);
+            }
+        }
+    }
+    //traverse every 0 cell and count biggest island it can conntect
+    for (int x = 0; x < N; ++x)
+        for (int y = 0; y < N; ++y)
+            if (grid[x][y] == 0) {
+                unordered_set<int> seen = {};
+                int cur = 1;
+                for (auto p : move(x, y)) {
+                    color = grid[p.first][p.second];
+                    if (color > 1 && seen.count(color) == 0) {
+                        seen.insert(color);
+                        cur += area[color];
+                    }
+                }
+                res = max(res, cur);
+            }
+    return res;
+}
+
+int dfs(vector<vector<int>>& grid, int x, int y, int color) {
+    int area = 0;
+    grid[x][y] = color;
+    for(auto p : move(x, y))
+        if (grid[p.first][p.second] == 1)
+            area += dfs(grid, p.first, p.second, color);
+    return area + 1;
+}
+
+vector<pair<int, int>> move(int x, int y) {
+    vector<pair<int, int>> res;
+    for (auto p : vector<vector<int>> {{1, 0}, { -1, 0}, {0, 1}, {0, -1}}) {
+        if (valid(x + p[0], y + p[1]))
+            res.push_back(make_pair(x + p[0], y + p[1]));
+    }
+    return res;
+}
+
+int valid(int x, int y) {
+    return 0 <= x && x < N && 0 <= y && y < N;
+}
 ```
 
 # Topological Sort
