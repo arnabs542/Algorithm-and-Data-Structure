@@ -19,6 +19,7 @@
     - [Shortest path](#shortest-path)
       - [Path with Obstable](#path-with-obstable)
     - [Minimum Height Tree](#minimum-height-tree)
+    - [Common Ancestor](#common-ancestor)
 - [Connected Component(Union Find, DFS, BFS)](#connected-componentunion-find-dfs-bfs)
   - [Basic idea](#basic-idea)
     - [Number of island](#number-of-island)
@@ -618,6 +619,186 @@ public:
 
 ```
 
+### Common Ancestor
+
+Suppose we have some input data describing a graph of relationships between parents and children over multiple generations. The data is formatted as a list of (parent, child) pairs, where each individual is assigned a unique integer identifier.
+
+For example, in this diagram, the earliest ancestor of 6 is 14, and the earliest ancestor of 15 is 2. 
+
+```
+
+         14
+         |
+  2      4
+  |    / | \
+  3   5  8  9
+ / \ / \     \
+15  6   7    11
+```
+
+
+```CPP
+int findEarliestAncestor(vector<pair<int, int>> parentChildPairs, int a, int b){
+  
+  unordered_map<int, vector<int>> m; //k is child, v is parent
+  unordered_map<int, int> parent;  //record all parents/distance from particular node 
+  
+    for(int i=0;i<parentChildPairs.size();i++){
+    int child = parentChildPairs[i].second;
+    int parent = parentChildPairs[i].first;
+    m[child].push_back(parent);
+  }
+  
+  queue<int> q; //1 parent, 2 is distance
+  
+  int step = 1;
+  for(auto j: m[a]){
+    q.push(j);
+    parent[j] = step;
+  }
+  
+    //BFS all node a's ancestor
+  while(!q.empty()){
+    int cur = q.front();
+    q.pop();
+    step++;
+    for(auto j: m[cur]){
+      q.push(j);
+      parent[j] = step;
+    }
+    
+  }
+  //BFS all node b's 
+  int earilest = 0;
+  int ret = -1;
+  
+  for(auto j: m[b]){
+      if(parent.find(j)!=parent.end()){
+        if(parent[j]>earilest){
+          earilest = parent[j];
+          ret = j;
+        }
+      }
+      
+      q.push(j);
+
+  }
+  
+  
+  while(!q.empty()){
+    int cur = q.front();
+    q.pop();
+    for(auto j: m[cur]){
+      q.push(j);
+      if(parent.find(j)!=parent.end()){
+        if(parent[j]>earilest){
+          earilest = parent[j];
+          ret = j;
+        }
+      }
+    }
+    
+  }
+  
+  return ret;
+  
+}
+
+
+bool hasCommonAncestor(vector<pair<int, int>> parentChildPairs, int a, int b){
+  unordered_map<int, vector<int>> m; //k is child, v is parents vector
+  for(int i=0;i<parentChildPairs.size();i++){
+    int child = parentChildPairs[i].second;
+    int parent = parentChildPairs[i].first;
+    m[child].push_back(parent);
+  }
+  
+  unordered_set<int> s;  //record all parents from node a
+  
+  if(m[a].size()==0 || m[b].size()==0){
+    return false;
+  }
+  
+  queue<int> q;
+  for(auto j: m[a]){
+    q.push(j);
+    s.insert(j);
+  }
+  
+  //BFS all node a's ancestor
+  while(!q.empty()){
+    int cur = q.front();
+    q.pop();
+    for(auto j: m[cur]){
+      q.push(j);
+      s.insert(j);
+    }
+    
+  }
+  
+  //check b's 
+    for(auto j: m[b]){
+      if(s.find(j)!=s.end()){
+        return true;
+      }
+      
+      q.push(j);
+
+    }
+  
+    //BFS all node b's ancestor
+  while(!q.empty()){
+    int cur = q.front();
+    q.pop();
+    for(auto j: m[cur]){
+      if(s.find(j)!=s.end()){
+        return true;
+      }
+      
+      q.push(j);
+    }
+    
+  }
+  
+  return false;
+  
+}
+
+
+vector<vector<int>> findNodesWithZeroAndOneParents(vector<pair<int, int>> parentChildPairs){
+  unordered_map<int, vector<int>> m; //k is child, v is parents vector
+  unordered_set<int> s;  //record all parents
+  
+  for(int i=0;i<parentChildPairs.size();i++){
+    int child = parentChildPairs[i].second;
+    int parent = parentChildPairs[i].first;
+    m[child].push_back(parent);
+    s.insert(parent);
+  }
+  
+  vector<int> zeroParents;
+  vector<int> oneParent;
+  vector<vector<int>> ret;
+  
+  for(auto j: s){
+    if(m.find(j)==m.end()){
+      zeroParents.push_back(j);
+    }
+  }
+  
+  for(auto n: m){
+   if(n.second.size()==1){
+      oneParent.push_back(n.first);
+    }
+  }
+  ret.push_back(zeroParents);
+  ret.push_back(oneParent);
+  
+  return ret;
+  
+}
+```
+
 # Connected Component(Union Find, DFS, BFS)
 
 ## Basic idea
@@ -1170,8 +1351,10 @@ int largestIsland(vector<vector<int>>& grid) {
             if (grid[x][y] == 0) {
                 unordered_set<int> seen = {};
                 int cur = 1;
+                //only search grid close to color
                 for (auto p : move(x, y)) {
                     color = grid[p.first][p.second];
+                    //for already connected components marked by color, and not visited
                     if (color > 1 && seen.count(color) == 0) {
                         seen.insert(color);
                         cur += area[color];

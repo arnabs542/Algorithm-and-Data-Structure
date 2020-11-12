@@ -28,6 +28,7 @@
   - [Split Array Largest Sum](#split-array-largest-sum)
   - [Split array equal sum](#split-array-equal-sum)
   - [Coin Exchange](#coin-exchange)
+  - [Minimum Difficulty of a Job Schedule](#minimum-difficulty-of-a-job-schedule)
 - [Poker Game/Cards in line](#poker-gamecards-in-line)
 - [digit number to letter str(decode-ways problem)](#digit-number-to-letter-strdecode-ways-problem)
 - [sum of logic calculation to certain target, express ways](#sum-of-logic-calculation-to-certain-target-express-ways)
@@ -964,6 +965,65 @@ int minDiff(vector<int> toys){
 		return DP[amount] == amount + 1 ? -1 : DP[amount];
 	}
 
+```
+
+### Minimum Difficulty of a Job Schedule
+
+https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/
+
+You want to schedule a list of jobs in d days. Jobs are dependent (i.e To work on the i-th job, you have to finish all the jobs j where 0 <= j < i).
+
+You have to finish at least one task every day. The difficulty of a job schedule is the sum of difficulties of each day of the d days. The difficulty of a day is the maximum difficulty of a job done in that day.
+
+Given an array of integers jobDifficulty and an integer d. The difficulty of the i-th job is jobDifficulty[i].
+
+Return the minimum difficulty of a job schedule. If you cannot find a schedule for the jobs return -1.
+
+
+```CPP
+//problem is cutting input array (list of job difficulties) into d pieces. Let’s say we have N jobs and d days, we need to choose d cutting points among N-1 job intervals.
+
+/*
+definition:dp[i][j] means if we want to complete first (j+1)jobs using exact (i+1)days, the minimum difficulty we can get.
+
+dp[i][j] = min(dp[i][j], dp[i - 1][r - 1] + max(jobdifficulty[i:r+1]) for r in range(j, i - 1)
+*/
+
+int minDifficulty(vector<int>& jobDifficulty, int d) {
+        
+        /*
+        problem is cutting input array (list of job difficulties) into d pieces. 
+        N jobs and d days, we need to choose d cutting points among N-1 job intervals.
+
+    dp[i][j] means if we want to complete first (j+1)jobs using exact (i+1)days, the minimum difficulty we can get.
+
+dp[i][j] = min(dp[i][j], dp[i - 1][r - 1] + max(jobdifficulty[i:r+1]) for r in range(j, i - 1)
+        */
+    int n = jobDifficulty.size(); 
+        if(n < d) 
+            return -1;
+        vector<vector<int>> dp(d, vector<int>(n,0));
+        
+        dp[0][0] = jobDifficulty[0];
+        //init to complete in 1 day
+        for(int i = 1; i < n; i++){
+            dp[0][i] = max(jobDifficulty[i],dp[0][i-1]);
+        }
+        
+        for(int i = 1; i < d; i++){
+            for(int j = i; j < n; j++){
+                int localMax = jobDifficulty[j];
+                dp[i][j] = INT_MAX;
+                //from j jobs, to i jobs(since need to finish at least 1 job/day)
+                for(int r = j; r >= i; r--){
+                    localMax = max(localMax,jobDifficulty[r]);
+                    dp[i][j] =  min(dp[i][j],dp[i-1][r-1] + localMax);
+                }
+            }
+        }
+        
+        return dp[d-1][n-1];
+    }
 ```
 
 ## Poker Game/Cards in line

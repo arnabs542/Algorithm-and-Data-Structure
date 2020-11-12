@@ -14,6 +14,8 @@
   - [Permutation](#permutation)
   - [SubSet](#subset)
     - [Subset with Duplicate](#subset-with-duplicate)
+    - [Unique Binary Tree](#unique-binary-tree)
+      - [Follow Up: only count how many substree there](#follow-up-only-count-how-many-substree-there)
   - [Generalized Abbreviation](#generalized-abbreviation)
   - [Different Ways to Add Parentheses](#different-ways-to-add-parentheses)
   - [Combination](#combination)
@@ -443,6 +445,74 @@ vector<vector<int>> subsetsWithDup(vector<int>& nums) {
         }
     }
 ```
+
+### Unique Binary Tree
+
+https://www.educative.io/courses/grokking-the-coding-interview/xVQyDZBMpKE
+
+Given a number ‘n’, write a function to return all structurally unique Binary Search Trees (BST) that can store values 1 to ‘n’?
+
+
+```CPP
+
+static vector<TreeNode *> findUniqueTrees(int n) {
+    if (n <= 0) {
+      return vector<TreeNode *>();
+    }
+    return findUniqueTreesRecursive(1, n);
+  }
+
+  static vector<TreeNode *> findUniqueTreesRecursive(int start, int end) {
+    vector<TreeNode *> result;
+    // base condition, return 'null' for an empty sub-tree
+    // consider n=1, in this case we will have start=end=1, this means we should have only one tree
+    // we will have two recursive calls, findUniqueTreesRecursive(1, 0) & (2, 1)
+    // both of these should return 'null' for the left and the right child
+    if (start > end) {
+      result.push_back(nullptr);
+      return result;
+    }
+
+    for (int i = start; i <= end; i++) {
+      // making 'i' root of the tree
+      vector<TreeNode *> leftSubtrees = findUniqueTreesRecursive(start, i - 1);
+      vector<TreeNode *> rightSubtrees = findUniqueTreesRecursive(i + 1, end);
+      for (auto leftTree : leftSubtrees) {
+        for (auto rightTree : rightSubtrees) {
+          TreeNode *root = new TreeNode(i);
+          root->left = leftTree;
+          root->right = rightTree;
+          result.push_back(root);
+        }
+      }
+    }
+    return result;
+  }
+```
+
+#### Follow Up: only count how many substree there
+
+```CPP
+    unordered_map<int, int> map = unordered_map<int, int>();
+    int numTrees(int n) {
+        if (map.find(n) != map.end()) {
+          return map[n];
+        }
+
+        if (n <= 1) 
+            return 1;
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+          // making 'i' root of the tree
+          int countOfLeftSubtrees = numTrees(i - 1);
+          int countOfRightSubtrees = numTrees(n - i);
+          count += (countOfLeftSubtrees * countOfRightSubtrees);
+        }
+        map[n] = count;
+        return count;
+    }
+```
+
 
 ## Generalized Abbreviation
 
