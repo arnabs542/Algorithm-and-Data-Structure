@@ -15,6 +15,9 @@
     - [KMP](#kmp)
       - [KMP application](#kmp-application)
 - [Subsequence Problem](#subsequence-problem)
+- [Palindrome Problem](#palindrome-problem)
+  - [Valid Palindrome with 1 delete](#valid-palindrome-with-1-delete)
+    - [Valid Palindrome with N delete](#valid-palindrome-with-n-delete)
 - [String BFS/Recursive](#string-bfsrecursive)
   - [Combination](#combination)
   - [Expression Coding/Decoding](#expression-codingdecoding)
@@ -446,6 +449,73 @@ bool isSubsequence(string s, string t) {
         }
     }
     return false;
+}
+```
+
+# Palindrome Problem
+
+## Valid Palindrome with 1 delete
+
+https://leetcode.com/problems/valid-palindrome-ii/
+
+Given a non-empty string s, you may delete at most one character. Judge whether you can make it a palindrome.
+
+```
+Example 1:
+Input: "aba"
+Output: True
+Example 2:
+Input: "abca"
+Output: True
+Explanation: You could delete the character 'c'.
+```
+
+```CPP
+bool validPalindrome(string s) {
+        int i =0;
+        int j = s.size()-1;
+        while(i<j){
+            if (s[i] != s[j]) {
+                //search for first not same pair a*****b 
+                int i1 = i, j1 = j - 1, i2 = i + 1, j2 = j;
+                while (i1 < j1 && s[i1] == s[j1]) {
+                    i1++; 
+                    j1--;
+                };
+                while (i2 < j2 && s[i2] == s[j2]) {
+                    i2++; j2--;
+                };
+                //we can go to middle
+                return i1 >= j1 || i2 >= j2;
+            }
+            i++;
+            j--;
+        }
+        return true;
+    }
+```
+
+### Valid Palindrome with N delete
+
+extend the delete into N
+
+```CPP
+bool validPalindrome(string s) {
+    return valid(s, 0, s.length() - 1, 1);
+}
+
+bool valid(string& s, int i, int j, int d) { // d: num of chars you can delete at most
+    //we have checked all
+    if (i >= j) 
+      return true;
+    if (s[i] == s[j])
+      return valid(s, i + 1, j - 1, d);
+    else
+      //we already delete all d
+      if (d<=0)
+        return false;
+      //delete either from start side or end side
+      return valid(s, i + 1, j, d - 1) || valid(s, i, j - 1, d - 1);
 }
 ```
 
