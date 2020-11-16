@@ -37,6 +37,7 @@
       - [Detect Circle via Topo Sort](#detect-circle-via-topo-sort)
     - [Task/Course schedule](#taskcourse-schedule)
       - [All Task/Course schedule](#all-taskcourse-schedule)
+    - [Parallel Courses(Max Depth in DAG)](#parallel-coursesmax-depth-in-dag)
   - [Example](#example)
     - [Sequence Reconstruction](#sequence-reconstruction)
 
@@ -1636,7 +1637,76 @@ Output:
 Explanation: There are two possible orderings of the tasks meeting all prerequisites.
 ```
 
+### Parallel Courses(Max Depth in DAG)
 
+https://leetcode.com/problems/parallel-courses/
+
+There are N courses, labelled from 1 to N.
+
+We are given relations[i] = [X, Y], representing a prerequisite relationship between course X and course Y: course X has to be studied before course Y.
+
+In one semester you can study any number of courses as long as you have studied all the prerequisites for the course you are studying.
+
+Return the minimum number of semesters needed to study all courses.  If there is no way to study all the courses, return -1.
+
+ 
+```
+Example 1:
+
+Input: N = 3, relations = [[1,3],[2,3]]
+Output: 2
+Explanation: 
+In the first semester, courses 1 and 2 are studied. In the second semester, course 3 is studied.
+Example 2:
+
+
+
+Input: N = 3, relations = [[1,2],[2,3],[3,1]]
+Output: -1
+Explanation: 
+No course can be studied because they depend on each other.
+```
+
+```CPP
+int minimumSemesters(int N, vector<vector<int>>& relations) {
+        //basically MAX distance in DAG
+        unordered_map<int, vector<int>> g; // key: prerequisite, value: course list. 
+        int len = relations.size();
+        vector<int> indegree(N+1,0); // inDegree[i]: number of prerequisites for i.
+        for (auto r : relations) {
+            g[r[0]].push_back(r[1]); // construct graph.
+            ++indegree[r[1]]; // count prerequisites for r[1].
+        }
+        queue<int> q; // save current 0 in-degree vertices.
+        for (int i = 1; i <= N; ++i)
+            if (indegree[i] == 0)
+                q.push(i);
+        int semester = 0;
+        while(!q.empty()) {
+            int n=q.size();
+            semester++;
+            for(int i=0;i<n;i++) {
+                int cur=q.front();
+                q.pop();
+                for(int v:g[cur]) {
+                    //prerequisite studied, all course with prerequisite can be studied in next round
+                    
+                    if(--indegree[v]==0) {
+                        q.push(v);
+                    }
+                }
+            }
+        }
+
+        //cycle present, not possible
+        for(int in:indegree) 
+            if(in>0)  
+                return -1;
+
+        return semester;
+
+    }
+```
 
 
 
