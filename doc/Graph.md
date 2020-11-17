@@ -1753,11 +1753,12 @@ Explanation: The order is invalid, so return "".
 
 ```CPP
 string alienOrder(vector<string>& words) {
-        if (words.size() == 0) return "";
+        if (words.size() == 0) 
+            return "";
         unordered_map<char, int> indegree;
         unordered_map<char, unordered_set<char>> graph;
         
-        // initialize
+        // initialize graph
         for (int i = 0; i < words.size(); i++) {
             for (int j = 0; j < words[i].size(); j++) {
                 char c = words[i][j];
@@ -1771,6 +1772,7 @@ string alienOrder(vector<string>& words) {
             string next = words[i + 1];
             int len = min(cur.size(), next.size());
             for (int j = 0; j < len; j++) {
+                //we get different char on same pos of two adjacent words
                 if (cur[j] != next[j]) {
                     unordered_set<char> set = graph[cur[j]];
                     if (set.find(next[j]) == set.end()) {

@@ -29,9 +29,8 @@
     - [Lowest Common Ancestor of a Binary Tree](#lowest-common-ancestor-of-a-binary-tree)
     - [Path Sum](#path-sum)
       - [Check Path sum exists](#check-path-sum-exists)
-      - [All path to a sum](#all-path-to-a-sum)
+      - [All root to leaf path to a sum](#all-root-to-leaf-path-to-a-sum)
         - [Count Paths for a Sum](#count-paths-for-a-sum)
-      - [Path Sum(no need to be leaf)](#path-sumno-need-to-be-leaf)
       - [Sum Root to Leaf Numbers](#sum-root-to-leaf-numbers)
       - [Path With Given Sequence](#path-with-given-sequence)
       - [Tree Diamter](#tree-diamter)
@@ -873,7 +872,7 @@ https://leetcode.com/problems/path-sum/
     }
 ```
 
-#### All path to a sum 
+#### All root to leaf path to a sum 
 
 https://leetcode.com/problems/path-sum-ii/
 
@@ -1026,93 +1025,6 @@ int pathSum(TreeNode* root, int sum) {
     }
 ```
 
-#### Path Sum(no need to be leaf)
-
-https://leetcode.com/problems/path-sum-iii/
-
-You are given a binary tree in which each node contains an integer value.
-
-Find the number of paths that sum to a given value.
-
-The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
-
-The tree has no more than 1,000 nodes and the values are in the range -1,000,000 to 1,000,000.
-
-```
-Example:
-
-root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
-
-      10
-     /  \
-    5   -3
-   / \    \
-  3   2   11
- / \   \
-3  -2   1
-
-Return 3. The paths that sum to 8 are:
-
-1.  5 -> 3
-2.  5 -> 2 -> 1
-3. -3 -> 11
-```
-
-```CPP
-int pathSum(TreeNode* root, int sum) {
-    int ret = 0;
-    if(!root)
-        return ret;
-    //BFS traversal for tree
-    queue<TreeNode*> q;
-    q.push(root);
-    while(!q.empty()){
-        TreeNode* cur=q.front();
-        if(cur->left)
-            q.push(cur->left);
-        if(cur->right)
-            q.push(cur->right);
-        //for each node as root, calculate its path sum
-        help(cur,sum-(cur->val),ret);
-        q.pop();
-    }
-    
-    return ret;
-}
-
-void help(TreeNode* root, int sum, int &ret){
-    if(sum==0)
-        ret++;
-
-    if(root->left)
-        help(root->left,sum-(root->left->val),ret);
-    if(root->right)
-        help(root->right,sum-(root->right->val),ret);
-        
-}
-```
-
-we can have DFS way also
-
-```CPP
-int pathSum(TreeNode* root, int sum) {
-    int ret = 0;
-    if(root==NULL)
-        return 0;
-    return help(root, 0, sum) + pathSum(root->left, sum)+ pathSum(root->right, sum);
-}
-
-int help(TreeNode* root, int last, int& sum){
-    if(!root) 
-        return 0;
-    int cur = last + root->val;
-    
-    if (cur==sum)
-        return  1+ help(root->left, cur, sum) + help(root->right, cur, sum);
-    else
-        return  help(root->left, cur, sum) + help(root->right, cur, sum);
-}
-```
 
 #### Sum Root to Leaf Numbers
 
