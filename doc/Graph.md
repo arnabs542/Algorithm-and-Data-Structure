@@ -38,6 +38,7 @@
     - [Task/Course schedule](#taskcourse-schedule)
       - [All Task/Course schedule](#all-taskcourse-schedule)
     - [Parallel Courses(Max Depth in DAG)](#parallel-coursesmax-depth-in-dag)
+    - [Alien dictionary](#alien-dictionary)
   - [Example](#example)
     - [Sequence Reconstruction](#sequence-reconstruction)
 
@@ -1705,6 +1706,109 @@ int minimumSemesters(int N, vector<vector<int>>& relations) {
 
         return semester;
 
+    }
+```
+
+### Alien dictionary
+
+https://leetcode.com/problems/alien-dictionary/
+
+There is a new alien language which uses the latin alphabet. However, the order among letters are unknown to you. You receive a list of non-empty words from the dictionary, where words are sorted lexicographically by the rules of this new language. Derive the order of letters in this language.
+
+```
+Example 1:
+
+Input:
+[
+  "wrt",
+  "wrf",
+  "er",
+  "ett",
+  "rftt"
+]
+
+Output: "wertf"
+Example 2:
+
+Input:
+[
+  "z",
+  "x"
+]
+
+Output: "zx"
+Example 3:
+
+Input:
+[
+  "z",
+  "x",
+  "z"
+] 
+
+Output: "" 
+
+Explanation: The order is invalid, so return "".
+```
+
+```CPP
+string alienOrder(vector<string>& words) {
+        if (words.size() == 0) return "";
+        unordered_map<char, int> indegree;
+        unordered_map<char, unordered_set<char>> graph;
+        
+        // initialize
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j < words[i].size(); j++) {
+                char c = words[i][j];
+                indegree[c] = 0; 
+            }
+        }
+        
+        // build graph and record indegree
+        for (int i = 0; i < words.size() - 1; i++) {
+            string cur = words[i];
+            string next = words[i + 1];
+            int len = min(cur.size(), next.size());
+            for (int j = 0; j < len; j++) {
+                if (cur[j] != next[j]) {
+                    unordered_set<char> set = graph[cur[j]];
+                    if (set.find(next[j]) == set.end()) {
+                        graph[cur[j]].insert(next[j]); // build graph
+                        indegree[next[j]]++; // add indegree
+                    }
+                    break;                        
+                }
+                if (j == len - 1 && cur.size() > next.size()) 
+                    return "";
+            }
+        }
+        
+        // topoligical sort
+        string ans;
+        queue<char> q;
+        for (auto& e : indegree) {
+            if (e.second == 0) {
+                q.push(e.first);
+            }
+        }
+        while(!q.empty()) {
+            char cur = q.front();
+            q.pop();
+            ans += cur;
+            
+            if (graph[cur].size() != 0) {
+                for (auto& e : graph[cur]) {
+                    indegree[e]--;
+                    if (indegree[e] == 0) {
+                        q.push(e);
+                    }
+                }
+            }            
+        }
+        
+        // tell if it is cyclic
+        return ans.length() == indegree.size() ? ans : "";
     }
 ```
 
