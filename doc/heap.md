@@ -4,7 +4,7 @@
 
 - [Heap](#heap)
   - [Max Heap and Min Heap](#max-heap-and-min-heap)
-    - [Maxheap](#maxheap)
+    - [Maxheap(priority_queue)](#maxheappriority_queue)
     - [Minheap](#minheap)
   - [K way Merge](#k-way-merge)
     - [Merge K sorted List](#merge-k-sorted-list)
@@ -69,7 +69,7 @@ O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 
 ## Max Heap and Min Heap
 
-### Maxheap
+### Maxheap(priority_queue)
 
 Maxheap means the top is max, when insert, we use operator, the "smaller" item push into heap
 
