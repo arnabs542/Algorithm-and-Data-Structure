@@ -22,13 +22,16 @@
     - [Common Ancestor](#common-ancestor)
 - [Connected Component(Union Find, DFS, BFS)](#connected-componentunion-find-dfs-bfs)
   - [Basic idea](#basic-idea)
-    - [Number of island](#number-of-island)
-      - [Number of Island(count number of islands)](#number-of-islandcount-number-of-islands)
-    - [Number of connected component](#number-of-connected-component)
+    - [Union find:](#union-find)
+    - [DFS/BFS:](#dfsbfs)
+    - [Number of island(DFS)](#number-of-islanddfs)
+      - [Count number of islands(Union Find)](#count-number-of-islandsunion-find)
+    - [Number of connected component(Union Find)](#number-of-connected-componentunion-find)
     - [Number of component with some step count](#number-of-component-with-some-step-count)
       - [Rotting Oranges](#rotting-oranges)
-    - [Friends Circle](#friends-circle)
+    - [Friends Circle(DFS/BFS)](#friends-circledfsbfs)
     - [Graph Valid Tree](#graph-valid-tree)
+    - [Account Merge (Union find)](#account-merge-union-find)
     - [Making A Large Island](#making-a-large-island)
 - [Topological Sort](#topological-sort)
   - [Top Sort](#top-sort)
@@ -804,13 +807,18 @@ vector<vector<int>> findNodesWithZeroAndOneParents(vector<pair<int, int>> parent
 # Connected Component(Union Find, DFS, BFS)
 
 ## Basic idea
-1. via Union find: Basic idea is to find root/parents of certain node, and union if same parents
-2. have a log complexity way to find root for each node
-2. DFS/BFS:  from one item(item in vector or point in 2-D matrix)
+
+### Union find: 
+
+Basic idea is to find root/parents of certain node, and union if same parents. have a log complexity way to find root for each node
+
+### DFS/BFS:  
+
+from one item(item in vector or point in 2-D matrix)
 	* search all surrounding via DFS/BFS
 	* mark visited(through either some visited mark, or change original value)
 
-### Number of island
+### Number of island(DFS)
 
 https://leetcode.com/problems/number-of-islands/
 
@@ -865,7 +873,7 @@ int numIslands(vector<vector<char>>& grid) {
     }
 ```
 
-#### Number of Island(count number of islands)
+#### Count number of islands(Union Find)
 
 https://leetcode.com/problems/number-of-islands-ii/
 
@@ -947,7 +955,7 @@ int findRoot(int idx) {
 }
 ```
 
-### Number of connected component
+### Number of connected component(Union Find)
 
 https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
 
@@ -1160,7 +1168,7 @@ int orangesRotting(vector<vector<int>>& grid) {
 
 
 
-### Friends Circle
+### Friends Circle(DFS/BFS)
 
 https://leetcode.com/problems/friend-circles/
 
@@ -1300,6 +1308,75 @@ public:
 
 ```
 
+### Account Merge (Union find)
+
+https://leetcode.com/problems/accounts-merge/
+
+Given a list accounts, each element accounts[i] is a list of strings, where the first element accounts[i][0] is a name, and the rest of the elements are emails representing emails of the account.
+
+Now, we would like to merge these accounts. Two accounts definitely belong to the same person if there is some email that is common to both accounts. Note that even if two accounts have the same name, they may belong to different people as people could have the same name. A person can have any number of accounts initially, but all of their accounts definitely have the same name.
+
+After merging the accounts, return the accounts in the following format: the first element of each account is the name, and the rest of the elements are emails in sorted order. The accounts themselves can be returned in any order.
+
+```
+Example 1:
+Input: 
+accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]]
+Output: [["John", 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com'],  ["John", "johnnybravo@mail.com"], ["Mary", "mary@mail.com"]]
+Explanation: 
+The first and third John's are the same person as they have the common email "johnsmith@mail.com".
+The second John and Mary are different people as none of their email addresses are used by other accounts.
+We could return these lists in any order, for example the answer [['Mary', 'mary@mail.com'], ['John', 'johnnybravo@mail.com'], 
+['John', 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com']] would still be accepted.
+```
+
+```CPP
+int find(vector<int> &account_union, int ind) {
+        while(account_union[ind] != ind)
+            ind = account_union[ind];
+        return ind;
+    }
+    
+vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
+    /*
+    idea is to use union find
+    each email, we need to union them to some parent, which is account
+    like link graph component
+    */
+    
+    unordered_map<string, int> m; //email : parent_id(account id)
+    vector<int> account_union(accounts.size(), 0);
+    unordered_map<int, vector<string>> res_map;
+    for (int i = 0; i < accounts.size(); i++) {
+        //assign identical id for each account
+        account_union[i] = i;
+        for (int j = 1; j < accounts[i].size(); j++) {
+            //find same email exists in another account vector(component)
+            if (m.find(accounts[i][j]) != m.end()) {
+                int root1 = find(account_union, i);
+                int root2 = find(account_union, m[accounts[i][j]]);
+                account_union[root1] = root2;
+            }
+            else
+                m[accounts[i][j]] = account_union[i];
+        }
+    }
+    for (auto it : m) {
+        //for same account id, push all email
+        int ind = find(account_union, it.second);
+        res_map[ind].push_back(it.first);
+    }
+    vector<vector<string>> res;
+    for (auto it : res_map) {
+        vector<string> email = it.second;
+        sort(email.begin(), email.end());
+        email.insert(email.begin(), accounts[it.first][0]);
+        res.push_back(email);
+    }
+    return res;
+}
+```
+
 ### Making A Large Island
 
 https://leetcode.com/problems/making-a-large-island/
@@ -1389,6 +1466,7 @@ int valid(int x, int y) {
     return 0 <= x && x < N && 0 <= y && y < N;
 }
 ```
+
 
 # Topological Sort
 
