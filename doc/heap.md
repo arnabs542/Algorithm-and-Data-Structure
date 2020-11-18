@@ -3,6 +3,9 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Heap](#heap)
+  - [Max Heap and Min Heap](#max-heap-and-min-heap)
+    - [Maxheap](#maxheap)
+    - [Minheap](#minheap)
   - [K way Merge](#k-way-merge)
     - [Merge K sorted List](#merge-k-sorted-list)
     - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
@@ -63,6 +66,39 @@ Time complexity for construct the heap is:
 ```shell
 O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 ```
+
+## Max Heap and Min Heap
+
+### Maxheap
+
+Maxheap means the top is max, and we use operator, 
+
+
+
+```CPP
+struct greater1{
+    bool operator()(const long& a,const long& b) const{
+        return a<b;
+    }
+};
+```
+The C++ __priority_queue__ itself is max heap
+
+### Minheap
+Minheap means the top is min, and we use operator, 
+
+The C++ __priority_queue__ itself is max heap
+
+```CPP
+struct greater1{
+    bool operator()(const long& a,const long& b) const{
+        return a>b;
+    }
+};
+```
+
+Or The function ```greater<int>```
+
 
 ## K way Merge
 
