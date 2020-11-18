@@ -71,7 +71,7 @@ O(N): 1*log(1)+2*log(2)...+n*log(n) = O(N)
 
 ### Maxheap(priority_queue)
 
-Maxheap means the top is max, when insert, we use operator, the "smaller" item push into heap
+Maxheap means the top is max, when insert, we use operator, the "smaller" item push down in heap
 
 ```CPP
 struct smaller{
@@ -83,7 +83,7 @@ struct smaller{
 The C++ __priority_queue__ itself is max heap
 
 ### Minheap
-Minheap means the top is min, when insert, we use operator, the "greater" item push into heap
+Minheap means the top is min, when insert, we use operator, the "greater" item push down in heap
 
 
 The C++ __priority_queue__ itself is max heap
