@@ -1370,7 +1370,7 @@ vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
     for (auto it : res_map) {
         vector<string> email = it.second;
         sort(email.begin(), email.end());
-        email.insert(email.begin(), accounts[it.first][0]);
+        email.insert(email.begin(), accounts[it.first][0]); //get from index the account name
         res.push_back(email);
     }
     return res;

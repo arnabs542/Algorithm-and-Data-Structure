@@ -2,6 +2,9 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
+- [Basic String operation](#basic-string-operation)
+  - [find/substr](#findsubstr)
+  - [Subdomain](#subdomain)
 - [Substring problem](#substring-problem)
   - [Two pointers problem](#two-pointers-problem)
     - [Common solution Summary](#common-solution-summary)
@@ -35,6 +38,43 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+
+# Basic String operation
+
+## find/substr
+
+```CPP
+//find to get position index for certain character in string
+char c;
+int i = str.find(c);
+
+//substr
+string substr (size_t pos = 0, size_t len = npos) const;
+
+```
+
+## Subdomain
+
+https://leetcode.com/problems/subdomain-visit-count/
+
+```CPP
+vector<string> subdomainVisits(vector<string>& cpdomains) {
+        unordered_map<string, int> count;
+        for (auto cd : cpdomains) {
+            int i = cd.find(" ");
+            int num = stoi(cd.substr (0, i));
+            string s = cd.substr (i + 1);
+            for (int i = 0; i < s.size(); ++i)
+                if (s[i] == '.')
+                    count[s.substr(i + 1)] += num;  //so we get all sub domain 
+            count[s] += num;  //need to add full domain
+        }
+        vector<string> res;
+        for (auto k : count)
+            res.push_back (to_string(k.second) + " " + k.first);
+        return res;
+    }
+```
 
 # Substring problem
 
