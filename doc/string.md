@@ -4,6 +4,7 @@
 
 - [Basic String operation](#basic-string-operation)
   - [find/substr](#findsubstr)
+  - [Insert/Pushback](#insertpushback)
   - [Subdomain](#subdomain)
 - [Substring problem](#substring-problem)
   - [Two pointers problem](#two-pointers-problem)
@@ -51,6 +52,18 @@ int i = str.find(c);
 //substr
 string substr (size_t pos = 0, size_t len = npos) const;
 
+```
+
+## Insert/Pushback
+
+```CPP
+//insert to any position, 
+
+s.insert(s.begin(), c) //insert c in begining
+s.insert(s.end(), v.begin(), v.end())  //append v string to s string
+
+s.push_back(c)  //insert c in bakc
+s.pop_bakc(); //delete last
 ```
 
 ## Subdomain
