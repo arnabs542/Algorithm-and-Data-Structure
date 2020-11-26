@@ -3,10 +3,13 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Matrix Problem](#matrix-problem)
-  - [Sub region or Path in Matrix](#sub-region-or-path-in-matrix)
+  - [Sub region  Matrix](#sub-region--matrix)
     - [Number of Islands](#number-of-islands)
+  - [Shorest/Longest Path in Matrix](#shorestlongest-path-in-matrix)
     - [Longest Increase Path](#longest-increase-path)
     - [Walls and gates](#walls-and-gates)
+    - [Shortest Path in Binary Matrix](#shortest-path-in-binary-matrix)
+    - [As Far from Land as Possible](#as-far-from-land-as-possible)
   - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
     - [Lonely Pixel](#lonely-pixel)
     - [Bomb Enemy](#bomb-enemy)
@@ -20,7 +23,7 @@
 
 # Matrix Problem
 
-## Sub region or Path in Matrix
+## Sub region  Matrix
 
 > Use DFS or BFS to search
 
@@ -141,6 +144,8 @@ int numIslands(vector<vector<char>>& grid) {
   return ret;
 }
 ```
+
+## Shorest/Longest Path in Matrix
 
 ### Longest Increase Path
 
@@ -302,6 +307,201 @@ void wallsAndGates(vector<vector<int>>& rooms) {
     }
 
 ```
+
+### Shortest Path in Binary Matrix
+
+https://leetcode.com/problems/shortest-path-in-binary-matrix/
+
+In an N by N square grid, each cell is either empty (0) or blocked (1).
+
+A clear path from top-left to bottom-right has length k if and only if it is composed of cells C_1, C_2, ..., C_k such that:
+
+```
+Adjacent cells C_i and C_{i+1} are connected 8-directionally (ie., they are different and share an edge or corner)
+C_1 is at location (0, 0) (ie. has value grid[0][0])
+C_k is at location (N-1, N-1) (ie. has value grid[N-1][N-1])
+If C_i is located at (r, c), then grid[r][c] is empty (ie. grid[r][c] == 0).
+Return the length of the shortest such clear path from top-left to bottom-right.  If such a path does not exist, return -1.
+```
+
+Thos shortest path problem can usually solved by BFS, so we can exit immediately if shortest path has been found
+
+```CPP
+int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+        int row = grid.size();
+        int col = grid[0].size();
+        if (grid[0][0]==1 || grid[row-1][col-1]==1)
+            return -1;
+        //possible to visit all 8 directions
+        vector<vector<int>> directions = {{1,1}, {0,1},{1,0},{0,-1},{-1,0},{-1, -1},{1, -1},{-1, 1}};
+        queue<pair<int,int>> q;
+        //start count
+        grid[0][0] =1;
+        q.push(make_pair(0,0));
+        
+        while(!q.empty()){
+            auto cur = q.front();
+            int x = cur.first, y = cur.second;
+            //finish to end, exist
+            if( x == row -1 && y == col -1) 
+                return grid[x][y];
+
+            for(auto direction : directions){
+                int nx = x + direction[0];
+                int ny = y + direction[1];
+                if(nx >= 0 && nx < row && ny >= 0 && ny < col && grid[nx][ny] == 0){
+                    q.push(make_pair(nx,ny));
+                    grid[nx][ny] = grid[x][y] + 1;
+                }
+            }
+            q.pop();
+        }
+        
+        return -1;
+        
+    }
+```
+
+
+### As Far from Land as Possible
+
+https://leetcode.com/problems/as-far-from-land-as-possible/
+
+Given an n x n grid containing only values 0 and 1, where 0 represents water and 1 represents land, find a water cell such that its distance to the nearest land cell is maximized, and return the distance. If no land or water exists in the grid, return -1.
+
+The distance used in this problem is the Manhattan distance: the distance between two cells (x0, y0) and (x1, y1) is |x0 - x1| + |y0 - y1|.
+
+ 
+```
+Example 1:
+
+
+Input: grid = [[1,0,1],[0,0,0],[1,0,1]]
+Output: 2
+Explanation: The cell (1, 1) is as far as possible from all the land with distance 2.
+Example 2:
+
+
+Input: grid = [[1,0,0],[0,0,0],[0,0,0]]
+Output: 4
+Explanation: The cell (2, 2) is as far as possible from all the land with distance 4.
+```
+* DFS Solution
+
+```CPP
+int row = 0;
+    int col = 0;
+    int maxDistance(vector<vector<int>>& grid) {
+        row = grid.size();
+        col = grid[0].size();
+        
+        int ret = 0;
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                if(grid[i][j]==1){
+                    grid[i][j] = 0; //critical to set, otherwise won't start
+                    //use >1 to represent the distance
+                    DFS(grid, i, j, 1);
+                }
+            }
+        }
+        
+        //above iteration ensure all distance is to nearest land
+       for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+               if (grid[i][j] > 1) 
+                   ret = max(ret, grid[i][j] - 1);
+            }
+        }
+        
+        
+        return ret==0?-1:ret;
+    }
+    
+    void DFS(vector<vector<int>>& grid, int i, int j, int dist){
+        //reach boudary or land, or already found shorter path to a land
+        if(i<0 || i >= row || j<0 || j >= col || (grid[i][j] != 0 && grid[i][j] <= dist))
+            return;
+        
+        grid[i][j] = dist;
+        DFS(grid, i - 1, j, dist + 1);
+        DFS(grid, i + 1, j, dist + 1);
+        DFS(grid, i, j - 1, dist + 1);
+        DFS(grid, i, j + 1, dist + 1);
+    }
+```
+
+* BFS way
+
+```CPP
+int maxDistance(vector<vector<int>>& grid) {
+        int row = grid.size();
+        int col = grid[0].size();
+        
+        queue<pair<int, int>> q;
+        
+        vector<vector<int>> gridValues(row, vector<int>(col, INT_MAX));
+        
+        int ret = -1;
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                if(grid[i][j]==1){
+                    q.push(make_pair(i,j));
+                    gridValues[i][j] = 0;
+                }
+            }
+        }
+        
+        if(q.empty())
+            return -1;
+        
+        //four direction
+        vector<int> dx({0, 1, 0, -1});
+        vector<int> dy({1, 0, -1, 0});
+        
+        //using BFS, we start level by level, first level is cloest to 1, then next level, 
+        //this ensure we do not go too deep from one level
+
+        while (!q.empty())
+        {
+            auto pos = q.front();
+            q.pop();
+            
+            for (int i = 0; i < 4; ++i)
+            {
+                int x = pos.first + dx[i];
+                int y = pos.second + dy[i];
+                
+                if (x >= 0 && x < row && y >= 0 && y < col)
+                {
+                    if (gridValues[x][y] == INT_MAX)
+                    {   //not visited before
+                        q.push(make_pair(x, y));
+                    }
+          //  updated to the distance to nearest land cell. 
+                    gridValues[x][y] = 
+                        min(gridValues[x][y], gridValues[pos.first][pos.second] + 1);
+                }
+            }
+        }
+        
+    // Step 3: find the maximum values in gridValues.
+        for (int i = 0; i < row; ++i)
+        {
+            for (int j = 0; j < col; ++j)
+            {
+                if (grid[i][j] == 0)
+                {
+                    ret = max(ret, gridValues[i][j]);
+                }
+            }
+        }
+        
+        return ret;
+
+    }
+```
+
 
 
 

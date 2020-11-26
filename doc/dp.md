@@ -24,6 +24,7 @@
   - [Problem Statement](#problem-statement)
   - [backpack Problem](#backpack-problem)
 - [Paint House Problem](#paint-house-problem)
+- [Minimum Falling Path Sum](#minimum-falling-path-sum)
 - [Array Split problems](#array-split-problems)
   - [Split Array Largest Sum](#split-array-largest-sum)
   - [Split array equal sum](#split-array-equal-sum)
@@ -787,6 +788,106 @@ Output: 5
 Explanation: Paint house 0 into color 0, paint house 1 into color 2. Minimum cost: 1 + 4 = 5; 
              Or paint house 0 into color 2, paint house 1 into color 0. Minimum cost: 3 + 2 = 5.
 ```
+
+## Minimum Falling Path Sum
+
+https://leetcode.com/problems/minimum-falling-path-sum/
+
+Given a square array of integers A, we want the minimum sum of a falling path through A.
+
+A falling path starts at any element in the first row, and chooses one element from each row.  The next row's choice must be in a column that is different from the previous row's column by at most one.
+
+``` 
+
+Example 1:
+
+Input: [[1,2,3],[4,5,6],[7,8,9]]
+Output: 12
+Explanation: 
+The possible falling paths are:
+
+```
+
+```CPP
+int minFallingPathSum(vector<vector<int>>& A) {
+        //The minimum path to get to element A[i][j] is the minimum of A[i - 1][j - 1], A[i - 1][j] and A[i - 1][j + 1].
+        
+        /*
+        
+        [1, 2, 3]
+[4, 5, 6] => [5, 6, 8]
+[7, 8, 9] => [7, 8, 9] => [12, 13, 15]
+        */
+    int len = A.size();
+    for (auto i = 1; i < len; ++i)
+        for (auto j = 0; j < len; ++j){
+            int left_shift = max(0,j-1);
+            int right_shift = min(len-1,j+1);
+            A[i][j] += min({ A[i-1][j], A[i-1][left_shift], A[i-1][right_shift] });
+        }
+            
+        return *min_element(begin(A[len - 1]), end(A[len - 1]));
+        
+    }
+```
+
+https://leetcode.com/problems/minimum-falling-path-sum-ii/
+
+
+Given a square grid of integers arr, a falling path with non-zero shifts is a choice of exactly one element from each row of arr, such that no two elements chosen in adjacent rows are in the same column.
+
+Return the minimum sum of a falling path with non-zero shifts.
+
+ 
+```
+Example 1:
+
+Input: arr = [[1,2,3],[4,5,6],[7,8,9]]
+Output: 13
+Explanation: 
+The possible falling paths are:
+[1,5,9], [1,5,7], [1,6,7], [1,6,8],
+[2,4,8], [2,4,9], [2,6,7], [2,6,8],
+[3,4,8], [3,4,9], [3,5,7], [3,5,9]
+The falling path with the smallest sum is [1,5,7], so the answer is 13.
+```
+
+```CPP
+int minFallingPathSum(vector<vector<int>>& arr) {
+        
+        //find the minimum element in the first row, add it to the  element in the second row, and so on.
+        
+        int row = arr.size();
+        int col = arr[0].size();
+        
+        
+        for (int i = 1; i < row; i++) {
+            //check prev row's smallest and second smallest
+            priority_queue<int, vector<int>, greater<int>> pq;
+            for (int j = 0; j < col; j++) {
+                pq.push(arr[i - 1] [j]);
+            }
+            int firstSmallest = pq.top();
+            pq.pop();
+            int secondSmallest = pq.top();
+            pq.pop();
+            //check compare with previous row
+            for (int j = 0; j < col; j++) {
+                if (arr[i - 1] [j] == firstSmallest) {
+                    arr[i] [j] = arr[i] [j] + secondSmallest;
+                } else {
+                    arr[i] [j] = arr[i] [j] + firstSmallest;
+                }
+            }
+        }
+        int result = INT_MAX;
+        for (int j = 0; j < col; j++) {
+            result = min(result, arr[row - 1][j]);
+        }
+        return result;
+    }
+```
+
 
 ## Array Split problems
 
