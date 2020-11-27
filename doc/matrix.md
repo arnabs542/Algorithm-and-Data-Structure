@@ -3,8 +3,14 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Matrix Problem](#matrix-problem)
-  - [Sub region  Matrix](#sub-region--matrix)
+  - [General Techniques](#general-techniques)
+    - [Use DFS or BFS to search](#use-dfs-or-bfs-to-search)
+      - [DFS usually for sub region](#dfs-usually-for-sub-region)
+      - [BFS For Path Problem](#bfs-for-path-problem)
+    - [Stop Conditions:](#stop-conditions)
+  - [Sub region](#sub-region)
     - [Number of Islands](#number-of-islands)
+      - [Number of Closed Islands](#number-of-closed-islands)
   - [Shorest/Longest Path in Matrix](#shorestlongest-path-in-matrix)
     - [Longest Increase Path](#longest-increase-path)
     - [Walls and gates](#walls-and-gates)
@@ -23,17 +29,27 @@
 
 # Matrix Problem
 
-## Sub region  Matrix
+## General Techniques
 
-> Use DFS or BFS to search
+### Use DFS or BFS to search
 
-* For subregion problem, usually started with target pixel and traversal region, need some matrix to record visited flag or directly modify the original matrix
+#### DFS usually for sub region
 
-* For Path Problem, start with path starting or ending point.
+For subregion problem, usually started with target pixel and traversal region, need some matrix to record visited flag or directly modify the original matrix.
 
-* Stop Conditions:
+pros of using DFS from one pixel can cover all that sub region
+
+#### BFS For Path Problem
+
+start with path starting or ending point. usually for longest/shortest , largest/smallest path problem. pros of BFS is you can start from several points(insert all of them first into queue), and search level by level, once you reach some condition, you can stop without other path to further search
+
+### Stop Conditions:
+
   * visited conditions
   * updated cell value larger or smaller than new DFS/BFS ones
+
+
+## Sub region
 
 ### Number of Islands
 
@@ -145,7 +161,72 @@ int numIslands(vector<vector<char>>& grid) {
 }
 ```
 
+#### Number of Closed Islands
+
+https://leetcode.com/problems/number-of-closed-islands/
+
+Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed island is an island totally (all left, top, right, bottom) surrounded by 1s.
+
+Return the number of closed islands.
+
+
+```CPP
+int row = 0;
+    int col = 0;
+    int closedIsland(vector<vector<int>>& grid) {
+        row = grid.size();
+        if(row==0)
+            return false;
+        col = grid[0].size();
+        
+        int ret = 0;
+        
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                if(grid[i][j]==0){
+                    if(DFS(grid, i, j)==true){
+                        ret++;
+                    }
+                }
+            }
+        }
+        
+        return ret;
+    }
+    
+    bool DFS(vector<vector<int>>& grid, int x, int y){
+
+        //out boundary, not closed
+        if ( x<0 || x>=row || y<0 || y>=col){
+            return false;
+        }
+        
+        //to water bouundary
+        if(grid[x][y]==1){
+            return true;
+        }
+        
+        grid[x][y]=1; //mark 1 so we do not need to revisit
+        
+        bool up = DFS(grid, x, y+1);
+        bool down = DFS(grid, x, y-1);
+        bool left = DFS(grid, x-1, y);
+        bool right = DFS(grid, x+1, y);
+        
+        return up && down && left && right;
+        
+    }
+```
+
 ## Shorest/Longest Path in Matrix
+
+* DFS
+* BFS
+
+Usually BFS is better since we can go level by level, also allow us to search from multiple different points
+otherwise DFS needs to travel to end from one point which could be very deep.
+
+For BFS, need to check stop condition
 
 ### Longest Increase Path
 
@@ -250,7 +331,7 @@ int dfs(vector<vector<int>>& matrix, int x, int y, vector<vector<int>>& cache){
 
 ### Walls and gates
 
-* https://leetcode.com/problems/walls-and-gates/#/description
+https://leetcode.com/problems/walls-and-gates/#/description
 You are given a m x n 2D grid initialized with these three possible values.
 
 -1 - A wall or an obstacle.
@@ -306,6 +387,50 @@ void wallsAndGates(vector<vector<int>>& rooms) {
 
     }
 
+```
+
+```CPP
+//BFS Solution
+
+void wallsAndGates(vector<vector<int>>& rooms) {
+        int row = rooms.size();
+        if(row==0)
+            return;
+        
+        int col = rooms[0].size();
+        
+        
+        
+        queue<pair<int,int>> q;
+        
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                if(rooms[i][j]==0){
+                    q.push(make_pair(i,j));
+                }
+            }
+        }
+        
+        vector<vector<int>> dirs = {{1,0},{0,1},{-1,0},{0, -1}};
+        
+        while(!q.empty()){
+            
+            pair<int,int> pos = q.front();
+            q.pop();
+            for(auto dir: dirs){
+                int x = pos.first + dir[0];
+                int y = pos.second + dir[1];
+                
+                if(x<0 || x>=row || y<0 || y>=col || rooms[x][y] ==-1)
+                    continue;
+                //not visited, or visited but has a closer path to gate, insert to queue
+                if(rooms[x][y] > rooms[pos.first][pos.second]+1){
+                    rooms[x][y] = rooms[pos.first][pos.second]+1;
+                    q.push(make_pair(x,y));
+                }
+                
+            }
+        }
 ```
 
 ### Shortest Path in Binary Matrix
