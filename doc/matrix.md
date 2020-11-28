@@ -16,6 +16,7 @@
     - [Walls and gates](#walls-and-gates)
     - [Shortest Path in Binary Matrix](#shortest-path-in-binary-matrix)
     - [As Far from Land as Possible](#as-far-from-land-as-possible)
+    - [Shortest Distance from All Buildings](#shortest-distance-from-all-buildings)
   - [Pattern Along row/col Problem](#pattern-along-rowcol-problem)
     - [Lonely Pixel](#lonely-pixel)
     - [Bomb Enemy](#bomb-enemy)
@@ -24,6 +25,10 @@
 - [Sparse Matrix](#sparse-matrix)
   - [Sparse Matrix Representation](#sparse-matrix-representation)
   - [Add/Transpose/Multiply Operations](#addtransposemultiply-operations)
+- [Geometry Problem](#geometry-problem)
+  - [Retangle in 2-D dimention](#retangle-in-2-d-dimention)
+      - [Common tech:](#common-tech)
+    - [Minimum Area Rectangle](#minimum-area-rectangle)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -627,8 +632,95 @@ int maxDistance(vector<vector<int>>& grid) {
     }
 ```
 
+### Shortest Distance from All Buildings
 
+https://leetcode.com/problems/shortest-distance-from-all-buildings/
 
+You want to build a house on an empty land which reaches all buildings in the shortest amount of distance. You can only move up, down, left and right. You are given a 2D grid of values 0, 1 or 2, where:
+
+Each 0 marks an empty land which you can pass by freely.
+Each 1 marks a building which you cannot pass through.
+Each 2 marks an obstacle which you cannot pass through.
+
+```CPP
+int row = 0;
+    int col = 0;
+    int shortestDistance(vector<vector<int>>& grid) {
+        row = grid.size();
+        col = grid[0].size();
+        
+        // Store distance sum to all building for every point 0. Update values when we do BFS traversal
+        vector<vector<int>> distance (row, vector<int>(col, 0));
+        // Store how many buildings each '0' can reach, because we don't guarantee each '0' can reach all builidings
+        vector<vector<int>> reach (row, vector<int>(col, 0));
+        
+        int buildingNum = 0;
+        
+        for (int i=0; i<row; ++i) {
+            for (int j=0; j<col; ++j) {
+                if (grid[i][j] == 1) {
+                    buildingNum++;
+                    BFS(i, j, distance, reach, grid); 
+                }
+            }
+        }
+        
+        int shortest = INT_MAX;
+        for (int i=0; i< row; i++) {
+            for (int j=0; j<col; j++) {
+                if (grid[i][j] || reach[i][j]!= buildingNum)
+                    continue;
+                
+                shortest = min(shortest, distance[i][j]);
+            }
+        }
+        
+        return shortest == INT_MAX ? -1: shortest;
+    }
+    
+    void BFS(int& i, int& j, vector<vector<int>>& distance, vector<vector<int>>& reach, vector<vector<int>>& grid)
+    {
+         vector<vector<bool>> visited(row, vector<bool>(col, false));
+                    
+         queue<pair<int, int>> q;
+         q.push(make_pair(i, j));
+
+         int step = 1;
+                    
+         while(!q.empty()) {
+            int len = q.size();
+                        
+            for(int i = 0; i < len; i++) {
+                pair<int, int> cur = q.front();
+                q.pop();
+                
+                vector<vector<int>> dirs = {{1,0},{-1,0},{0,1}, {0,-1}};
+                            
+                for (auto dir: dirs) {
+                    int x = cur.first + dir[0];
+                    int y = cur.second + dir[1];
+                                
+                    if (x >= row || y>= col || x<0 || y<0)
+                        continue;
+                                
+                    if (visited[x][y])
+                        continue;
+                                
+                    if (grid[x][y]!=0)
+                        continue;
+                                
+                    distance[x][y] += step;
+                    reach[x][y]++;
+                    visited[x][y] = true;
+                                
+                    q.push(make_pair(x,y));
+                }
+            }
+            // The shortest distance from x,y to the building
+            step++;
+        }        
+    }
+```
 
 ## Pattern Along row/col Problem
 search space goes from certain node along its same row and col index
@@ -1140,3 +1232,64 @@ public:
     } 
 }
 ```
+
+# Geometry Problem
+
+## Retangle in 2-D dimention
+
+#### Common tech:
+
+* Hash table to record certain x's y coordination
+
+### Minimum Area Rectangle
+
+https://leetcode.com/problems/minimum-area-rectangle/
+
+Given a set of points in the xy-plane, determine the minimum area of a rectangle formed from these points, with sides parallel to the x and y axes.
+
+If there isn't any rectangle, return 0.
+
+```
+Example 1:
+
+Input: [[1,1],[1,3],[3,1],[3,3],[2,2]]
+Output: 4
+Example 2:
+
+Input: [[1,1],[1,3],[3,1],[3,3],[4,1],[4,3]]
+Output: 2
+```
+
+```CPP
+    int minAreaRect(vector<vector<int>>& points) {
+        unordered_map<int, unordered_set<int>> s;
+        for (const auto& point : points)
+          s[point[0]].insert(point[1]);
+
+        const int n = points.size();
+        int min_area = INT_MAX;
+        for (int i = 0; i < n; ++i)
+          for (int j = i + 1; j < n; ++j) {
+              //get 2 diagnol points
+            int x0 = points[i][0];
+            int y0 = points[i][1];
+            int x1 = points[j][0];
+            int y1 = points[j][1];
+              
+            if (x0 == x1 || y0 == y1) 
+                continue;
+              
+            //try to find other 2 points
+            if (!s[x1].count(y0) || !s[x0].count(y1)) 
+                continue;
+            int area = abs(x0 - x1) * abs(y0 - y1);
+            if (area > min_area) 
+                continue;
+
+            min_area = area;
+          }
+        return min_area == INT_MAX ? 0 : min_area;
+    }
+```
+
+

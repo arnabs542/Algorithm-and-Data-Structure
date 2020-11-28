@@ -39,8 +39,10 @@
       - [BFS](#bfs-1)
       - [Detect Circle via Topo Sort](#detect-circle-via-topo-sort)
     - [Task/Course schedule](#taskcourse-schedule)
-      - [All Task/Course schedule](#all-taskcourse-schedule)
-    - [Parallel Courses(Max Depth in DAG)](#parallel-coursesmax-depth-in-dag)
+      - [Can finish all course](#can-finish-all-course)
+      - [Find courses order](#find-courses-order)
+      - [Find out all finish path](#find-out-all-finish-path)
+      - [Parallel Courses(Max Depth in DAG)](#parallel-coursesmax-depth-in-dag)
     - [Alien dictionary](#alien-dictionary)
   - [Example](#example)
     - [Sequence Reconstruction](#sequence-reconstruction)
@@ -1623,6 +1625,8 @@ To better understand the above algorithm, we summarize a few points here:
 
 ### Task/Course schedule
 
+#### Can finish all course
+
 https://leetcode.com/problems/course-schedule/
 
 There are a total of numCourses courses you have to take, labeled from 0 to numCourses-1.
@@ -1649,14 +1653,57 @@ Explanation: There are a total of 2 courses to take.
 ```
 
 ```CPP
+bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<vector<int>> graph(numCourses);
+        vector<int> indegree(numCourses,0);
+        //build graph
+        for(auto edge : prerequisites)
+        {
+            graph[edge[1]].push_back(edge[0]); //from node -> dest graph
+            ++indegree[edge[0]]; 
+        }
+        queue<int> Q;
+        for(int i = 0;i < numCourses;i++)
+            if(indegree[i] == 0)
+                Q.push(i);
+        int counter = 0;
+        while(!Q.empty())
+        {
+            int u = Q.front();
+            Q.pop();
+            ++counter;
+            for(auto v : graph[u])
+            {
+                if(--indegree[v] == 0)
+                    Q.push(v);
+            }
+        }
+        return counter == numCourses;
+    }
+```
+
+#### Find courses order
+
+https://leetcode.com/problems/course-schedule-ii/
+
+There are a total of n courses you have to take labelled from 0 to n - 1.
+
+Some courses may have prerequisites, for example, if prerequisites[i] = [ai, bi] this means you must take the course bi before the course ai.
+
+Given the total number of courses numCourses and a list of the prerequisite pairs, return the ordering of courses you should take to finish all courses.
+
+If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.
+
+
+
+```CPP
 vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
-        vector<int> sortedOrder;
+        vector<int> ret;
 
         // a. Initialize the graph
-        unordered_map<int, int> inDegree;       // count of incoming edges for every vertex
+        vector<int> inDegree(numCourses, 0);       // count of incoming edges for every vertex
         unordered_map<int, vector<int>> graph;  // adjacency list graph
         for (int i = 0; i < numCourses; i++) {
-          inDegree[i] = 0;
           graph[i] = vector<int>();
         }
 
@@ -1668,34 +1715,31 @@ vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
         }
 
         // c. Find all sources i.e., all vertices with 0 in-degrees
-        queue<int> sources;
-        for (auto entry : inDegree) {
-          if (entry.second == 0) {
-            sources.push(entry.first);
-          }
-        }
+        queue<int> q;
+        for(int i = 0;i < numCourses;i++)
+            if(inDegree[i] == 0)
+                q.push(i);
 
-        // d. For each source, add it to the sortedOrder and subtract one from all of its children's
+        // d. For each source, add it to the ret and subtract one from all of its children's
         // in-degrees if a child's in-degree becomes zero, add it to the sources queue
-        while (!sources.empty()) {
-          int vertex = sources.front();
-          sources.pop();
-          sortedOrder.push_back(vertex);
-          vector<int> children =
-              graph[vertex];  // get the node's children to decrement their in-degrees
-          for (auto child : children) {
-            inDegree[child]--;
-            if (inDegree[child] == 0) {
-              sources.push(child);
+        while (!q.empty()) {
+          int vertex = q.front();
+          q.pop();
+        //no prerequest courses, we can take it and add to return vector
+          ret.push_back(vertex); 
+
+          for (auto child : graph[vertex]) {
+            if (--inDegree[child] == 0) {
+              q.push(child);
             }
           }
         }
         
-        return sortedOrder.size()==numCourses?sortedOrder: vector<int>{};
+        return ret.size()==numCourses?ret: vector<int>{};
     }
 ```
 
-#### All Task/Course schedule
+#### Find out all finish path
 
 https://www.educative.io/courses/grokking-the-coding-interview/q2YmVjQMMr3
 
@@ -1716,7 +1760,7 @@ Output:
 Explanation: There are two possible orderings of the tasks meeting all prerequisites.
 ```
 
-### Parallel Courses(Max Depth in DAG)
+#### Parallel Courses(Max Depth in DAG)
 
 https://leetcode.com/problems/parallel-courses/
 

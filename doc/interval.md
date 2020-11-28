@@ -8,8 +8,9 @@
   - [Remove intervals so that no overlap happen](#remove-intervals-so-that-no-overlap-happen)
   - [Interval Intersection](#interval-intersection)
   - [Minimum Meeting room](#minimum-meeting-room)
-  - [Meeting Scheduler](#meeting-scheduler)
   - [Max CPU time](#max-cpu-time)
+  - [Course schedule with deadline](#course-schedule-with-deadline)
+  - [Meeting Scheduler](#meeting-scheduler)
   - [Employee Free time](#employee-free-time)
   - [Ballon Burst](#ballon-burst)
   - [Skyline](#skyline)
@@ -219,6 +220,120 @@ int minMeetingRooms(vector<Interval>& intervals) {
 
 ```
 
+## Max CPU time
+
+https://www.educative.io/courses/grokking-the-coding-interview/xVlyyv3rR93
+
+
+We are given a list of Jobs. Each job has a Start time, an End time, and a CPU load when it is running. Our goal is to find the maximum CPU load at any time if all the jobs are running on the same machine.
+```
+Example 1:
+
+Jobs: [[1,4,3], [2,5,4], [7,9,6]]
+Output: 7
+Explanation: Since [1,4,3] and [2,5,4] overlap, their maximum CPU load (3+4=7) will be when both the 
+jobs are running at the same time i.e., during the time interval (2,4)
+```
+
+The problem follows the Merge Intervals pattern and can easily be converted to Minimum Meeting Rooms. Similar to ‘Minimum Meeting Rooms’ where we were trying to find the maximum number of meetings happening at any time, for ‘Maximum CPU Load’ we need to find the maximum number of jobs running at any time.
+
+
+```CPP
+static bool startcomp(Interval s1, Interval s2){
+    return s1.start<s2.start;
+}
+
+struct endCompare {
+    bool operator()(const Job &x, const Job &y) { return x.end > y.end; }
+  };
+
+  static int findMaxCPULoad(vector<Job> &jobs) {
+    if (jobs.empty()) {
+      return 0;
+    }
+
+    // sort the jobs by start time
+    sort(jobs.begin(), jobs.end(), startcomp);
+
+    int maxCPULoad = 0;
+    int currentCPULoad = 0;
+    //minheap, top is earilest ending job
+    priority_queue<Job, vector<Job>, endCompare> minHeap;
+    for (auto job : jobs) {
+      // remove all jobs that have ended
+      while (!minHeap.empty() && job.start > minHeap.top().end) {
+        currentCPULoad -= minHeap.top().cpuLoad;
+        minHeap.pop();
+      }
+
+      // add the current job into the minHeap
+      minHeap.push(job);
+      currentCPULoad += job.cpuLoad;
+      maxCPULoad = max(maxCPULoad, currentCPULoad);
+    }
+
+    return maxCPULoad;
+  }
+```
+
+## Course schedule with deadline
+
+https://leetcode.com/problems/course-schedule-iii/
+
+There are n different online courses numbered from 1 to n. Each course has some duration(course length) t and closed on dth day. A course should be taken continuously for t days and must be finished before or on the dth day. You will start at the 1st day.
+
+Given n online courses represented by pairs (t,d), your task is to find the maximal number of courses that can be taken.
+
+```
+Example:
+
+Input: [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
+Output: 3
+Explanation: 
+There're totally 4 courses, but you can take 3 courses at most:
+First, take the 1st course, it costs 100 days so you will finish it on the 100th day, and ready to take the next course on the 101st day.
+Second, take the 3rd course, it costs 1000 days so you will finish it on the 1100th day, and ready to take the next course on the 1101st day. 
+Third, take the 2nd course, it costs 200 days so you will finish it on the 1300th day. 
+The 4th course cannot be taken now, since you will finish it on the 3300th day, which exceeds the closed date.
+```
+
+```CPP
+struct comp{
+      bool operator()(const vector<int>& v1, const vector<int>& v2) {
+          return v1[1] < v2[1];
+      } 
+    };
+    
+
+    int scheduleCourse(vector<vector<int>>& courses) 
+    {
+        //sort by ending time of course
+        sort(courses.begin(), courses.end(), comp());
+        
+        // max heap, so top is longest time taken course
+        priority_queue<int> q;
+        
+        int sum = 0;
+        for (auto& c : courses)
+        {
+            int t = c[0]; //Course time
+            int d = c[1]; //Max day before which course has to be completed
+            
+            q.push(t);
+            sum += t;
+            
+            //can not finish before deadline, pop most time taken course
+            while (sum > d)
+            {
+                sum -= q.top(); //This can be some other long course
+                q.pop();
+            }
+
+        }
+        return q.size();
+    }
+```
+
 ## Meeting Scheduler
 
 https://leetcode.com/problems/meeting-scheduler/
@@ -293,61 +408,6 @@ vector<int> minAvailableDuration(vector<vector<int>>& slots1, vector<vector<int>
 }
 ```
 
-## Max CPU time
-
-https://www.educative.io/courses/grokking-the-coding-interview/xVlyyv3rR93
-
-
-We are given a list of Jobs. Each job has a Start time, an End time, and a CPU load when it is running. Our goal is to find the maximum CPU load at any time if all the jobs are running on the same machine.
-```
-Example 1:
-
-Jobs: [[1,4,3], [2,5,4], [7,9,6]]
-Output: 7
-Explanation: Since [1,4,3] and [2,5,4] overlap, their maximum CPU load (3+4=7) will be when both the 
-jobs are running at the same time i.e., during the time interval (2,4)
-```
-
-The problem follows the Merge Intervals pattern and can easily be converted to Minimum Meeting Rooms. Similar to ‘Minimum Meeting Rooms’ where we were trying to find the maximum number of meetings happening at any time, for ‘Maximum CPU Load’ we need to find the maximum number of jobs running at any time.
-
-
-```CPP
-static bool startcomp(Interval s1, Interval s2){
-    return s1.start<s2.start;
-}
-
-struct endCompare {
-    bool operator()(const Job &x, const Job &y) { return x.end > y.end; }
-  };
-
-  static int findMaxCPULoad(vector<Job> &jobs) {
-    if (jobs.empty()) {
-      return 0;
-    }
-
-    // sort the jobs by start time
-    sort(jobs.begin(), jobs.end(), startcomp);
-
-    int maxCPULoad = 0;
-    int currentCPULoad = 0;
-    //minheap, top is earilest ending job
-    priority_queue<Job, vector<Job>, endCompare> minHeap;
-    for (auto job : jobs) {
-      // remove all jobs that have ended
-      while (!minHeap.empty() && job.start > minHeap.top().end) {
-        currentCPULoad -= minHeap.top().cpuLoad;
-        minHeap.pop();
-      }
-
-      // add the current job into the minHeap
-      minHeap.push(job);
-      currentCPULoad += job.cpuLoad;
-      maxCPULoad = max(maxCPULoad, currentCPULoad);
-    }
-
-    return maxCPULoad;
-  }
-```
 
 
 ## Employee Free time
