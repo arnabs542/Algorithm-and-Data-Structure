@@ -11,6 +11,8 @@
   - [Sub region](#sub-region)
     - [Number of Islands](#number-of-islands)
       - [Number of Closed Islands](#number-of-closed-islands)
+    - [Max area island](#max-area-island)
+    - [Making A Large Island](#making-a-large-island)
   - [Shorest/Longest Path in Matrix](#shorestlongest-path-in-matrix)
     - [Longest Increase Path](#longest-increase-path)
     - [Walls and gates](#walls-and-gates)
@@ -50,8 +52,9 @@ start with path starting or ending point. usually for longest/shortest , largest
 
 ### Stop Conditions:
 
-  * visited conditions
-  * updated cell value larger or smaller than new DFS/BFS ones
+* visited conditions
+  - one trick is change matrix point after visit to some other value, 
+* updated cell value larger or smaller than new DFS/BFS ones
 
 
 ## Sub region
@@ -221,6 +224,130 @@ int row = 0;
         return up && down && left && right;
         
     }
+```
+
+### Max area island
+
+https://leetcode.com/problems/max-area-of-island/
+
+Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+Find the maximum area of an island in the given 2D array. (If there is no island, the maximum area is 0.)
+
+```CPP
+int row = 0;
+int col = 0;
+int maxAreaOfIsland(vector<vector<int>>& grid) {
+    row = grid.size();
+    if(row == 0)
+        return 0;
+    col = grid[0].size();
+    
+    //DFS every island and give it an color of island (>1)
+    int res = 0;
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            if (grid[i][j] == 1) {
+                int cur = DFS(grid, i, j);
+                res = max(res, cur);
+            }
+        }
+    }
+    
+    return res;
+}
+
+int DFS(vector<vector<int>>& grid, int x, int y) {
+    if(x>=0 && x<row && y>=0 && y<col && grid[x][y] ==1){
+        grid[x][y] = 0; //change to 0 so we do not revisit
+        int left = DFS(grid, x-1, y);
+        int right = DFS(grid, x+1, y);
+        int up = DFS(grid, x, y+1);
+        int down = DFS(grid, x, y-1);
+        return left + right + up + down + 1;
+    }else{
+       return 0; 
+    }
+
+    
+}
+```
+
+### Making A Large Island
+
+https://leetcode.com/problems/making-a-large-island/
+
+In a 2D grid of 0s and 1s, we change at most one 0 to a 1.
+
+After, what is the size of the largest island? (An island is a 4-directionally connected group of 1s).
+
+```CPP
+
+int row = 0;
+int col = 0;
+vector<vector<int>> dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+int largestIsland(vector<vector<int>>& grid) {
+    row = grid.size();
+    if(row == 0)
+        return 0;
+    col = grid[0].size();
+    
+    //DFS every island and give it an color of island (>1)
+    int color = 2, res = 0;
+    unordered_map <int, int> area;  //K is area color index, V is area size
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            if (grid[i][j] == 1) {
+                area[color] = DFS(grid, i, j, color);
+                //res is current max island area before we change one 0->1
+                //for case all points is 1
+                res = max(res, area[color]);
+                color++;
+            }
+        }
+    }
+    
+    //traverse every 0 cell and count biggest island it can conntect
+    //by change current 0 to 1,
+    for (int i = 0; i < row; i++)
+        for (int j = 0; j < col; j++)
+            if (grid[i][j] == 0) {
+            //seen means whether we can visit  current color's island from current 0
+                unordered_set<int> s;
+                
+                for (auto dir : dirs) {
+                    int x = i+dir[0];
+                    int y = j+dir[1];
+                    if(x>=0 && x<row && y>=0 && y<col && grid[x][y]!=0){
+                        //add color id into set
+                        s.insert(grid[x][y]);
+                    }
+                    
+                }
+                
+                int sum = 1;  //change 0->1
+                for(auto id: s){
+                    sum+=area[id];
+                }
+                
+                res = max(res, sum);
+            }
+    return res;
+}
+
+int DFS(vector<vector<int>>& grid, int x, int y, int color) {
+    //out of boudary or visited or 0
+    if(x<0 || x>row-1 || y<0 || y>col-1 || grid[x][y] != 1)
+        return 0;
+    
+    grid[x][y] = color;
+    int left = DFS(grid, x-1, y, color);
+    int right = DFS(grid, x+1, y, color);
+    int up = DFS(grid, x, y+1, color);
+    int down = DFS(grid, x, y-1, color);
+    //need to include itself
+    return left + right + up + down + 1;
+}
 ```
 
 ## Shorest/Longest Path in Matrix
