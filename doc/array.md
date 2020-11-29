@@ -1166,6 +1166,35 @@ Explanation: There are 7 subarrays with a sum divisible by K = 5:
 [4, 5, 0, -2, -3, 1], [5], [5, 0], [5, 0, -2, -3], [0], [0, -2, -3], [-2, -3]
 ```
 
+```CPP
+int subarraysDivByK(vector<int>& A, int K) {
+        unordered_map<int, int> m; //key is sum%k, val is count
+        
+        int sum = 0;
+        int ret = 0;
+        // m[0] = 1;
+        for(int i=0;i<A.size();i++){
+            sum+=A[i];
+            int mod = sum%K;
+            
+            //count from begin to here has sum divided by K
+            if(mod==0)
+                ret++;
+            
+            if(mod<0)
+                mod+=K;
+                
+            //find same mod, means sub array in between has sum divided by K
+            if(m.find(mod)!=m.end()){
+                ret+=m[mod];
+            }
+            m[mod]++;
+        }
+        
+        return ret;
+    }
+```
+
 
 ### Find Two Non-overlapping Sub-arrays Each With Target Sum
 
