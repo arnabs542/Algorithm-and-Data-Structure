@@ -44,6 +44,7 @@
       - [Find out all finish path](#find-out-all-finish-path)
       - [Parallel Courses(Max Depth in DAG)](#parallel-coursesmax-depth-in-dag)
     - [Alien dictionary](#alien-dictionary)
+    - [Minimum Height Trees](#minimum-height-trees)
   - [Example](#example)
     - [Sequence Reconstruction](#sequence-reconstruction)
 
@@ -1760,6 +1761,83 @@ Output:
 Explanation: There are two possible orderings of the tasks meeting all prerequisites.
 ```
 
+```CPP
+static void printOrders(int tasks, vector<vector<int>> &prerequisites) {
+    vector<int> sortedOrder;
+    if (tasks <= 0) {
+      return;
+    }
+
+    // a. Initialize the graph
+    unordered_map<int, int> inDegree;       // count of incoming edges for every vertex
+    unordered_map<int, vector<int>> graph;  // adjacency list graph
+    for (int i = 0; i < tasks; i++) {
+      inDegree[i] = 0;
+      graph[i] = vector<int>();
+    }
+
+    // b. Build the graph
+    for (int i = 0; i < prerequisites.size(); i++) {
+      int parent = prerequisites[i][0], child = prerequisites[i][1];
+      graph[parent].push_back(child);  // put the child into it's parent's list
+      inDegree[child]++;               // increment child's inDegree
+    }
+
+    // c. Find all sources i.e., all vertices with 0 in-degrees
+    vector<int> sources;
+    for (auto entry : inDegree) {
+      if (entry.second == 0) {
+        sources.push_back(entry.first);
+      }
+    }
+
+    printAllTopologicalSorts(graph, inDegree, sources, sortedOrder);
+  }
+
+static void printAllTopologicalSorts(unordered_map<int, vector<int>> &graph,
+                                   unordered_map<int, int> &inDegree,
+                                   const vector<int> &sources, vector<int> &sortedOrder) {
+    if (!sources.empty()) {
+      for (int vertex : sources) {
+        sortedOrder.push_back(vertex);
+        vector<int> sourcesForNextCall = sources;
+        // only remove the current source, all other sources should remain in the queue for the next
+        // call
+        sourcesForNextCall.erase(
+            find(sourcesForNextCall.begin(), sourcesForNextCall.end(), vertex));
+
+        vector<int> children =
+            graph[vertex];  // get the node's children to decrement their in-degrees
+        for (auto child : children) {
+          inDegree[child]--;
+          if (inDegree[child] == 0) {
+            sourcesForNextCall.push_back(child);  // save the new source for the next call
+          }
+        }
+
+        // recursive call to print other orderings from the remaining (and new) sources
+        printAllTopologicalSorts(graph, inDegree, sourcesForNextCall, sortedOrder);
+
+        // backtrack, remove the vertex from the sorted order and put all of its
+        // children back to consider the next source instead of the current vertex
+        sortedOrder.erase(find(sortedOrder.begin(), sortedOrder.end(), vertex));
+        for (auto child : children) {
+          inDegree[child]++;
+        }
+      }
+    }
+
+    // if sortedOrder doesn't contain all tasks, either we've a cyclic dependency between tasks, or
+    // we have not processed all the tasks in this recursive call
+    if (sortedOrder.size() == inDegree.size()) {
+      for (int num : sortedOrder) {
+        cout << num << " ";
+      }
+      cout << endl;
+    }
+}
+```
+
 #### Parallel Courses(Max Depth in DAG)
 
 https://leetcode.com/problems/parallel-courses/
@@ -1936,6 +2014,59 @@ string alienOrder(vector<string>& words) {
     }
 ```
 
+### Minimum Height Trees
+
+https://leetcode.com/problems/minimum-height-trees/
+
+https://www.educative.io/courses/grokking-the-coding-interview/7nDN8y7JKVA
+
+A tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.
+
+Given a tree of n nodes labelled from 0 to n - 1, and an array of n - 1 edges where edges[i] = [ai, bi] indicates that there is an undirected edge between the two nodes ai and bi in the tree, you can choose any node of the tree as the root. When you select a node x as the root, the result tree has height h. Among all possible rooted trees, those with minimum height (i.e. min(h))  are called minimum height trees (MHTs).
+
+```CPP
+/*
+leaves can’t give us MHT, we can remove them from the graph and remove their edges too. Once we remove the leaves, we will have new leaves. Since these new leaves can’t give us MHT, we will repeat the process and remove them from the graph too. We will prune the leaves until we are left with one or two nodes which will be our answer and the roots for MHTs.
+*/
+
+vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+    vector<int> ret;
+    //key is int and value is its direct linked node
+    unordered_map<int,unordered_set<int>> g;
+    for(int i=0;i<edges.size();i++){
+        g[edges[i][0]].insert(edges[i][1]);
+        g[edges[i][1]].insert(edges[i][0]);
+    }
+    vector<int> cur;
+    //corner case
+     if (n == 1) {
+      cur.push_back(0);
+      return cur;
+    }
+    
+    // Create first leaf layer
+    for (int i = 0; i < g.size(); ++i) {
+      if (g[i].size() == 1) {
+        cur.push_back(i);
+      }
+    }
+   // BFS the graph
+    while (true) {
+      vector<int> next;
+    //from all leave layer
+      for (int node : cur) {
+        for (int neighbor : g[node]) {
+          g[neighbor].erase(node); //remove layers
+          if (g[neighbor].size() == 1) //found until leave
+            next.push_back(neighbor);
+        }
+      }
+      if (next.empty()) 
+        return cur;
+      cur = next;
+    }
+}
+```
 
 
 ## Example

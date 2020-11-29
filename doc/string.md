@@ -5,7 +5,11 @@
 - [Basic String operation](#basic-string-operation)
   - [find/substr](#findsubstr)
   - [Insert/Pushback](#insertpushback)
-  - [Subdomain](#subdomain)
+  - [Remove/erase](#removeerase)
+    - [remove selected chars from string in place](#remove-selected-chars-from-string-in-place)
+  - [Basica String operation problem](#basica-string-operation-problem)
+    - [Subdomain](#subdomain)
+    - [Minimum Remove to Make Valid Parentheses](#minimum-remove-to-make-valid-parentheses)
 - [Substring problem](#substring-problem)
   - [Two pointers problem](#two-pointers-problem)
     - [Common solution Summary](#common-solution-summary)
@@ -66,7 +70,38 @@ s.push_back(c)  //insert c in bakc
 s.pop_bakc(); //delete last
 ```
 
-## Subdomain
+## Remove/erase 
+
+### remove selected chars from string in place
+
+```CPP
+
+string str("(555) 555-5555");
+
+char chars[] = "()-";
+
+for (unsigned int i = 0; i < strlen(chars); ++i)
+{
+  // you need include <algorithm> to use general algorithms like std::remove()
+  str.erase (std::remove(str.begin(), str.end(), chars[i]), str.end());
+}
+
+// output: 555 5555555
+cout << str << endl;
+
+void removeCharsFromString( string &str, char* charsToRemove ) {
+   for ( unsigned int i = 0; i < strlen(charsToRemove); ++i ) {
+      str.erase( remove(str.begin(), str.end(), charsToRemove[i]), str.end() );
+   }
+}
+//example of usage:
+removeCharsFromString( str, "()-" );
+
+```
+
+## Basica String operation problem
+
+### Subdomain
 
 https://leetcode.com/problems/subdomain-visit-count/
 
@@ -86,6 +121,40 @@ vector<string> subdomainVisits(vector<string>& cpdomains) {
         for (auto k : count)
             res.push_back (to_string(k.second) + " " + k.first);
         return res;
+    }
+```
+
+### Minimum Remove to Make Valid Parentheses
+
+https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+
+Given a string s of '(' , ')' and lowercase English characters. 
+
+Your task is to remove the minimum number of parentheses ( '(' or ')', in any positions ) so that the resulting parentheses string is valid and return any valid string.
+
+
+```CPP
+string minRemoveToMakeValid(string s) {
+          stack<int> st;
+        vector<>
+          for (auto i = 0; i < s.size(); ++i) {
+            if (s[i] == '(') st.push(i);
+            if (s[i] == ')') {
+                
+              if (!st.empty()) 
+                  st.pop();
+              else 
+                  s[i] = '*'; //invalid, need to remove
+            }
+          }
+        //ideally we should have empty stack 
+          while (!st.empty()) {
+            s[st.top()] = '*';
+            st.pop();
+          }
+        //remove all *, remove return iter after removed s, erase all after that
+          s.erase(remove(s.begin(), s.end(), '*'), s.end());
+          return s;
     }
 ```
 
