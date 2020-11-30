@@ -22,6 +22,7 @@
     - [Sort Color(Dutch flag)](#sort-colordutch-flag)
     - [BackSpace String compare](#backspace-string-compare)
     - [Shortest Unsorted Continuous Subarray](#shortest-unsorted-continuous-subarray)
+    - [Product of Array Except Self](#product-of-array-except-self)
   - [Three pointers problems](#three-pointers-problems)
     - [3 Sum](#3-sum)
     - [3 Sum Cloest](#3-sum-cloest)
@@ -745,6 +746,40 @@ int findUnsortedSubarray(vector<int>& nums) {
     }
 ```
 
+### Product of Array Except Self
+
+https://leetcode.com/problems/product-of-array-except-self/
+
+Given an array nums of n integers where n > 1,  return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+
+```
+Example:
+
+Input:  [1,2,3,4]
+Output: [24,12,8,6]
+```
+
+```CPP
+vector<int> productExceptSelf(vector<int>& nums) {
+    /*
+    Numbers:     2    3    4     5
+    Lefts:            2  2*3 2*3*4
+    Rights:  3*4*5  4*5    5    
+    */
+    int n = nums.size();
+    vector<int> res(n);
+    res[0] = 1;
+    for (int i = 1; i < n; i++) {
+        res[i] = res[i - 1] * nums[i - 1];
+    }
+    int right = 1;
+    for (int i = n - 1; i >= 0; i--) {
+        res[i] *= right;
+        right *= nums[i];
+    }
+    return res;
+}
+```
 
 ## Three pointers problems
 > Common techniques

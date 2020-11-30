@@ -1195,7 +1195,9 @@ int help(TreeNode* root, int &maxPath){
         return 0;
     int l = max(0, help(root->left, maxPath));
     int r = max(0, help(root->right, maxPath));
+    //this is to record max path if current node is root.
     maxPath = max(maxPath, l + r + root->val);
+    //if we need to choose a path, we need just choose either left or right as sub branch
     return root->val + max(l, r);
 }
 ```

@@ -1981,6 +1981,7 @@ string alienOrder(vector<string>& words) {
                     }
                     break;                        
                 }
+                //not able to alphabetic order
                 if (j == len - 1 && cur.size() > next.size()) 
                     return "";
             }
