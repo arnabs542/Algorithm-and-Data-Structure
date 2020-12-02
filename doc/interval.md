@@ -445,8 +445,7 @@ struct startCompare {
           return ret;
         }
 
-        // PriorityQueue to store one interval from each employee
-        //pair here is employ row index and col index 
+        // min Heap 
         priority_queue<pair<Interval, pair<int, int>>, vector<pair<Interval, pair<int, int>>>,
                        startCompare>
             minHeap;

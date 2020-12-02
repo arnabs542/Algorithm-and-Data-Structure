@@ -13,6 +13,8 @@
       - [Number of Closed Islands](#number-of-closed-islands)
     - [Max area island](#max-area-island)
     - [Making A Large Island](#making-a-large-island)
+  - [Path In Matrix](#path-in-matrix)
+    - [Word Search](#word-search)
   - [Shorest/Longest Path in Matrix](#shorestlongest-path-in-matrix)
     - [Longest Increase Path](#longest-increase-path)
     - [Walls and gates](#walls-and-gates)
@@ -25,8 +27,10 @@
   - [Largest square/rectangle inside](#largest-squarerectangle-inside)
     - [Maximal-square](#maximal-square)
 - [Sparse Matrix](#sparse-matrix)
+  - [Dot Product of Two Sparse Vectors](#dot-product-of-two-sparse-vectors)
   - [Sparse Matrix Representation](#sparse-matrix-representation)
   - [Add/Transpose/Multiply Operations](#addtransposemultiply-operations)
+    - [Sparse Matrix Multiplication](#sparse-matrix-multiplication)
 - [Geometry Problem](#geometry-problem)
   - [Retangle in 2-D dimention](#retangle-in-2-d-dimention)
       - [Common tech:](#common-tech)
@@ -347,6 +351,44 @@ int DFS(vector<vector<int>>& grid, int x, int y, int color) {
     int down = DFS(grid, x, y-1, color);
     //need to include itself
     return left + right + up + down + 1;
+}
+```
+
+## Path In Matrix
+
+### Word Search
+
+https://leetcode.com/problems/word-search/
+
+Given an m x n board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cells, where "adjacent" cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+```CPP
+bool exist(vector<vector<char>>& board, string word) {
+    if(board.empty() || board[0].empty()) return false;
+    vector<vector<bool>> visited(board.size(), vector<bool>(board[0].size(),false));
+    for(int i=0; i<board.size(); i++) {
+        for(int j=0; j<board[i].size(); j++) {
+            if(findWord(board, visited, i, j, word, 0)) return true;
+        }
+    }
+    return false;
+}
+
+bool findWord(vector<vector<char>> &board, vector<vector<bool>> &visited, int row, int col, string &word, int index) {
+    if(index==word.size()) return true;
+    if(row<0 || col<0 || row>=board.size() || col>=board[0].size() || visited[row][col] || board[row][col]!=word[index]) 
+        return false;
+
+    visited[row][col] = true;
+    if(findWord(board, visited, row-1, col, word, index+1)) return true;  
+    if(findWord(board, visited, row+1, col, word, index+1)) return true;
+    if(findWord(board, visited, row, col-1, word, index+1)) return true;
+    if(findWord(board, visited, row, col+1, word, index+1)) return true;
+    //Here we need to set False since 
+    visited[row][col] = false;
+    return false;
 }
 ```
 
@@ -1107,6 +1149,50 @@ int maximalSquare(vector<vector<char>>& matrix) {
 
 # Sparse Matrix
 
+## Dot Product of Two Sparse Vectors
+
+https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
+
+Given two sparse vectors, compute their dot product.
+
+Implement class SparseVector:
+```
+SparseVector(nums) Initializes the object with the vector nums
+
+dotProduct(vec) Compute the dot product between the instance of SparseVector and vec
+A sparse vector is a vector that has mostly zero values, you should store the sparse vector efficiently and compute the dot product between two SparseVector.
+```
+
+```CPP
+class SparseVector {
+public:
+    
+    vector<pair<int, int>> v;
+    SparseVector(vector<int> &nums) {
+        for (int i = 0; i < nums.size(); ++i)
+            if (nums[i])
+                v.push_back({i, nums[i]});
+    }
+    int dotProduct(SparseVector& vec) {
+        int res = 0;
+        int i =0;
+        int j =0;
+        while (i < v.size() && j < vec.v.size())
+            if (v[i].first < vec.v[j].first)
+                i++;
+            else if (v[i].first > vec.v[j].first)
+                ++j;
+            else{
+                res += v[i].second * vec.v[j].second;
+                i++;
+                j++;
+            }
+                
+        return res;
+    }
+};
+```
+
 ## Sparse Matrix Representation
 
 A sparse matrix can be represented by using TWO representations, those are as follows...
@@ -1357,6 +1443,56 @@ public:
         } 
         result.print(); 
     } 
+}
+```
+
+### Sparse Matrix Multiplication
+
+https://leetcode.com/problems/sparse-matrix-multiplication/
+
+```CPP
+vector<vector<int>> multiply(vector<vector<int>>& A, vector<vector<int>>& B) {
+     int am = A.size();
+     int bm = B.size();
+
+     int an = A[0].size();
+     int bn = B[0].size();
+     vector<vector<int>> result(am,vector<int>(bn,0));
+
+
+     //convert this into sparse matrix representation
+     vector<vector<int>> A_non_zero(am);
+     vector<vector<int>> B_non_zero(bn);
+     //record row, each none zero is a column is vector for that row index vector
+     for(int i=0;i<am;i++)
+         for(int j=0;j<an;j++)
+             if(A[i][j])
+                 A_non_zero[i].push_back(j);
+
+    //record col, each none zero is a row is vector for that row index vector
+     for(int j=0;j<bn;j++)
+         for(int i=0;i<bm;i++)
+             if(B[i][j])
+                 B_non_zero[j].push_back(i);
+
+     for(int i=0;i<am;i++)
+         for(int j=0;j<bn;j++){
+             int m=0,n=0;
+             while(m<A_non_zero[i].size() && n<B_non_zero[j].size()){
+                 int idx_A = A_non_zero[i][m];
+                 int idx_B = B_non_zero[j][n];
+                 if(idx_A == idx_B){
+                     result[i][j]+= (A[i][idx_A]*B[idx_B][j]);
+                     m++;
+                     n++;
+                 }
+                 else if(idx_A > idx_B)
+                     n++;
+                 else 
+                     m++;
+             }
+         }
+     return result;
 }
 ```
 

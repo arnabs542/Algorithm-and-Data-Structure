@@ -8,6 +8,7 @@
     - [Minheap](#minheap)
   - [K way Merge](#k-way-merge)
     - [Merge K sorted List](#merge-k-sorted-list)
+    - [Employee Free Time](#employee-free-time)
     - [K-th Largest/Smallest problem](#k-th-largestsmallest-problem)
       - [K-th Largest in Array](#k-th-largest-in-array)
       - [K-th Smallest In stream](#k-th-smallest-in-stream)
@@ -161,6 +162,91 @@ public:
         
     }
 };
+```
+
+### Employee Free Time
+
+https://leetcode.com/problems/employee-free-time/
+
+We are given a list schedule of employees, which represents the working time for each employee.
+
+Each employee has a list of non-overlapping Intervals, and these intervals are in sorted order.
+
+Return the list of finite intervals representing common, positive-length free time for all employees, also in sorted order.
+
+(Even though we are representing Intervals in the form [x, y], the objects inside are Intervals, not lists or arrays. For example, schedule[0][0].start = 1, schedule[0][0].end = 2, and schedule[0][0][0] is not defined).  Also, we wouldn't include intervals like [5, 5] in our answer, as they have zero length.
+
+ 
+```
+Example 1:
+
+Input: schedule = [[[1,2],[5,6]],[[1,3]],[[4,10]]]
+Output: [[3,4]]
+Explanation: There are a total of three employees, and all common
+free time intervals would be [-inf, 1], [3, 4], [10, inf].
+We discard any intervals that contain inf as they aren't finite.
+Example 2:
+
+Input: schedule = [[[1,3],[6,7]],[[2,4]],[[2,5],[9,12]]]
+Output: [[5,6],[7,9]]
+```
+
+```CPP
+struct startCompare {
+        bool operator()(pair<Interval, pair<int, int>> &x,
+                        pair<Interval, pair<int, int>> &y) {
+          return x.first.start > y.first.start;
+        }
+    };
+    
+vector<Interval> employeeFreeTime(vector<vector<Interval>>& schedule) {
+    vector<Interval> ret;
+    if (schedule.empty()) {
+      return ret;
+    }
+
+    // minheap to store  interval from each employee
+    //pair here is employ row index and col index in 2D vector
+    priority_queue<pair<Interval, pair<int, int>>, vector<pair<Interval, pair<int, int>>>,
+                   startCompare>
+        minHeap;
+
+    // insert the first interval of each employee to the queue
+    for (int i = 0; i < schedule.size(); i++) {
+      minHeap.push(make_pair(schedule[i][0], make_pair(i, 0)));
+    }
+    
+    /*
+    Once we have the smallest start-time interval, we can then compare it with the next smallest start-time interval (again from the Heap) to find the gap
+    */
+    
+    Interval prev = minHeap.top().first; 
+    while(!minHeap.empty()){
+        auto next = minHeap.top();
+        minHeap.pop();
+        //no overlap
+        if (prev.end < next.first.start) {
+            ret.push_back({prev.end, next.first.start});
+            prev = next.first;
+          } else {  
+            // overlapping intervals, update the prev if needed
+            if (prev.end < next.first.end) {
+              prev = next.first;
+            }
+        }
+        
+
+        vector<Interval> cur_employee = schedule[next.second.first];
+        //index of current employee's next schedule
+        int next_index = next.second.second + 1;
+        if (cur_employee.size() > next_index) {
+            minHeap.push(make_pair(cur_employee[next_index],
+                               make_pair(next.second.first, next_index)));
+        }
+    }
+    
+    return ret;
+}
 ```
 
 ### K-th Largest/Smallest problem

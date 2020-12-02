@@ -218,6 +218,8 @@ static int findSquareSum(int num) {
 
 ### Palindrome List
 
+https://leetcode.com/problems/palindrome-linked-list/
+
 Your algorithm should use constant space and the input LinkedList should be in the original form once the algorithm is finished. The algorithm should have O(N)O(N) time complexity where ‘N’ is the number of nodes in the LinkedList.
 ```
 Example 1:
@@ -276,6 +278,23 @@ static bool isPalindrome(ListNode *head) {
     }
     return prev;
   }
+```
+
+```CPP
+//recursive way
+bool isPalindrome(ListNode* head) {
+    return check(head, head);
+}
+
+bool check(ListNode*& head, ListNode* p) {
+    if(!p) { return true; }
+    bool isPal = check(head, p->next);
+    if(head->val != p->val) {
+        return false;
+    }
+    head = head->next;
+    return isPal;
+}
 ```
 
 ### Re Arrange List
