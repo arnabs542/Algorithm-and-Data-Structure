@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Basic String operation](#basic-string-operation)
+  - [Basic Ops](#basic-ops)
   - [find/substr](#findsubstr)
   - [Insert/Pushback](#insertpushback)
   - [Remove/erase](#removeerase)
@@ -28,6 +29,7 @@
     - [Valid Palindrome with N delete](#valid-palindrome-with-n-delete)
 - [String BFS/Recursive](#string-bfsrecursive)
   - [Combination](#combination)
+  - [Int to English Words](#int-to-english-words)
   - [Expression Coding/Decoding](#expression-codingdecoding)
     - [String Compression](#string-compression)
     - [String as calculator](#string-as-calculator)
@@ -46,6 +48,20 @@
 
 # Basic String operation
 
+## Basic Ops
+
+```CPP
+//convert to lower or upper case
+tolower()
+toupper()
+//Is digit
+isdigit()
+//is alpha char?
+isalpha()
+//The result is true if either isalpha or isdigit would also return true.
+isalnum()
+```
+
 ## find/substr
 
 ```CPP
@@ -53,7 +69,7 @@
 char c;
 int i = str.find(c);
 
-//substr
+//substr, if we do not have len, meas to the end
 string substr (size_t pos = 0, size_t len = npos) const;
 
 ```
@@ -98,6 +114,7 @@ void removeCharsFromString( string &str, char* charsToRemove ) {
 removeCharsFromString( str, "()-" );
 
 ```
+
 
 ## Basica String operation problem
 
@@ -685,6 +702,87 @@ void help(string &in, int i, int cnt, string &one, vector<string> ret){
 }
 
 ```
+
+## Int to English Words
+
+https://leetcode.com/problems/integer-to-english-words/
+
+Convert a non-negative integer num to its English words representation.
+```
+Example 1:
+
+Input: num = 123
+Output: "One Hundred Twenty Three"
+Example 2:
+
+Input: num = 12345
+Output: "Twelve Thousand Three Hundred Forty Five"
+Example 3:
+
+Input: num = 1234567
+Output: "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"
+Example 4:
+
+Input: num = 1234567891
+Output: "One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Thousand Eight Hundred Ninety One"
+```
+
+```CPP
+vector<string> below_20 = {"One", "Two", "Three", "Four","Five","Six","Seven","Eight","Nine","Ten", "Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+vector<string> below_100 = {"Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+  
+string numberToWords(int n) {
+    if(n == 0) 
+        return "Zero";
+    else 
+        return int_string(n).substr(1);
+}
+
+
+string int_string(int n) {
+    if(n >= 1000000000)   
+        return int_string(n / 1000000000) + " Billion" + int_string(n - 1000000000 * (n / 1000000000));
+    else if(n >= 1000000) 
+        return int_string(n / 1000000) + " Million" + int_string(n - 1000000 * (n / 1000000));
+    else if(n >= 1000)    
+        return int_string(n / 1000) + " Thousand" + int_string(n - 1000 * (n / 1000));
+    else if(n >= 100)     
+        return int_string(n / 100) + " Hundred" + int_string(n - 100 * (n / 100));
+    else if(n >= 20)      
+        return string(" ") + below_100[n / 10 - 2] + int_string(n - 10 * (n / 10));
+    else if(n >= 1)       
+        return string(" ") + below_20[n - 1];
+    else 
+        return "";
+}
+```
+
+A better solution
+
+```CPP
+string hundredStr(int num){
+    vector<string> arr1={"","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
+    "Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+    vector<string> arr2={"","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"};
+    string ret;
+    ret=num%100<20?arr1[num%100]:arr2[(num%100)/10]+(num%10?" "+arr1[num%10]:"");
+    if(num>99)ret=arr1[num/100]+" Hundred"+(num%100?" "+ret:"");
+    return ret;
+}
+string numberToWords(int num) {
+    string ret;
+    vector<string> strarr={"Thousand","Million","Billion"};
+    ret=hundredStr(num%1000);
+    for(int i=0;i<3;i++){
+        num/=1000;
+        ret=num%1000?hundredStr(num%1000)+" "+strarr[i]+" "+ ret:ret;
+    }
+    while(ret.back()==' ')
+        ret.pop_back();
+    return ret.empty()?"Zero":ret;
+}
+```
+
 
 ## Expression Coding/Decoding
 

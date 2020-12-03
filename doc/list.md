@@ -3,6 +3,10 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Linked List](#linked-list)
+  - [List Reverse](#list-reverse)
+    - [Reverse part of List](#reverse-part-of-list)
+  - [Copy List](#copy-list)
+    - [Copy List with Random pointer](#copy-list-with-random-pointer)
   - [Fine the Cycle in Linked List](#fine-the-cycle-in-linked-list)
     - [Fast/Slow pointer](#fastslow-pointer)
     - [Find cycle intersection](#find-cycle-intersection)
@@ -21,6 +25,132 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Linked List
+
+## List Reverse
+
+https://leetcode.com/problems/reverse-linked-list/
+
+```CPP
+Node* reverseList(Node* head){
+ if(head==NULL || head->next ==NULL){
+  return head;
+ }
+ //recursive to end, node will be last node, head is prev to node;
+ Node* node = reverseList(head->next);
+ //reverse the next pointer
+ head->next->next = head;
+ head->next = NULL;
+ return node;
+
+}
+
+//we can also do it iterative
+Node* reverseList(Node* head){
+  Node *cur = NULL;
+  while(head){
+    Node* next = head->next;
+    head->next = cur;
+    cur = head;
+    head = next;
+  }
+  return cur;
+}
+```
+
+### Reverse part of List
+
+https://leetcode.com/problems/reverse-linked-list-ii/
+
+Reverse a linked list from position m to n. Do it in one-pass.
+
+```CPP
+ListNode* reverseBetween(ListNode* head, int m, int n){
+  ListNode* dummy = new ListNode(0);
+  dummy->next = head;
+  ListNode* prev = dummy;
+  ListNode* cur = head;
+  //after this, cur is m-th, prev is m-1 th
+  for(int i=0;i<m-1;i++){
+      if(cur==NULL)
+          break;
+      cur = cur->next;
+      prev = prev->next;
+  }
+  
+  ListNode* tmp = cur->next;
+
+  for(int i=0;i<n-m;i++){
+      cur->next = tmp->next;
+      tmp->next = prev->next;
+      prev->next = tmp;
+      tmp = cur->next;
+  }
+  
+  return dummy->next;
+
+}
+```
+
+
+## Copy List
+
+### Copy List with Random pointer
+
+https://leetcode.com/problems/copy-list-with-random-pointer/
+
+A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+
+Return a deep copy of the list.
+
+The Linked List is represented in the input/output as a list of n nodes. Each node is represented as a pair of [val, random_index] where:
+
+val: an integer representing Node.val
+random_index: the index of the node (range from 0 to n-1) where random pointer points to, or null if it does not point to any node.
+
+```CPP
+Node* copyRandomList(Node* head){
+  //l1 is original, l2 is copy
+  Node *l1=head, *l2;
+  if(head==NULL)
+    return NULL;
+
+  //generate l2, insert l2 node right after l1
+  
+  while(l1!=NULL){
+     l2 = new Node(l1->val);
+     l2->next = l1->next;
+     l1->next = l2;
+     //since we insert right after l1, need to two next 
+     l1=l1->next->next;
+  }
+
+  //update l2's random
+
+  l1 = head;
+  while(l1!=NULL){
+    if(l1->random != NULL){
+      //l1->next is l2, l1->random->next is also l2
+      l1->next->random = l1->random->next;
+    }
+    l1 = l1->next->next;
+  }
+
+  //split l1 and l2
+  l1 = head;
+  Node* l2_head = l1->next;
+  while(l1!=NULL){
+    l2 = l1->next;
+    l1->next = l2->next;
+    if(l2->next != NULL)
+      l2->next = l2->next->next;
+    l1 = l1->next;
+  }
+
+  return l2_head;
+
+}
+```
+
 
 ## Fine the Cycle in Linked List
 
