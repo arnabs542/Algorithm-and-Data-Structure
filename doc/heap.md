@@ -168,6 +168,8 @@ public:
 
 https://leetcode.com/problems/employee-free-time/
 
+https://www.educative.io/courses/grokking-the-coding-interview/RLwKZWgMJ1q
+
 We are given a list schedule of employees, which represents the working time for each employee.
 
 Each employee has a list of non-overlapping Intervals, and these intervals are in sorted order.
@@ -687,6 +689,41 @@ static int findKthSmallestNumber(const vector<int> &nums, int k) {
     // the root of the heap has the Kth smallest number
     return maxHeap.top();
   }
+```
+
+https://leetcode.com/problems/kth-largest-element-in-an-array/
+
+Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+```
+Example 1:
+
+Input: [3,2,1,5,6,4] and k = 2
+Output: 5
+Example 2:
+
+Input: [3,2,3,1,2,4,5,5,6] and k = 4
+Output: 4
+```
+
+```CPP
+struct mycompare{
+    bool operator()(int a, int b){
+        return a>b;
+    }
+};
+
+int findKthLargest(vector<int>& nums, int k) {
+    //should have a min heap size k, where top is the minimum of max k values.
+    priority_queue<int,vector<int>,mycompare> pq;
+    for(int i=0;i<nums.size();i++){
+        pq.push(nums[i]);
+        if(pq.size()>k)
+            pq.pop();
+    }
+    
+    return pq.top();
+}
 ```
 
 ### K-th Cloest points
